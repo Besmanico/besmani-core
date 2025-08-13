@@ -38,13 +38,20 @@
     <link href="{{ config('app.url') }}assets-file/css/bootstrap.min.css" rel="stylesheet">
 
     <!-- Custom styles for this template -->
-    <link href="{{ config('app.url') }}assets-file/css/style.css?v=<?= filemtime('assets-file/css/style.css'); ?>" rel="stylesheet">
-    <link href="{{ config('app.url') }}assets-file/css/responsive.css?v=<?= filemtime('assets-file/css/responsive.css'); ?>" rel="stylesheet">
+    <link href="{{ config('app.url') }}assets-file/css/style.css?v=<?= filemtime('assets-file/css/style.css') ?>"
+        rel="stylesheet">
+    <link
+        href="{{ config('app.url') }}assets-file/css/responsive.css?v=<?= filemtime('assets-file/css/responsive.css') ?>"
+        rel="stylesheet">
     <link href="{{ config('app.url') }}assets-file/lightbox/css/lightbox.min.css" rel="stylesheet">
     <link href="{{ config('app.url') }}assets-file/aos/aos.css" rel="stylesheet">
+    <link rel="stylesheet" href="{{ config('app.url') }}assets-file/css/owl.carousel.min.css">
+    <link rel="stylesheet" href="{{ config('app.url') }}assets-file/css/owl.theme.default.min.css">
+
+
     <script src="{{ config('app.url') }}assets-file/js/jquery.min.js"></script>
 
-  
+
     @livewireStyles
 
 
@@ -54,19 +61,43 @@
     @livewire('header')
     <div id="hero" class="hero overlay">
         <div class="hero-content aos" data-aos="fade-up">
-            <div class="hero-text">
+            <div class="hero-text -mt-150">
                 <h1>Your story begins from here.</h1>
-                <a href="{{ config('app.url') }}" style="position:relative" class="site-title"><img style="margin-top:15px;width:450px;" src="{{ config('app.url') }}assets-file/img/header.png" alt="besmani"></a>
-    
+                <a href="{{ config('app.url') }}" style="position:relative" class="site-title"><img
+                        style="margin-top:15px;width:450px;" src="{{ config('app.url') }}assets-file/img/header.png"
+                        alt="besmani"></a>
+
                 <p style="margin-top:55px;">BESMANI EXPERIENCE OF THE FUTURE TECHNOLOGY AND DESIGN </p>
-             </div><!-- /.hero-text -->
+
+                {{-- subscribe --}}
+                <section class="site-section section-newsletter Subscribe-section text-center ">
+
+                    <div class="form-group newsletter-group">
+                        <input type="email" class="form-control email-subscribe" placeholder="Your e-mail">
+                        <button id="Subscribe" class="btn btn-green absolute Subscribe-btn"
+                            type="button">Subscribe</button>
+                    </div><!-- /.newsletter-group -->
+
+                </section><!-- /.section-newsletter -->
+
+                {{-- subscribeEnd --}}
+
+
+                <b class="txt-hero-measure">
+                    
+We measure our success by the results we drive for our clients.
+
+                </b>
+
+
+            </div><!-- /.hero-text -->
         </div><!-- /.hero-content -->
     </div><!-- /.hero -->
 
     <main id="main" class="site-main">
 
 
-    {{ $slot }}
+        {{ $slot }}
 
     </main>
 
@@ -100,7 +131,7 @@
         if (regexp.test(email) == false) {
             error = 1;
             $(".email-subscribe").focus();
-        }  
+        }
         if (error == 1) {
             return false;
         }
@@ -113,8 +144,9 @@
                 }
             })
             .done(function(msg) {
-                window.location = '{{ config('app.url') }}subscribe/check/'+email;
+                window.location = '{{ config('app.url') }}subscribe/check/' + email;
             })
-    }) 
+    })
 </script>
+
 </html>

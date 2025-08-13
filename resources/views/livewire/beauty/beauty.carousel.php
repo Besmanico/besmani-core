@@ -35,4 +35,32 @@
     </div>
 </div>
 
-<script src="https://cdnjs.cloudflare.com/ajax/libs/OwlCarousel2/2.3.4/owl.carousel.min.js"></script>
+ <script>
+    // Offer Slider JS
+	$('.offer-slider').owlCarousel({
+		loop: true,
+		margin: 15,
+		nav: true,
+		dots: false,
+		smartSpeed: 1000,
+		autoplay: true,
+		autoplayTimeout: 4000,
+		autoplayHoverPause: true,
+		rtl: false,
+		navText: [
+			"<i class='bx bx-left-arrow-alt'></i>",
+			"<i class='bx bx-right-arrow-alt'></i>"
+		],
+		responsive:{
+			0:{
+				items: 1,
+			},
+			768:{
+				items: 2,
+			},
+			992:{
+				items: 5,
+			}
+		}
+    });
+</script>

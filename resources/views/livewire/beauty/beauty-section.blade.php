@@ -1,6 +1,6 @@
 <div>
 
-    <section class="section-beauty get-area three" style="background: #fff; position: relative; overflow: hidden; ">
+    <section class="section-beauty get-area three " style="background: #fff; position: relative; overflow: hidden; ">
 
         {{-- <section class="site-section section-beauty get-area three"
         style="background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 50%, #dee2e6 100%); position: relative; overflow: hidden; padding: 40px 0;"> --}}
@@ -9,13 +9,12 @@
             style="position: absolute; top: 0; left: 0; right: 0; bottom: 0; z-index: 1; background: url('{{ config('app.url') }}assets-file/img/adv/bg-blue.JPG') repeat; background-size: cover; opacity: 0.8;">
         </div> --}}
 
-        <div class="container" style="position: relative; z-index: 2;">
+        <div class="container mt-20" style="position: relative; z-index: 2;">
 
             <!-- Services Grid Section -->
             <div class="row" style="margin-bottom: 40px; gap: 20px;">
-                <section class="container p-95" style="padding-bottom: 0px;">
-
-
+ 
+                    {{-- p-95 --}}
                     <!-- Beauty Service - Left Large -->
                     <div class="col-lg-6 col-md-6 col-sm-12 mb-4 pr-0">
                         <a href="https://beauty.besmani.com/" target="_blank">
@@ -110,14 +109,8 @@
 
                         </div>
                     </div>
-
-
-
-                </section>
-
-
+ 
             </div>
-
 
 
             <!-- Subscription Section -->
@@ -141,56 +134,179 @@
                     </button>
                 </form>
             </div> --}}
+
+
+            {{-- owl-carousel --}}
+
+            <div class="container">
+                <div class="row" >
+                <div class="beauty-slider owl-theme owl-carousel">
+
+                    <div class="offer-item">
+                        <img src="{{ config('app.url') }}assets-file/img/work/hapally1.jpg" class="img-res">
+ 
+                    </div>
+                    <!-- item -->
+
+                    <div class="offer-item">
+                        <img src="{{ config('app.url') }}assets-file/img/besmo.jpg" class="img-res">
+                         
+                    </div>
+                    <!-- item -->
+                    <div class="offer-item">
+                        <img src="{{ config('app.url') }}assets-file/img/portfolio-1.jpg" class="img-res">
+                         
+                    </div>
+                    <!-- item -->
+
+                    <div class="offer-item">
+                        <img src="{{ config('app.url') }}assets-file/img/portfolio-12.jpg" class="img-res" >
+                         
+                    </div>
+                    <!-- item -->
+                    <div class="offer-item">
+                        <img src="{{ config('app.url') }}assets-file/img/work/immigration.jpg" class="img-res" >
+                         
+                    </div>
+                    <!-- item -->
+                    <div class="offer-item">
+                        <img src="{{ config('app.url') }}assets-file/img/work/beauty.jpg" class="img-res" >
+                         
+                    </div>
+                    <!-- item -->
+
+                </div>
+                </div>
+            </div>
+            {{-- owl-carousel END --}}
+
+
         </div>
 
- {{-- owl-carousel --}}
-    <!-- Include Owl Carousel CSS and JS -->
-   
-    {{-- <div class="container">
-        <div class="owl-carousel owl-theme vertical-slider">
-            <div class="item">
-                <div class="carousel-item-card">
-                    <img src="{{ asset('assets-file/img/adv/b-girl.jpg') }}" alt="Beauty Service">
-                    <div class="carousel-content">
-                        <h4>Beauty Services</h4>
-                        <p>Professional beauty treatments</p>
-                    </div>
-                </div>
-            </div>
-            <div class="item">
-                <div class="carousel-item-card">
-                    <img src="{{ asset('assets-file/img/adv/dog.jpg') }}" alt="Pet Services">
-                    <div class="carousel-content">
-                        <h4>Pet Care</h4>
-                        <p>Safe and reliable pet services</p>
-                    </div>
-                </div>
-            </div>
-            <div class="item">
-                <div class="carousel-item-card">
-                    <img src="{{ asset('assets-file/img/adv/store.jpg') }}" alt="Shopping">
-                    <div class="carousel-content">
-                        <h4>Safe Shopping</h4>
-                        <p>Secure online shopping experience</p>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div> --}}
+
 
 
     </section>
 
 
-   
 
-     
-   
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/OwlCarousel2/2.3.4/owl.carousel.min.js"></script>
+
+    <script>
+        // Offer Slider JS
+        $('.beauty-slider').owlCarousel({
+            loop: true,
+            margin: 15,
+            nav: true,
+            dots: false,
+            
+            smartSpeed: 1000,
+            autoplay: false,
+            autoplayTimeout: 4000,
+            autoplayHoverPause: true,
+            rtl: false,
+                         navText: [
+                 "<i class='fa fa-angle-left'></i>",
+                 "<i class='fa fa-angle-right'></i>"
+             ],
+            responsive: {
+                0: {
+                    items: 3,
+                },
+                768: {
+                    items: 2,
+                },
+                992: {
+                    items: 6,
+                }
+            }
+        });
+    </script>
 
     <style>
-        .section-beauty{
-           box-shadow: 0 -3px 16px 24px #fff;
+
+        .beauty-slider .offer-item {
+            height: 150px;
+            background: #fff;
+            border-radius: 20px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+            overflow: hidden;
+            position: relative;
+            transition: all 0.3s ease;
+
         }
+
+        /* Beautiful Navigation Icons */
+        .beauty-slider .owl-nav {
+            position: absolute;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 100%;
+            display: flex;
+            justify-content: space-between;
+            pointer-events: none;
+            z-index: 10;
+        }
+
+        .beauty-slider .owl-nav button {
+            width: 50px;
+            height: 50px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%) !important;
+            border: none !important;
+            border-radius: 50% !important;
+            color: white !important;
+            font-size: 18px !important;
+            display: flex !important;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(102, 126, 234, 0.3);
+            pointer-events: auto;
+            margin: 0 20px;
+        }
+
+        .beauty-slider .owl-nav button:hover {
+            background: linear-gradient(135deg, #764ba2 0%, #667eea 100%) !important;
+            transform: scale(1.1);
+            box-shadow: 0 6px 20px rgba(102, 126, 234, 0.4);
+        }
+
+        .beauty-slider .owl-nav button:active {
+            transform: scale(0.95);
+        }
+
+        .beauty-slider .owl-nav button i {
+            font-weight: bold;
+            text-shadow: 0 1px 2px rgba(0, 0, 0, 0.2);
+        }
+
+        .beauty-slider .owl-nav .owl-prev {
+            left: -25px;
+        }
+
+        .beauty-slider .owl-nav .owl-next {
+            right: -25px;
+        }
+
+        /* Responsive navigation */
+        @media (max-width: 768px) {
+            .beauty-slider .owl-nav button {
+                width: 40px;
+                height: 40px;
+                font-size: 16px;
+                margin: 0 10px;
+            }
+            .beauty-slider .offer-item{
+                height: 130px;
+
+            }
+        }
+        .section-beauty {
+            box-shadow: 0 -3px 16px 24px #fff;
+        }
+
         .hover-remove-effect:hover .service-card-filter-cover {
 
             background: none;
@@ -525,6 +641,6 @@
         }
     </style>
 
-   
+
 
 </div>

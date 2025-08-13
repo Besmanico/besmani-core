@@ -2,9 +2,9 @@
    @livewire('beauty.beauty-section')
    {{-- @livewire('web-design') --}}
    {{-- @livewire('services-side') --}}
-   @livewire('besmo-side')
+   {{-- @livewire('besmo-side') --}}
    {{-- @livewire('map-side') --}}   
    @livewire('portfolio-side')
-   @livewire('newsletter-side')
+   {{-- @livewire('newsletter-side') --}}
    
 </div>

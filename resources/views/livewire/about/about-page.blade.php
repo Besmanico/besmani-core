@@ -1,5 +1,5 @@
 <section class="site-section subpage-site-section section-contact-us">
-
+<br>
     <div class="container">
         <div class="row">
             <div class="col-sm-7">
@@ -31,23 +31,28 @@
             </div>
             <div class="col-sm-5">
 
-            <div class="row">
-                <div class="col-md-6 mt-105">
-                <img src="{{ config('app.url') }}assets-file/img/about-1.jpg" alt="" class="w-100 shadow-sm">
+                <div class="row">
+                    <div class="col-md-6 mt-105">
+                        <img src="{{ config('app.url') }}assets-file/img/about-1.jpg" alt=""
+                            class="w-100 shadow-sm">
 
-                </div>
-                <div class="col-md-6 mt-105">
-                    <img src="{{ config('app.url') }}assets-file/img/about-2.jpg" alt="" class="w-100 shadow-sm">
+                    </div>
+                    <div class="col-md-6 mt-105">
+                        <img src="{{ config('app.url') }}assets-file/img/about-2.jpg" alt=""
+                            class="w-100 shadow-sm">
 
+                    </div>
                 </div>
-            </div>
-                
+
             </div>
 
         </div>
     </div>
-
-    </div>
+<br>
+<br>
+<br>
+<br>
+      </div>
     </div>
 
 </section><!-- /.section-contact-us -->
