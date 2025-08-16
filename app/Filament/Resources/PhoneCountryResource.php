@@ -31,6 +31,8 @@ use function Filament\Support\is_app_url;
 
 class PhoneCountryResource extends Resource
 {
+
+    public static $APP_URL = 'https://besmani.com/';
     protected static ?string $model = PhoneCountry::class;
 
     protected static ?string $navigationIcon = 'heroicon-o-rectangle-stack';
@@ -38,6 +40,7 @@ class PhoneCountryResource extends Resource
     protected static ?string $navigationLabel = "  Country  ";
     protected static ?string $modelLabel = "   Country  ";
     protected static ?string $pluralModelLabel = "  Country    ";
+
 
     public static function form(Form $form): Form
     {
@@ -74,7 +77,7 @@ class PhoneCountryResource extends Resource
                 TextColumn::make('name_fa')->label('country fa')->searchable(),
                 TextColumn::make('code')->label('code')->searchable(),
                 TextColumn::make('flag')->label('flag')
-                ->formatStateUsing(fn (string $state) => new HtmlString('<img class="w-10" src="' . env('APP_URL') . ''.$state.'"  />'))
+                ->formatStateUsing(fn (string $state) => new HtmlString('<img class="w-10" src="' .self::$APP_URL . ''.$state.'"  />')) 
                 ->html(),
                 TextColumn::make('province_count')->counts('province')->label('state/province')->badge()->color('danger'),
                 TextColumn::make('user.email')->label('user'),

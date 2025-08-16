@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Contact;
 use Illuminate\Http\Request;
 use App\Models\ServiceRequest;
+use App\Models\Subscribe;
 use Illuminate\Routing\Controller as BaseController;
 use Illuminate\Foundation\Validation\ValidatesRequests;
 use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
@@ -40,5 +41,21 @@ class Controller extends BaseController
         $serviceRequest->service_id = $request->service;
         $serviceRequest->save();
         return response()->json(['success' => true]);
+    }
+    public function AddSubscribe(Request $request)
+    {
+        $request->validate([
+            'email' => 'required|email'
+        ]);
+        $ip = $_SERVER['REMOTE_ADDR'];
+
+        $subscribe = Subscribe::where('email', $request->email)->first();
+        if (!$subscribe) {
+            $subscribe = new Subscribe();
+            $subscribe->email = $request->email;
+            $subscribe->ip = $ip;
+            $subscribe->save();
+        }
+        session()->flash('message', 'Post successfully updated.');
     }
 }

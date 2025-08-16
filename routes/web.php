@@ -28,4 +28,5 @@ Route::get('/careers', Careers::class);
 Route::get('/aboutus', AboutPage::class);  
 Route::get('/contactus', ContactPage::class);  
 Route::post('/contactus/AddContact', [Controller::class, 'AddContact']);
+Route::post('/subscribe/AddSubscribe', [Controller::class, 'AddSubscribe']);
 

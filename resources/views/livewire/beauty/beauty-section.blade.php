@@ -13,169 +13,164 @@
 
             <!-- Services Grid Section -->
             <div class="row" style="margin-bottom: 40px; gap: 20px;">
- 
-                    {{-- p-95 --}}
-                    <!-- Beauty Service - Left Large -->
-                    <div class="col-lg-6 col-md-6 col-sm-12 mb-4 pr-0">
-                        <a href="https://beauty.besmani.com/" target="_blank">
-                            <div class="service-card hover-remove-effect"
-                                style="height: 600px; background:url('{{ asset('assets-file/img/adv/b-girl.jpg') }}') center/cover; border-radius: 20px; position: relative;  box-shadow: 0 10px 30px rgba(0,0,0,0.1); transition: all 0.3s ease;  justify-content: center; align-items: center; text-align: center;"
-                                onmouseover="this.style.transform='translateY(-5px)'; this.style.boxShadow='0 15px 40px rgba(0,0,0,0.15)'"
-                                onmouseout="this.style.transform='translateY(0)'; this.style.boxShadow='0 10px 30px rgba(0,0,0,0.1)'">
-                                <div class="service-card-filter-cover"></div>
-                                <div style="margin-bottom: 5px;">
 
-                                    <img src="{{ asset('assets-file/img/adv/b-logo-dark.png') }}"
-                                        class="img-beauty-logo">
-                                </div>
-                                <div class="beauty-title-text" style="padding: 0 30px;">
-                                    <p class="beauty-title-text-title">Beauty Besmani</p>
-
-                                    <p class="beauty-title-text-description">
-                                        Beauty is your ultimate beauty <br> destination</p>
-                                </div>
-                            </div>
-                        </a>
-                    </div>
-
-                    <!-- Petaban Service - Top Right -->
-                    <div class="col-lg-6 col-md-6 col-sm-12 mb-4">
-                        <div class="service-card"
-                            style="height: 280px; background:  url('{{ asset('assets-file/img/adv/dog.jpg') }}') center/cover; border-radius: 20px; position: relative;  box-shadow: 0 10px 30px rgba(0,0,0,0.1); transition: all 0.3s ease;  justify-content: center; align-items: center; text-align: center;"
+                {{-- p-95 --}}
+                <!-- Beauty Service - Left Large -->
+                <div class="col-lg-6 col-md-6 col-sm-12 mb-4 pr-0">
+                    <a href="https://beauty.besmani.com/" target="_blank">
+                        <div class="service-card hover-remove-effect"
+                            style="height: 600px; background:url('{{ asset('assets-file/img/adv/b-girl.jpg') }}') center/cover; border-radius: 20px; position: relative;  box-shadow: 0 10px 30px rgba(0,0,0,0.1); transition: all 0.3s ease;  justify-content: center; align-items: center; text-align: center;"
                             onmouseover="this.style.transform='translateY(-5px)'; this.style.boxShadow='0 15px 40px rgba(0,0,0,0.15)'"
                             onmouseout="this.style.transform='translateY(0)'; this.style.boxShadow='0 10px 30px rgba(0,0,0,0.1)'">
                             <div class="service-card-filter-cover"></div>
+                            <div style="margin-bottom: 5px;">
 
-                            <div style="margin-bottom: 20px;">
-
-                                <img src="{{ asset('assets-file/img/adv/pet-logo.png') }}" class="img-beauty-logo">
+                                <img src="{{ asset('assets-file/img/adv/b-logo-dark.png') }}" class="img-beauty-logo">
                             </div>
-                            <div style="margin-bottom: 15px;">
+                            <div class="beauty-title-text" style="padding: 0 30px;">
+                                <p class="beauty-title-text-title">Beauty Besmani</p>
 
-                                <h3
-                                    style="color: #222; font-size: 2rem; font-weight: bold; margin: 0; font-family: 'Quicksand', sans-serif;">
-                                    A safe way for your pet</h3>
-                            </div>
-
-                        </div>
-                    </div>
-
-                    <!-- Store Service - Bottom Right -->
-                    <div class="col-lg-6 col-md-6 col-sm-12 mb-4 mt-40">
-                        <div class="service-card"
-                            style="height: 280px; background: url('{{ asset('assets-file/img/adv/store.jpg') }}') center/cover; border-radius: 20px; position: relative;  box-shadow: 0 10px 30px rgba(0,0,0,0.1); transition: all 0.3s ease;  justify-content: center; align-items: center; text-align: center;"
-                            onmouseover="this.style.transform='translateY(-5px)'; this.style.boxShadow='0 15px 40px rgba(0,0,0,0.15)'"
-                            onmouseout="this.style.transform='translateY(0)'; this.style.boxShadow='0 10px 30px rgba(0,0,0,0.1)'">
-                            <div class="service-card-filter-cover"></div>
-
-                            <div style="margin-bottom: 20px;">
-
-                                <img src="{{ asset('assets-file/img/adv/cart.png') }}" class="img-store-logo">
-                            </div>
-
-                            <div style="padding: 0 20px;">
-
-                                <h3 class="mt-60"
-                                    style="color: #222; font-size: 2rem; font-weight: bold; font-family: 'Quicksand', sans-serif;">
-                                    Safe shopping for you
-                                </h3>
+                                <p class="beauty-title-text-description">
+                                    Beauty is your ultimate beauty <br> destination</p>
                             </div>
                         </div>
+                    </a>
+                </div>
+
+                <!-- Petaban Service - Top Right -->
+                <div class="col-lg-6 col-md-6 col-sm-12 mb-4">
+                    <div class="service-card"
+                        style="height: 280px; background:  url('{{ asset('assets-file/img/adv/dog.jpg') }}') center/cover; border-radius: 20px; position: relative;  box-shadow: 0 10px 30px rgba(0,0,0,0.1); transition: all 0.3s ease;  justify-content: center; align-items: center; text-align: center;"
+                        onmouseover="this.style.transform='translateY(-5px)'; this.style.boxShadow='0 15px 40px rgba(0,0,0,0.15)'"
+                        onmouseout="this.style.transform='translateY(0)'; this.style.boxShadow='0 10px 30px rgba(0,0,0,0.1)'">
+                        <div class="service-card-filter-cover"></div>
+
+                        <div style="margin-bottom: 20px;">
+
+                            <img src="{{ asset('assets-file/img/adv/pet-logo.png') }}" class="img-beauty-logo">
+                        </div>
+                        <div style="margin-bottom: 15px;">
+
+                            <h3
+                                style="color: #222; font-size: 2rem; font-weight: bold; margin: 0; font-family: 'Quicksand', sans-serif;">
+                                A safe way for your pet</h3>
+                        </div>
+
                     </div>
+                </div>
 
-                    <!-- Travel Banner - Full Width Bottom -->
-                    <div class="col-lg-12 col-md-12 col-sm-12 mb-4 mt-40 mt-travel">
+                <!-- Store Service - Bottom Right -->
+                <div class="col-lg-6 col-md-6 col-sm-12 mb-4 mt-40">
+                    <div class="service-card mt-sm-store-card"
+                        style="height: 280px; background: url('{{ asset('assets-file/img/adv/store.jpg') }}') center/cover; border-radius: 20px; position: relative;  box-shadow: 0 10px 30px rgba(0,0,0,0.1); transition: all 0.3s ease;  justify-content: center; align-items: center; text-align: center;"
+                        onmouseover="this.style.transform='translateY(-5px)'; this.style.boxShadow='0 15px 40px rgba(0,0,0,0.15)'"
+                        onmouseout="this.style.transform='translateY(0)'; this.style.boxShadow='0 10px 30px rgba(0,0,0,0.1)'">
+                        <div class="service-card-filter-cover"></div>
 
-                        <div class="service-card"
-                            style="height: 220px; background: url('{{ asset('assets-file/img/adv/travel.jpeg') }}') center/cover; border-radius: 20px; position: relative;  box-shadow: 0 10px 30px rgba(0,0,0,0.1); transition: all 0.3s ease;  align-items: center; justify-content: center; text-align: center;"
-                            onmouseover="this.style.transform='translateY(-5px)'; this.style.boxShadow='0 15px 40px rgba(0,0,0,0.15)'"
-                            onmouseout="this.style.transform='translateY(0)'; this.style.boxShadow='0 10px 30px rgba(0,0,0,0.1)'">
+                        <div style="margin-bottom: 20px;">
 
-                            <div style="margin-bottom: 20px;">
+                            <img src="{{ asset('assets-file/img/adv/logo-store-black.png') }}" class="img-store-logo">
+                        </div>
 
-                                <img src="{{ asset('assets-file/img/adv/travel-logo.png') }}" class="img-travel-logo">
-                            </div>
+                        <div style="padding: 0 20px;">
 
-                            <br>
-
-                            <div>
-                                <h3
-                                    style="color: #000; font-size: 20px; font-weight: bold; margin: 0; font-family: 'Inter', sans-serif;  ">
-                                    Travel site for immigration
-                                </h3>
-
-
-                            </div>
-
+                            <h3 class="mt-60"
+                                style="color: #222; font-size: 2rem; font-weight: bold; font-family: 'Quicksand', sans-serif;">
+                                Safe shopping for you
+                            </h3>
                         </div>
                     </div>
- 
+                </div>
+
+                <!-- Travel Banner - Full Width Bottom -->
+                <div class="col-lg-12 col-md-12 col-sm-12 mb-4 mt-40 mt-travel">
+
+                    <div class="service-card"
+                        style="height: 220px; background: url('{{ asset('assets-file/img/adv/travel.jpeg') }}') center/cover; border-radius: 20px; position: relative;  box-shadow: 0 10px 30px rgba(0,0,0,0.1); transition: all 0.3s ease;  align-items: center; justify-content: center; text-align: center;"
+                        onmouseover="this.style.transform='translateY(-5px)'; this.style.boxShadow='0 15px 40px rgba(0,0,0,0.15)'"
+                        onmouseout="this.style.transform='translateY(0)'; this.style.boxShadow='0 10px 30px rgba(0,0,0,0.1)'">
+                            
+                        <div style="margin-bottom: 20px;">
+
+                            <img src="{{ asset('assets-file/img/adv/travel-logo.png') }}" class="img-travel-logo">
+                        </div>
+
+                        <br>
+
+                        <div>
+                            <h3
+                                style="color: #000; font-size: 20px; font-weight: bold; margin: 0; font-family: 'Inter', sans-serif;  ">
+                                Travel site for immigration
+                            </h3>
+
+
+                        </div>
+
+                    </div>
+                </div>
+
             </div>
 
-
-            <!-- Subscription Section -->
-            {{-- <div class="subscription-section" style="text-align: center; padding: 40px 0;">
-                <h2
-                    style="font-family: 'Playfair Display', serif; font-weight: bold; font-size: 2.5rem; color: #2c3e50; margin-bottom: 30px;">
-                    Subscribe our services</h2>
-
-                <form class="subscription-form"
-                    style="display: flex; justify-content: center; align-items: center; gap: 20px; flex-wrap: wrap;">
-                    <input type="email" placeholder="Your e-mail"
-                        style="background: transparent; border: 2px solid #2c3e50; border-radius: 25px; padding: 12px 20px; width: 300px; font-size: 1rem; color: #2c3e50; outline: none; transition: all 0.3s ease; font-family: 'Inter', sans-serif;"
-                        onfocus="this.style.boxShadow='0 0 0 3px rgba(44, 62, 80, 0.2)'"
-                        onblur="this.style.boxShadow='none'">
-
-                    <button type="submit"
-                        style="background: linear-gradient(135deg, #2c3e50, #34495e); color: white; border: none; border-radius: 25px; padding: 12px 25px; font-size: 1rem; font-weight: bold; cursor: pointer; transition: all 0.3s ease; font-family: 'Inter', sans-serif;"
-                        onmouseover="this.style.transform='translateY(-2px)'; this.style.boxShadow='0 8px 24px rgba(44, 62, 80, 0.3)'"
-                        onmouseout="this.style.transform='translateY(0)'; this.style.boxShadow='none'">
-                        Subscribe
-                    </button>
-                </form>
-            </div> --}}
-
+ 
 
             {{-- owl-carousel --}}
 
             <div class="container">
-                <div class="row" >
-                <div class="beauty-slider owl-theme owl-carousel">
+                <div class="row">
+                    <div class="beauty-slider owl-theme owl-carousel">
 
-                    <div class="offer-item">
-                        <img src="{{ config('app.url') }}assets-file/img/work/hapally1.jpg" class="img-res">
- 
-                    </div>
-                    <!-- item -->
+                        <div class="offer-item">
+                            <a href="https://beauty.besmani.com/signup" target="_blank">
+                                <img src="{{ config('app.url') }}assets-file/img/work/sing-up-k.png" class="img-res">
+                            </a>
+                        </div>
+                        <!-- item -->
+                        <div class="offer-item">
+                            <img src="{{ config('app.url') }}assets-file/img/work/u-acc-k.png" class="img-res">
 
-                    <div class="offer-item">
-                        <img src="{{ config('app.url') }}assets-file/img/besmo.jpg" class="img-res">
-                         
-                    </div>
-                    <!-- item -->
-                    <div class="offer-item">
-                        <img src="{{ config('app.url') }}assets-file/img/portfolio-1.jpg" class="img-res">
-                         
-                    </div>
-                    <!-- item -->
+                        </div>
+                        <!-- item -->
+                        <div class="offer-item">
+                            <img src="{{ config('app.url') }}assets-file/img/work/m-k.png" class="img-res">
 
-                    <div class="offer-item">
-                        <img src="{{ config('app.url') }}assets-file/img/portfolio-12.jpg" class="img-res" >
-                         
-                    </div>
-                    <!-- item -->
-                    <div class="offer-item">
-                        <img src="{{ config('app.url') }}assets-file/img/work/immigration.jpg" class="img-res" >
-                         
-                    </div>
-                    <!-- item -->
-                    <div class="offer-item">
-                        <img src="{{ config('app.url') }}assets-file/img/work/beauty.jpg" class="img-res" >
-                         
-                    </div>
-                    <!-- item -->
+                        </div>
+                        <!-- item -->
 
-                </div>
+
+                        <div class="offer-item">
+                            <img src="{{ config('app.url') }}assets-file/img/work/hapally1.jpg" class="img-res">
+
+                        </div>
+                        <!-- item -->
+
+                        <div class="offer-item">
+                            <img src="{{ config('app.url') }}assets-file/img/besmo.jpg" class="img-res">
+
+                        </div>
+                        <!-- item -->
+                        <div class="offer-item">
+                            <img src="{{ config('app.url') }}assets-file/img/portfolio-1.jpg" class="img-res">
+
+                        </div>
+                        <!-- item -->
+
+                        <div class="offer-item">
+                            <img src="{{ config('app.url') }}assets-file/img/portfolio-12.jpg" class="img-res">
+
+                        </div>
+                        <!-- item -->
+                        <div class="offer-item">
+                            <img src="{{ config('app.url') }}assets-file/img/work/immigration.jpg" class="img-res">
+
+                        </div>
+                        <!-- item -->
+                        <div class="offer-item">
+                            <img src="{{ config('app.url') }}assets-file/img/work/beauty.jpg" class="img-res">
+
+                        </div>
+                        <!-- item -->
+
+                    </div>
                 </div>
             </div>
             {{-- owl-carousel END --}}
@@ -200,16 +195,16 @@
             margin: 15,
             nav: true,
             dots: false,
-            
+
             smartSpeed: 1000,
             autoplay: false,
-            autoplayTimeout: 4000,
-            autoplayHoverPause: true,
+            // autoplayTimeout: 4000,
+            // autoplayHoverPause: true,
             rtl: false,
-                         navText: [
-                 "<i class='fa fa-angle-left'></i>",
-                 "<i class='fa fa-angle-right'></i>"
-             ],
+            navText: [
+                "<i class='fa fa-angle-left'></i>",
+                "<i class='fa fa-angle-right'></i>"
+            ],
             responsive: {
                 0: {
                     items: 3,
@@ -225,16 +220,14 @@
     </script>
 
     <style>
-
         .beauty-slider .offer-item {
             height: 150px;
             background: #fff;
             border-radius: 20px;
-            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
-            overflow: hidden;
+             overflow: hidden;
             position: relative;
             transition: all 0.3s ease;
-
+            border: 1px solid #071021;
         }
 
         /* Beautiful Navigation Icons */
@@ -252,10 +245,10 @@
         .beauty-slider .owl-nav button {
             width: 50px;
             height: 50px;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%) !important;
+            background: rgba(251, 251, 251, 0.6) !important;
             border: none !important;
             border-radius: 50% !important;
-            color: white !important;
+            color: #000 !important;
             font-size: 18px !important;
             display: flex !important;
             align-items: center;
@@ -268,7 +261,7 @@
         }
 
         .beauty-slider .owl-nav button:hover {
-            background: linear-gradient(135deg, #764ba2 0%, #667eea 100%) !important;
+            background: rgba(235, 235, 235, 0.6) !important;
             transform: scale(1.1);
             box-shadow: 0 6px 20px rgba(102, 126, 234, 0.4);
         }
@@ -298,11 +291,13 @@
                 font-size: 16px;
                 margin: 0 10px;
             }
-            .beauty-slider .offer-item{
-                height: 130px;
+
+            .beauty-slider .offer-item { 
+                height: 99px;
 
             }
         }
+
         .section-beauty {
             box-shadow: 0 -3px 16px 24px #fff;
         }
@@ -436,7 +431,7 @@
         }
 
         .img-store-logo {
-            width: 80px;
+            width: 190px;
             margin-top: 58px;
         }
 
@@ -540,6 +535,7 @@
         }
 
         @media (max-width: 576px) {
+
             .hero-text h1 {
                 font-size: 20px !important;
             }
@@ -549,7 +545,7 @@
             }
 
             .hero-text p {
-                margin-top: 40px !important;
+                margin-top: 16px !important;
                 font-size: 14px !important;
             }
 
@@ -562,7 +558,7 @@
             }
 
             .service-card {
-                min-height: 250px !important;
+                min-height: 160px !important;
             }
 
             .service-card h3 {
@@ -605,6 +601,7 @@
             .col-lg-6.col-md-6.col-sm-12:nth-child(1) {
                 width: 50% !important;
                 float: left !important;
+                margin-bottom: 18px !important;
             }
 
             .col-lg-6.col-md-6.col-sm-12:nth-child(2) {

@@ -4,7 +4,7 @@
    {{-- @livewire('services-side') --}}
    {{-- @livewire('besmo-side') --}}
    {{-- @livewire('map-side') --}}   
-   @livewire('portfolio-side')
+   @livewire('portfolio-side') 
    {{-- @livewire('newsletter-side') --}}
    
 </div>

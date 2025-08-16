@@ -59,7 +59,7 @@ a:hover {
     
 }
 .-mt-150{
-    margin-top: -150px !important;
+    margin-top: -193px !important;
 }
  .txt-hero-measure{
     font-size: 16px;
@@ -242,7 +242,12 @@ button.btn:focus {
     margin: 0 auto;
     width: 100%;
 }
-
+.success-subscribe{
+    margin-bottom: 5px;
+    font-weight: bold;
+    color: green;
+    display: none;
+}
 .form-control {
     border-radius: 25px;
     height: 50px;

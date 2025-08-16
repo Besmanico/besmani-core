@@ -23,16 +23,36 @@ $(function () {
       closedSymbol: '<i class="fa fa-caret-down" aria-hidden="true"></i>',
       openedSymbol :'<i class="fa fa-caret-up" aria-hidden="true"></i>'
   });
-
+ 
   // menu click event
   $('.slicknav_btn').click(function() {
     $(this).toggleClass('act');
       if($(this).hasClass('act')) {
         $('.slicknav_menu').addClass('act');
+        $('body').addClass('menu-open');
       }
       else {
         $('.slicknav_menu').removeClass('act');
+        $('body').removeClass('menu-open');
       }
+  });
+
+  // Close menu when clicking outside
+  $(document).on('click', function(e) {
+    if ($('.slicknav_menu').hasClass('act') && !$(e.target).closest('.slicknav_menu, .slicknav_btn').length) {
+      $('.slicknav_btn').removeClass('act');
+      $('.slicknav_menu').removeClass('act');
+      $('body').removeClass('menu-open');
+    }
+  });
+
+  // Close menu on escape key
+  $(document).keyup(function(e) {
+    if (e.key === "Escape" && $('.slicknav_menu').hasClass('act')) {
+      $('.slicknav_btn').removeClass('act');
+      $('.slicknav_menu').removeClass('act');
+      $('body').removeClass('menu-open');
+    }
   });
 
   //Counters

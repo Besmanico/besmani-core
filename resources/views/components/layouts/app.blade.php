@@ -63,7 +63,7 @@
         <div class="hero-content aos" data-aos="fade-up">
             <div class="hero-text -mt-150">
                 <h1>Your story begins from here.</h1>
-                <a href="{{ config('app.url') }}" style="position:relative" class="site-title"><img
+                <a href="{{ config('app.url') }}" style="position:relative" class="site-title mt-sm-logo"><img
                         style="margin-top:15px;width:450px;" src="{{ config('app.url') }}assets-file/img/header.png"
                         alt="besmani"></a>
 
@@ -71,11 +71,15 @@
 
                 {{-- subscribe --}}
                 <section class="site-section section-newsletter Subscribe-section text-center ">
+                    <div class="success-subscribe"> Success Subscribe </div>
 
                     <div class="form-group newsletter-group">
                         <input type="email" class="form-control email-subscribe" placeholder="Your e-mail">
                         <button id="Subscribe" class="btn btn-green absolute Subscribe-btn"
-                            type="button">Subscribe</button>
+                            type="button">
+                            Subscribe
+                            <i class="fa fa-spinner fa-spin" style="display: none;"></i>
+                        </button>
                     </div><!-- /.newsletter-group -->
 
                 </section><!-- /.section-newsletter -->
@@ -84,8 +88,8 @@
 
 
                 <b class="txt-hero-measure">
-                    
-We measure our success by the results we drive for our clients.
+
+                    We measure our success by the results we drive for our clients.
 
                 </b>
 
@@ -135,16 +139,30 @@ We measure our success by the results we drive for our clients.
         if (error == 1) {
             return false;
         }
+        $(".fa-spinner").show();
         $.ajax({
+                headers: {
+                    'X-CSRF-TOKEN': '{{ csrf_token() }}'
+                },
+
                 url: '{{ config('app.url') }}subscribe/AddSubscribe',
                 type: 'POST',
                 async: false,
                 data: {
                     email: email,
-                }
+                } 
             })
             .done(function(msg) {
-                window.location = '{{ config('app.url') }}subscribe/check/' + email;
+                $(".success-subscribe").slideDown();
+                $(".email-subscribe").val('');
+                setTimeout(function() {
+                    $(".success-subscribe").slideUp();
+                }, 5000);
+                $(".fa-spinner").hide();
+                // window.location = '{{ config('app.url') }}subscribe/check/' + email;
+            })
+            .fail(function(msg) {
+                $(".fa-spinner").hide();
             })
     })
 </script>
