@@ -22,7 +22,7 @@
                             style="height: 600px; background:url('{{ asset('assets-file/img/adv/b-girl.jpg') }}') center/cover; border-radius: 20px; position: relative;  box-shadow: 0 10px 30px rgba(0,0,0,0.1); transition: all 0.3s ease;  justify-content: center; align-items: center; text-align: center;"
                             onmouseover="this.style.transform='translateY(-5px)'; this.style.boxShadow='0 15px 40px rgba(0,0,0,0.15)'"
                             onmouseout="this.style.transform='translateY(0)'; this.style.boxShadow='0 10px 30px rgba(0,0,0,0.1)'">
-                            <div class="service-card-filter-cover"></div>
+                            <div class="service-card-filter-cover inMobileRemoveCover"></div>
                             <div style="margin-bottom: 5px;">
 
                                 <img src="{{ asset('assets-file/img/adv/b-logo-dark.png') }}" class="img-beauty-logo">
@@ -40,7 +40,7 @@
                 <!-- Petaban Service - Top Right -->
                 <div class="col-lg-6 col-md-6 col-sm-12 mb-4">
                     <div class="service-card"
-                        style="height: 280px; background:  url('{{ asset('assets-file/img/adv/dog.jpg') }}') center/cover; border-radius: 20px; position: relative;  box-shadow: 0 10px 30px rgba(0,0,0,0.1); transition: all 0.3s ease;  justify-content: center; align-items: center; text-align: center;"
+                        style="height: 280px; background:  url('{{ asset('assets-file/img/adv/dog.jpg') }}') center/cover; border-radius: 20px; position: relative;  box-shadow: 0 10px 30px rgba(0,0,0,0.1); transition: all 0.3s ease;  justify-content: center; align-items: center; text-align: center;  margin-top: -13px;"
                         onmouseover="this.style.transform='translateY(-5px)'; this.style.boxShadow='0 15px 40px rgba(0,0,0,0.15)'"
                         onmouseout="this.style.transform='translateY(0)'; this.style.boxShadow='0 10px 30px rgba(0,0,0,0.1)'">
                         <div class="service-card-filter-cover"></div>
@@ -49,20 +49,16 @@
 
                             <img src="{{ asset('assets-file/img/adv/pet-logo.png') }}" class="img-beauty-logo">
                         </div>
-                        <div style="margin-bottom: 15px;">
 
-                            <h3
-                                style="color: #222; font-size: 2rem; font-weight: bold; margin: 0; font-family: 'Quicksand', sans-serif;">
-                                A safe way for your pet</h3>
-                        </div>
+                        <p class="pet-title-text">A safe way for your pet</p>
 
                     </div>
                 </div>
 
                 <!-- Store Service - Bottom Right -->
-                <div class="col-lg-6 col-md-6 col-sm-12 mb-4 mt-40">
+                <div class="col-lg-6 col-md-6 col-sm-12 mb-4 mt-40 ">
                     <div class="service-card mt-sm-store-card"
-                        style="height: 280px; background: url('{{ asset('assets-file/img/adv/store.jpg') }}') center/cover; border-radius: 20px; position: relative;  box-shadow: 0 10px 30px rgba(0,0,0,0.1); transition: all 0.3s ease;  justify-content: center; align-items: center; text-align: center;"
+                        style="height: 280px; background: url('{{ asset('assets-file/img/adv/store.jpg') }}') center/cover; border-radius: 20px; position: relative;  box-shadow: 0 10px 30px rgba(0,0,0,0.1); transition: all 0.3s ease;  justify-content: center; align-items: center; text-align: center;margin-top: -23px;"
                         onmouseover="this.style.transform='translateY(-5px)'; this.style.boxShadow='0 15px 40px rgba(0,0,0,0.15)'"
                         onmouseout="this.style.transform='translateY(0)'; this.style.boxShadow='0 10px 30px rgba(0,0,0,0.1)'">
                         <div class="service-card-filter-cover"></div>
@@ -72,13 +68,8 @@
                             <img src="{{ asset('assets-file/img/adv/logo-store-black.png') }}" class="img-store-logo">
                         </div>
 
-                        <div style="padding: 0 20px;">
-
-                            <h3 class="mt-60"
-                                style="color: #222; font-size: 2rem; font-weight: bold; font-family: 'Quicksand', sans-serif;">
-                                Safe shopping for you
-                            </h3>
-                        </div>
+                        <p class="store-title-text"> Safe shopping for you
+                        </p>
                     </div>
                 </div>
 
@@ -89,7 +80,7 @@
                         style="height: 220px; background: url('{{ asset('assets-file/img/adv/travel.jpeg') }}') center/cover; border-radius: 20px; position: relative;  box-shadow: 0 10px 30px rgba(0,0,0,0.1); transition: all 0.3s ease;  align-items: center; justify-content: center; text-align: center;"
                         onmouseover="this.style.transform='translateY(-5px)'; this.style.boxShadow='0 15px 40px rgba(0,0,0,0.15)'"
                         onmouseout="this.style.transform='translateY(0)'; this.style.boxShadow='0 10px 30px rgba(0,0,0,0.1)'">
-                            
+
                         <div style="margin-bottom: 20px;">
 
                             <img src="{{ asset('assets-file/img/adv/travel-logo.png') }}" class="img-travel-logo">
@@ -111,64 +102,53 @@
 
             </div>
 
- 
+
 
             {{-- owl-carousel --}}
-
             <div class="container">
                 <div class="row">
                     <div class="beauty-slider owl-theme owl-carousel">
+
+                        {{-- @foreach ($sliders as $slider)
+                        <div class="offer-item">
+                            <a href="{{ $slider->link }}" target="_blank">
+                                <img src="{{ config('app.url') }}storage/{{ $slider->image }}" class="img-res">
+                            </a>
+                        </div>
+                        @endforeach --}}
+                        <!-- item -->
 
                         <div class="offer-item">
                             <a href="https://beauty.besmani.com/signup" target="_blank">
                                 <img src="{{ config('app.url') }}assets-file/img/work/sing-up-k.png" class="img-res">
                             </a>
+
+                        </div>
+                        <div class="offer-item">
+                            <a href="/aboutus">
+                                <img src="{{ config('app.url') }}assets-file/img/work/access.png" class="img-res">
+                            </a>
+
                         </div>
                         <!-- item -->
                         <div class="offer-item">
+                            
+                            <a href="https://beauty.besmani.com/login" target="_blank">
+
                             <img src="{{ config('app.url') }}assets-file/img/work/u-acc-k.png" class="img-res">
+                            </a>
 
                         </div>
                         <!-- item -->
-                        <div class="offer-item">
-                            <img src="{{ config('app.url') }}assets-file/img/work/m-k.png" class="img-res">
+                        @foreach ($sliders as $slider)
+                            <div class="offer-item">
 
-                        </div>
-                        <!-- item -->
+                                <img src="{{ config('app.url') }}storage/{{ $slider->image }}" class="img-res">
 
+                            </div>
+                        @endforeach
 
-                        <div class="offer-item">
-                            <img src="{{ config('app.url') }}assets-file/img/work/hapally1.jpg" class="img-res">
-
-                        </div>
-                        <!-- item -->
-
-                        <div class="offer-item">
-                            <img src="{{ config('app.url') }}assets-file/img/besmo.jpg" class="img-res">
-
-                        </div>
-                        <!-- item -->
-                        <div class="offer-item">
-                            <img src="{{ config('app.url') }}assets-file/img/portfolio-1.jpg" class="img-res">
-
-                        </div>
-                        <!-- item -->
-
-                        <div class="offer-item">
-                            <img src="{{ config('app.url') }}assets-file/img/portfolio-12.jpg" class="img-res">
-
-                        </div>
-                        <!-- item -->
-                        <div class="offer-item">
-                            <img src="{{ config('app.url') }}assets-file/img/work/immigration.jpg" class="img-res">
-
-                        </div>
-                        <!-- item -->
-                        <div class="offer-item">
-                            <img src="{{ config('app.url') }}assets-file/img/work/beauty.jpg" class="img-res">
-
-                        </div>
-                        <!-- item -->
+                       
 
                     </div>
                 </div>
@@ -191,7 +171,7 @@
     <script>
         // Offer Slider JS
         $('.beauty-slider').owlCarousel({
-            loop: true,
+            loop: false,
             margin: 15,
             nav: true,
             dots: false,
@@ -220,11 +200,23 @@
     </script>
 
     <style>
+        .mt-70 {
+            margin-top: 70px !important;
+        }
+
+        .store-title-text,
+        .pet-title-text {
+            position: absolute;
+            bottom: 55px;
+            width: 100%;
+            font-size: 19px;
+        }
+
         .beauty-slider .offer-item {
             height: 150px;
             background: #fff;
             border-radius: 20px;
-             overflow: hidden;
+            overflow: hidden;
             position: relative;
             transition: all 0.3s ease;
             border: 1px solid #071021;
@@ -285,6 +277,15 @@
 
         /* Responsive navigation */
         @media (max-width: 768px) {
+            /* .inMobileRemoveCover{
+                display: none;
+            } */
+
+            .store-title-text,
+        .pet-title-text {
+            
+            font-size: 14px;
+        }
             .beauty-slider .owl-nav button {
                 width: 40px;
                 height: 40px;
@@ -292,11 +293,20 @@
                 margin: 0 10px;
             }
 
-            .beauty-slider .offer-item { 
+            .beauty-slider .offer-item {
                 height: 99px;
 
             }
         }
+
+        /* Full screen mobile display */
+        /* @media (max-width: 768px) and (orientation: landscape) {
+            .inMobileRemoveCover {
+                display: none !important;
+            }
+        } */
+
+
 
         .section-beauty {
             box-shadow: 0 -3px 16px 24px #fff;
@@ -426,13 +436,24 @@
         }
 
         .img-beauty-logo {
-            width: 200px;
-            margin-top: 8px;
+
+            width: 120px !important;
+            margin-top: 30px !important;
+            z-index: 999999999;
+            position: absolute;
+            margin: 0 auto;
+            left: 0;
+            right: 0;
         }
 
         .img-store-logo {
-            width: 190px;
+            width: 136px;
             margin-top: 58px;
+            z-index: 9999999;
+            position: absolute;
+            left: 0;
+            right: 0;
+            margin: 20px auto;
         }
 
         @media (max-width: 768px) {
@@ -639,5 +660,5 @@
     </style>
 
 
-
+    
 </div>

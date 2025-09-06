@@ -3,9 +3,10 @@
     <div class="container">
         <div class="row">
             <div class="col-sm-7">
-                <h2>BASMANI</h2>
+                <h2></h2>
+                <br>
                 <p>
-                    Besmani, a start-up organization has the vision
+                    <b>Besmani</b>, a start-up organization has the vision
                     to create the finest technology at a superior
                     level.
                     Our team of diligent engineers and designers

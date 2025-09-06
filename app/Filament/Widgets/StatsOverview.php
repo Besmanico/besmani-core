@@ -16,7 +16,7 @@ class StatsOverview extends BaseWidget
             ->description(' travel users  ')
             ->descriptionIcon('heroicon-m-arrow-trending-down')
             ->color('success')
-            ->url('https://easyreasy.com/admin')
+            ->url('https://travel.besmani.com')
             ->openUrlInNewTab()
              
             ->chart([7, 3, 4, 5, 6, 3, 5, 3]),
@@ -24,7 +24,7 @@ class StatsOverview extends BaseWidget
             ->description('beauty users  ')
             ->descriptionIcon('heroicon-m-arrow-trending-down')
             ->color('danger')
-            ->url('https://beauty.en.easyreasy.com/cp_admin')
+            ->url('https://beauty.besmani.com/cp_admin')
             ->openUrlInNewTab()
             ->chart([7, 3, 4, 5, 6, 3, 5, 3]),
             Stat::make('PETSHOP', MainUser::where('child','travel')->count())

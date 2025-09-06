@@ -38,12 +38,12 @@
  <script>
     // Offer Slider JS
 	$('.offer-slider').owlCarousel({
-		loop: true,
+		loop: false,
 		margin: 15,
 		nav: true,
 		dots: false,
-		smartSpeed: 1000,
-		autoplay: true,
+		smartSpeed: 1000, 
+		autoplay: false,
 		autoplayTimeout: 4000,
 		autoplayHoverPause: true,
 		rtl: false,

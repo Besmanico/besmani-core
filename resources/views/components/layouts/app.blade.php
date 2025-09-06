@@ -75,8 +75,7 @@
 
                     <div class="form-group newsletter-group">
                         <input type="email" class="form-control email-subscribe" placeholder="Your e-mail">
-                        <button id="Subscribe" class="btn btn-green absolute Subscribe-btn"
-                            type="button">
+                        <button id="Subscribe" class="btn btn-green absolute Subscribe-btn" type="button">
                             Subscribe
                             <i class="fa fa-spinner fa-spin" style="display: none;"></i>
                         </button>
@@ -150,7 +149,7 @@
                 async: false,
                 data: {
                     email: email,
-                } 
+                }
             })
             .done(function(msg) {
                 $(".success-subscribe").slideDown();
@@ -165,6 +164,20 @@
                 $(".fa-spinner").hide();
             })
     })
+
+    if (window.innerWidth < 768) { 
+        $(window).scroll(function() {
+            var scrollTop = $(window).scrollTop();
+            if (scrollTop > 331) {
+                $('.inMobileRemoveCover').css('display', 'none');
+            }
+            if (scrollTop < 331) {
+                $('.inMobileRemoveCover').css('display', 'block');
+            }
+
+
+        });
+    }
 </script>
 
 </html>

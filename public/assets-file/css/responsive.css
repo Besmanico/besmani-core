@@ -705,7 +705,10 @@
 		height: 70% !important;
 	}
 	.mt-sm-store-card{
-		margin-top: 9px !important;
+		margin-top: -14px !important; 
+	}
+	.img-store-logo{
+		margin-top: 30px !important;
 	}
 	.beauty-slider .owl-stage-outer{
 		height: 115px;
@@ -717,10 +720,12 @@
 	} 
 	.section-newsletter{
 		width: 345px;
-  margin: 0 auto;
+  margin: -28px auto;
 	}
+	 
 	.txt-hero-measure{
 		padding: 2px;
+		color: #000 !important;
 	}
 	.site-footer .mb-sm{
 		margin-bottom: 10px;
