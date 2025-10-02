@@ -35,6 +35,7 @@
                             </div>
                         </div>
                     </a>
+                    </a>
                 </div>
 
                 <!-- Petaban Service - Top Right -->
@@ -132,10 +133,10 @@
                         </div>
                         <!-- item -->
                         <div class="offer-item">
-                            
+
                             <a href="https://beauty.besmani.com/login" target="_blank">
 
-                            <img src="{{ config('app.url') }}assets-file/img/work/u-acc-k.png" class="img-res">
+                                <img src="{{ config('app.url') }}assets-file/img/work/u-acc-k.png" class="img-res">
                             </a>
 
                         </div>
@@ -148,7 +149,7 @@
                             </div>
                         @endforeach
 
-                       
+
 
                     </div>
                 </div>
@@ -282,10 +283,11 @@
             } */
 
             .store-title-text,
-        .pet-title-text {
-            
-            font-size: 14px;
-        }
+            .pet-title-text {
+
+                font-size: 14px;
+            }
+
             .beauty-slider .owl-nav button {
                 width: 40px;
                 height: 40px;
@@ -455,8 +457,16 @@
             right: 0;
             margin: 20px auto;
         }
+        @media (min-width: 768px) {
+            .hover-remove-effect .service-card-filter-cover {
+                background: none;
+
+            }
+        }
 
         @media (max-width: 768px) {
+           
+
             .mt-travel {
                 margin-top: 40px !important;
             }
@@ -660,5 +670,5 @@
     </style>
 
 
-    
+
 </div>

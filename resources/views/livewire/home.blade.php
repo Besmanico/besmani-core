@@ -1,5 +1,8 @@
 <div>
    @livewire('beauty.beauty-section')
+
+
+   
    {{-- @livewire('web-design') --}}
    {{-- @livewire('services-side') --}}
    {{-- @livewire('besmo-side') --}}

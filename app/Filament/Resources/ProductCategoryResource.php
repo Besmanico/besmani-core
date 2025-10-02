@@ -21,10 +21,11 @@ class ProductCategoryResource extends Resource
     protected static ?string $model = ProductCategory::class;
 
     protected static ?string $navigationIcon = 'heroicon-o-tag';
-    protected static ?string $navigationGroup = 'Store';
-    protected static ?string $navigationLabel = "  Category  ";
-    protected static ?string $modelLabel = "   Category  ";
+    protected static ?string $navigationGroup = 'BEAUTY';
+    protected static ?string $navigationLabel = " Store(Category)  ";         
+    protected static ?string $modelLabel = "   Category  "; 
     protected static ?string $pluralModelLabel = "  Category    ";
+    protected static ?int $navigationSort = 4;
 
     public static function form(Form $form): Form
     {

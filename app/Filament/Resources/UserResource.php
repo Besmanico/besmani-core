@@ -18,6 +18,7 @@ use Illuminate\Database\Eloquent\Builder;
 use App\Filament\Resources\UserResource\Pages;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
 use App\Filament\Resources\UserResource\RelationManagers;
+use Tapp\FilamentAuthenticationLog\RelationManagers\AuthenticationLogsRelationManager;
 
 class UserResource extends Resource
 {
@@ -27,9 +28,9 @@ class UserResource extends Resource
     
     protected static ?string $navigationLabel = "admin";
     protected static ?string $modelLabel = "  admin   ";
-    protected static ?string $navigationGroup = 'settings';
+    protected static ?string $navigationGroup = 'Settings';
 
-    protected static ?int $navigationSort = 2;
+    protected static ?int $navigationSort = 1;
 
    
 
@@ -86,7 +87,8 @@ class UserResource extends Resource
     public static function getRelations(): array
     {
         return [
-            //
+            AuthenticationLogsRelationManager::class,
+
         ];
     }
 

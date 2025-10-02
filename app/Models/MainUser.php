@@ -3,14 +3,24 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
-use Illuminate\Database\Eloquent\Model;
+use Illuminate\Foundation\Auth\User as Authenticatable;
 use App\Models\Product;
 use App\Models\InfoActivity;
 
-class MainUser extends Model
+class MainUser extends Authenticatable
 {
     use HasFactory;
     protected $guarded = [];
+    
+    // Define the password field for authentication
+    protected $hidden = [
+        'password',
+    ];
+    
+    // Cast password as hashed
+     protected $casts = [
+        'password' => 'hashed',
+    ];
 
     public function products()
     {
@@ -20,4 +30,9 @@ class MainUser extends Model
     {
         return $this->hasMany(InfoActivity::class,'user_id'); 
     }
+    public function WsPortfolio()
+    {
+        return $this->hasMany(WsPortfolio::class,'user_id'); 
+    }
+    
 }

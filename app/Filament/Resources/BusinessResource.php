@@ -27,6 +27,8 @@ class BusinessResource extends Resource
     protected static ?string $navigationLabel = "  Business   ";
     protected static ?string $modelLabel = "   Business  ";
     protected static ?string $pluralModelLabel = "  Business    ";
+    protected static ?int $navigationSort = 2;
+
     public static function form(Form $form): Form
     {
         return $form

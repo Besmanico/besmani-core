@@ -23,6 +23,7 @@ class Home extends Component
         $this->contact = '';
         $this->login = '';
     }
+   
     public function render()
     {
         $metaData = ['title' => $this->title];
@@ -30,4 +31,5 @@ class Home extends Component
          
         return view('livewire.home')->layout('components/layouts.app',$metaData); 
     }
+
 } 

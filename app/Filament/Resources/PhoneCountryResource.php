@@ -40,6 +40,7 @@ class PhoneCountryResource extends Resource
     protected static ?string $navigationLabel = "  Country  ";
     protected static ?string $modelLabel = "   Country  ";
     protected static ?string $pluralModelLabel = "  Country    ";
+    protected static ?int $navigationSort = 2;
 
 
     public static function form(Form $form): Form

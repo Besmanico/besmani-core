@@ -10,14 +10,48 @@
                 </div><!-- /.navbar-header -->
 
                 <div class="collapse navbar-collapse" id="agency-navbar-collapse">
-
+ 
                     <ul class="nav navbar-nav navbar-right">
+
 
                         <li class="active"><a href="{{ config('app.url') }}">HOME</a></li>
                         <li class=""><a href="{{ config('app.url') }}services">SERVICES</a></li>
                         <li class=""><a href="{{ config('app.url') }}careers">CAREERS</a></li>
                         <li class=""><a href="{{ config('app.url') }}aboutus">ABOUT US</a></li>
                         <li class=""><a href="{{ config('app.url') }}contactus">CONTACT US</a></li>
+                        <li class="welcome-user user-dropdown" style="display: {{ Auth::guard('mainUsers')->check() ? 'block' : 'none' }};">
+                            <a href="#" id="welcome-message" class="dropdown-toggle" style="color: #dc2626; font-weight: bold; position: relative;">
+                                Welcome, <b class="WuserName">{{ Auth::guard('mainUsers')->check() ? Auth::guard('mainUsers')->user()->fl_name : 'User' }}</b>
+                                <i class="fa fa-chevron-down dropdown-arrow"></i>
+                            </a>
+                            <div class="user-dropdown-menu">
+                                <div class="dropdown-header">
+                                    <div class="user-avatar">
+                                        <i class="fa fa-user-circle"></i>
+                                    </div>
+                                    <div class="user-info">
+                                        <span class="user-name">{{ Auth::guard('mainUsers')->check() ? Auth::guard('mainUsers')->user()->fl_name . ' ' . Auth::guard('mainUsers')->user()->last_name : 'User' }}</span>
+                                        <span class="user-email">{{ Auth::guard('mainUsers')->check() ? Auth::guard('mainUsers')->user()->email : '' }}</span>
+                                    </div>
+                                </div>
+                                <div class="dropdown-divider"></div>
+                                <div class="dropdown-items">
+                                    <a href="#" class="dropdown-item">
+                                        <i class="fa fa-user"></i>
+                                        <span>Profile</span>
+                                    </a>
+                                    <a href="#" class="dropdown-item">
+                                        <i class="fa fa-cog"></i>
+                                        <span>Settings</span>
+                                    </a>
+                                    <div class="dropdown-divider"></div>
+                                    <a href="#" class="dropdown-item logout-item" onclick="logout()">
+                                        <i class="fa fa-sign-out"></i>
+                                        <span>Logout</span>
+                                    </a>
+                                </div>
+                            </div>
+                        </li>
                         <li class=""><a href=""></a></li>
                         <li class=""><a href=""></a></li>
                         {{-- <li class="">
@@ -203,6 +237,129 @@
                 padding: 10px 15px;
             }
         }
+
+        /* User Dropdown Styles */
+        .user-dropdown {
+            position: relative;
+        }
+
+        .dropdown-toggle {
+            display: flex;
+            align-items: center;
+            text-decoration: none;
+            padding: 8px 12px;
+            border-radius: 6px;
+            transition: all 0.3s ease;
+        }
+
+        .dropdown-toggle:hover {
+            background-color: rgba(220, 38, 38, 0.1);
+            text-decoration: none;
+        }
+
+        .dropdown-arrow {
+            margin-left: 8px;
+            font-size: 12px;
+            transition: transform 0.3s ease;
+        }
+
+        .dropdown-toggle.active .dropdown-arrow {
+            transform: rotate(180deg);
+        }
+
+        .user-dropdown-menu {
+            position: absolute;
+            top: 100%;
+            right: 0;
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.15);
+            min-width: 280px;
+            opacity: 0;
+            visibility: hidden;
+            transform: translateY(-10px);
+            transition: all 0.3s ease;
+            z-index: 1000;
+            border: 1px solid rgba(0, 0, 0, 0.1);
+        }
+
+        .user-dropdown-menu.show {
+            opacity: 1;
+            visibility: visible;
+            transform: translateY(0);
+        }
+
+        .dropdown-header {
+            display: flex;
+            align-items: center;
+            padding: 20px;
+            background: linear-gradient(135deg, #dc2626, #ef4444);
+            border-radius: 12px 12px 0 0;
+            color: white;
+        }
+
+        .user-avatar {
+            margin-right: 15px;
+        }
+
+        .user-avatar i {
+            font-size: 40px;
+            color: rgba(255, 255, 255, 0.9);
+        }
+
+        .user-info {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .user-name {
+            font-weight: 600;
+            font-size: 16px;
+            margin-bottom: 4px;
+        }
+
+        .user-email {
+            font-size: 13px;
+            opacity: 0.8;
+        }
+
+        .dropdown-divider {
+            height: 1px;
+            background: rgba(0, 0, 0, 0.1);
+            margin: 8px 0;
+        }
+
+        .dropdown-items {
+            padding: 8px 0;
+        }
+
+        .dropdown-item {
+            display: flex;
+            align-items: center;
+            padding: 12px 20px;
+            color: #374151;
+            text-decoration: none;
+            transition: all 0.2s ease;
+            font-size: 14px;
+        }
+
+        .dropdown-item:hover {
+            background-color: #f9fafb;
+            color: #dc2626;
+            text-decoration: none;
+        }
+
+        .dropdown-item i {
+            margin-right: 12px;
+            width: 16px;
+            text-align: center;
+            font-size: 14px;
+        }
+
+        .logout-item:hover {
+            background-color: #fef2f2;
+            color: #dc2626;
+        }
     </style>
 
     <!-- Custom Mobile Navigation HTML -->
@@ -280,6 +437,56 @@
             $('body').on('menu-close', function() {
                 $('body').css('overflow', 'auto');
             });
+
+            // User Dropdown Toggle
+            $('#welcome-message').on('click', function(e) {
+                e.preventDefault();
+                e.stopPropagation();
+                
+                const dropdown = $('.user-dropdown-menu');
+                const toggle = $(this);
+                
+                if (dropdown.hasClass('show')) {
+                    dropdown.removeClass('show');
+                    toggle.removeClass('active');
+                } else {
+                    dropdown.addClass('show');
+                    toggle.addClass('active');
+                }
+            });
+
+            // Close dropdown when clicking outside
+            $(document).on('click', function(e) {
+                if (!$(e.target).closest('.user-dropdown').length) {
+                    $('.user-dropdown-menu').removeClass('show');
+                    $('#welcome-message').removeClass('active');
+                }
+            });
+
+            // Prevent dropdown from closing when clicking inside
+            $('.user-dropdown-menu').on('click', function(e) {
+                e.stopPropagation();
+            });
         });
+
+        // Logout function
+        function logout() {
+            if (confirm('Are you sure you want to logout?')) {
+                // Create a form and submit it
+                const form = document.createElement('form');
+                form.method = 'POST';
+                form.action = '{{ route('logout') }}';
+                
+                // Add CSRF token
+                const csrfToken = document.createElement('input');
+                csrfToken.type = 'hidden';
+                csrfToken.name = '_token';
+                csrfToken.value = '{{ csrf_token() }}';
+                form.appendChild(csrfToken);
+                
+                document.body.appendChild(form);
+                form.submit();
+            }
+        }
     </script>
     </div> 

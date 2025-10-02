@@ -29,6 +29,8 @@ class ProvinceResource extends Resource
     protected static ?string $navigationLabel = "  State/Province  ";
     protected static ?string $modelLabel = "   State/Province  ";
     protected static ?string $pluralModelLabel = "  State/Province    ";
+    protected static ?int $navigationSort = 2;
+
     public static function form(Form $form): Form
     {
         return $form

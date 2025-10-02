@@ -29,4 +29,7 @@ Route::get('/aboutus', AboutPage::class);
 Route::get('/contactus', ContactPage::class);  
 Route::post('/contactus/AddContact', [Controller::class, 'AddContact']);
 Route::post('/subscribe/AddSubscribe', [Controller::class, 'AddSubscribe']);
+Route::post('/signup', [Controller::class, 'signup'])->name('signup');
+Route::post('/confirm-code', [Controller::class, 'confirmCode'])->name('confirm-code');
+Route::post('/logout', [Controller::class, 'logout'])->name('logout');
 

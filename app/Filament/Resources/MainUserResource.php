@@ -8,13 +8,16 @@ use App\Models\MainUser;
 use Filament\Forms\Form;
 use Filament\Tables\Table;
 use Filament\Resources\Resource;
+use Filament\Forms\Components\Section;
 use Filament\Tables\Columns\TextColumn;
+use Filament\Forms\Components\TextInput;
 use Filament\Tables\Columns\ToggleColumn;
 use Illuminate\Database\Eloquent\Builder;
 use App\Filament\Resources\MainUserResource\Pages;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
 use App\Filament\Resources\MainUserResource\RelationManagers;
 use App\Filament\Resources\ProductResource\RelationManagers\ProductsRelationManager;
+use App\Filament\Resources\MainUserResource\RelationManagers\WsPortfolioRelationManager;
 use App\Filament\Resources\MainUsertResource\RelationManagers\InfoActivityRelationManager;
 
 class MainUserResource extends Resource
@@ -22,12 +25,24 @@ class MainUserResource extends Resource
     protected static ?string $model = MainUser::class;
 
     protected static ?string $navigationIcon = 'heroicon-s-user-group';
+    protected static ?string $navigationGroup = 'Public';
+    protected static ?string $navigationLabel = "  Main User  ";
+    protected static ?string $modelLabel = "   Main User  ";
+    protected static ?string $pluralModelLabel = "  Main User    ";
+    protected static ?int $navigationSort = 2;
 
     public static function form(Form $form): Form
     {
         return $form
             ->schema([
-                //
+                Section::make('')
+                    ->schema([
+                        TextInput::make('fl_name')->label('First Name')->required(),
+                        TextInput::make('last_name')->label('Last Name')->required(),
+                        TextInput::make('email')->label('Email')->required(),
+                        TextInput::make('mobile')->label('Phone No.')->required(),
+                    ])
+                    ->columns(2),
             ]);
     }
 
@@ -40,11 +55,11 @@ class MainUserResource extends Resource
                 TextColumn::make('last_name')->searchable()->label('Last Name')->searchable(),
                 TextColumn::make('email')->searchable()->label('Email')->searchable(),
                 TextColumn::make('mobile')->searchable()->label('Phone No.')->searchable(),
-                TextColumn::make('confirm_code')->searchable()->label('Confirm Code')->badge()->color('danger'),
-                TextColumn::make('fl_moaref')->searchable()->label('Reference Name'),
-                TextColumn::make('mobile_moaref')->searchable()->label('Reference Phone No.'),
-                TextColumn::make('code_moaref')->searchable()->label('Code')->badge(),
-                ToggleColumn::make('approved')->label('Approved'),
+                TextColumn::make('confirm_code')->searchable()->label('Confirm Code')->badge()->color('danger')->toggleable(false),
+                TextColumn::make('fl_moaref')->searchable()->label('Reference Name')->toggleable(true),
+                TextColumn::make('mobile_moaref')->searchable()->label('Reference Phone No.')->toggleable(true),
+                TextColumn::make('code_moaref')->searchable()->label('Code')->badge()->toggleable(true),
+                ToggleColumn::make('approved')->label('Approved')->toggleable(true), 
 
                
             ])
@@ -53,10 +68,12 @@ class MainUserResource extends Resource
             ])
             ->actions([
                 //  Tables\Actions\DeleteAction::make(),  
+                 Tables\Actions\EditAction::make(),  
+                 Tables\Actions\ViewAction::make(),  
             ])
             ->bulkActions([
                 Tables\Actions\BulkActionGroup::make([
-                    Tables\Actions\DeleteBulkAction::make(),
+                    // Tables\Actions\DeleteBulkAction::make(),
                 ]),
             ]);
     }
@@ -67,6 +84,7 @@ class MainUserResource extends Resource
             InfoActivityRelationManager::class,
 
             ProductsRelationManager::class,   
+            WsPortfolioRelationManager::class,
         ];
     }
 
@@ -76,7 +94,7 @@ class MainUserResource extends Resource
             'index' => Pages\ListMainUsers::route('/'),
             'create' => Pages\CreateMainUser::route('/create'),
             'view' => Pages\ViewUser::route('/{record}'),
-             'edit' => Pages\EditMainUser::route('/{record}/edit'),
+            //  'edit' => Pages\EditMainUser::route('/{record}/edit'),
         ];
     }
     public static function getEloquentQuery(): Builder
