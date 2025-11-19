@@ -13,6 +13,7 @@ return new class extends Migration
     {
         Schema::create('license_checks', function (Blueprint $table) {
             $table->id();
+            $table->foreignId('license_id')->constrained()->onDelete('cascade');
             $table->integer('user_id');
             $table->string('site'); 
             $table->timestamps();

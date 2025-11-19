@@ -12,8 +12,8 @@ class License extends Model
     protected $guarded = [];
     // protected $connection = 'beauty_mysql';
     // protected $table = 'license';
-    public function license_checks()
+    public function licensechecks()
     {
         return $this->hasMany(LicenseCheck::class,'license_id');
-    } 
+    }    
 }

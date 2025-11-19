@@ -16,6 +16,7 @@ return new class extends Migration
             $table->string('name_fa');
             $table->string('name_en')->nullable();
             $table->integer('province_id');
+            $table->integer('county_id');
             $table->integer('user_id')->nullable();
             $table->boolean('status')->default(0);
             $table->timestamps(); 

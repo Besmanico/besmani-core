@@ -43,12 +43,13 @@ class LicenseResource extends Resource
                             ->default(1)
                             ->label('Quantity')
                             ->helperText('Number of license codes to generate'),
-                        
+
+                        Hidden::make('user_id')->default(Auth::user()->id)->dehydrated(true),
                         Placeholder::make('note')
                             ->content('License codes will be automatically generated based on quantity')
                             ->columnSpanFull(),
 
-                        Hidden::make('user_id')->default(Auth::user()->id),
+                        // Hidden::make('user_id')->default(Auth::user()->id),
 
                     ])->collapsed(false)->columns(2),
             ]);
@@ -57,12 +58,31 @@ class LicenseResource extends Resource
     public static function table(Table $table): Table
     {
         return $table
+            ->paginated([100, 150, 200,  'all'])
             ->columns([
-                TextColumn::make('code')->label('Code'),
-                TextColumn::make('license_checks.site')->label('Site'),
-                TextColumn::make('license_checks.user_id')->getStateUsing(function ($record) {
-                    $user = MainUser::find($record->user_id);
-                    return $user ? $user->fl_name : 'N/A';
+                TextColumn::make('code')->searchable()
+                    ->label('Code')
+                    ->copyable()
+                    ->copyMessage('License code copied!')
+                    ->copyMessageDuration(1500),
+                // TextColumn::make('license_checkssite')->getStateUsing(function ($record) {
+                //     if ($record->license_checks && $record->license_checks->count() > 0) {
+                //         $licenseCheck = $record->license_checks->first();
+                //         return $licenseCheck ? $licenseCheck->site : 'N/A';
+                //     }
+                //     return 'N/A';
+                // })->label('Site'),
+                TextColumn::make('licensechecks.site')->label('Site'),
+                // TextColumn::make('licensechecks.user_id')->label('User'),
+                TextColumn::make('licensechecks.user_id')->getStateUsing(function ($record) {
+                    if ($record->license_checks && $record->license_checks->count() > 0) {
+                        $licenseCheck = $record->license_checks->first();
+                        if ($licenseCheck && $licenseCheck->user_id) {
+                            $user = MainUser::find($licenseCheck->user_id);
+                            return $user ? $user->fl_name : 'N/A';
+                        }
+                    }
+                    return 'N/A';
                 })->label('User'),
 
                 IconColumn::make('status')->label('Status')->boolean(),
@@ -73,11 +93,11 @@ class LicenseResource extends Resource
                 //
             ])
             ->actions([
-                Tables\Actions\DeleteAction::make(),
+                // Tables\Actions\DeleteAction::make(),
             ])
             ->bulkActions([
                 Tables\Actions\BulkActionGroup::make([
-                    Tables\Actions\DeleteBulkAction::make(),
+                    // Tables\Actions\DeleteBulkAction::make(),
                 ]),
             ]);
     }
@@ -91,13 +111,16 @@ class LicenseResource extends Resource
     public static function getEloquentQuery(): Builder
     {
         return parent::getEloquentQuery()
+            ->with(['licensechecks' => function ($query) {
+                $query->orderBy('id', 'desc');
+            }])
             ->orderBy('id', 'desc');
     }
     public static function getPages(): array
     {
         return [
             'index' => Pages\ListLicenses::route('/'),
-             'create' => Pages\CreateLicense::route('/create'),
+            'create' => Pages\CreateLicense::route('/create'),
             'edit' => Pages\EditLicense::route('/{record}/edit'),
         ];
     }

@@ -9,10 +9,16 @@ use Filament\Tables;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
-
+use Illuminate\Database\Eloquent\Model;
 class InfoActivityRelationManager extends RelationManager
 {
     protected static string $relationship = 'InfoActivity';
+    protected static ?string $title = ' Activity';
+    public static function getTitle(Model $ownerRecord, string $pageClass): string
+    {
+        $count = $ownerRecord->InfoActivity()->count();
+        return " Activity ({$count})";
+    }
 
     public function form(Form $form): Form
     {

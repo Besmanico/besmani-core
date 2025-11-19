@@ -4,6 +4,7 @@
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="csrf-token" content="{{ csrf_token() }}">
 
     <title>{{ $title ?? 'Page Title' }}</title>
 
@@ -38,10 +39,15 @@
     <link href="{{ config('app.url') }}assets-file/css/bootstrap.min.css" rel="stylesheet">
 
     <!-- Custom styles for this template -->
-    <link href="{{ config('app.url') }}assets-file/css/style.css?v=<?=  filemtime('assets-file/css/style.css'); ?>" rel="stylesheet">
-    <link href="{{ config('app.url') }}assets-file/css/responsive.css?v=<?=  filemtime('assets-file/css/responsive.css'); ?>" rel="stylesheet">
+    <link href="{{ config('app.url') }}assets-file/css/style.css?v=<?= filemtime('assets-file/css/style.css') ?>"
+        rel="stylesheet">
+    <link
+        href="{{ config('app.url') }}assets-file/css/responsive.css?v=<?= filemtime('assets-file/css/responsive.css') ?>"
+        rel="stylesheet">
     <link href="{{ config('app.url') }}assets-file/lightbox/css/lightbox.min.css" rel="stylesheet">
     <link href="{{ config('app.url') }}assets-file/aos/aos.css" rel="stylesheet">
+    <link rel="stylesheet"
+        href="{{ config('app.url') }}assets-file/css/sonnet-toast.css?v=<?= filemtime('assets-file/css/sonnet-toast.css') ?>">
     <script src="{{ config('app.url') }}assets-file/js/jquery.min.js"></script>
 
     @livewireStyles
@@ -50,225 +56,251 @@
 </head>
 
 <body>
-    
+    @php
+        $mainUser = Auth::guard('mainUsers')->user();
+    @endphp
+
     <header id="masthead" class="site-header site-header-white">
         <nav id="primary-navigation" class="site-navigation">
             <div class="container">
-    
-            <div class="navbar-header" style="float: left;">
-                   
-                   <a href="{{ config('app.url') }}" class="site-title logo-header"><img src="{{ config('app.url') }}assets-file/img/logo.png" alt="logo"></a>
-    
-               </div><!-- /.navbar-header -->
-    
-               <div class="collapse navbar-collapse" id="agency-navbar-collapse">
-    
-                   <ul class="nav navbar-nav navbar-right">
-    
-                       <li class="active"><a href="{{ config('app.url') }}" >HOME</a></li>
-                       <li class=""><a href="{{ config('app.url') }}services">SERVICES</a></li>
+
+                <div class="navbar-header" style="float: left;">
+
+                    <a href="{{ config('app.url') }}" class="site-title logo-header"><img
+                            src="{{ config('app.url') }}assets-file/img/logo.png" alt="logo"></a>
+
+                </div><!-- /.navbar-header -->
+
+                <div class="collapse navbar-collapse" id="agency-navbar-collapse">
+
+                    <ul class="nav navbar-nav navbar-right desktop-nav">
+
+                        <li class=""><a href="{{ config('app.url') }}services">SERVICES</a></li>
+                        <li class=""><a href="{{ config('app.url') }}orders">ORDERS</a></li>
+                        <li class=""><a href="{{ config('app.url') }}design-style">DESIGN STYLE</a></li>
+                        <li class=""><a href="{{ config('app.url') }}portfolios">PORTFOLIOS</a></li>
                         <li class=""><a href="{{ config('app.url') }}careers">CAREERS</a></li>
-                       <li class=""><a href="{{ config('app.url') }}aboutus">ABOUT US</a></li>
-                       <li class=""><a href="{{ config('app.url') }}contactus">CONTACT US</a></li>
-                       {{-- <li class=""><a href="{{ config('app.url') }}login" class="btn-login">   Login </a></li> --}}
-    
-                   </ul>
-    
-               </div>
-    
-    
-            </div>   
+                        <li class=""><a href="{{ config('app.url') }}aboutus">ABOUT US</a></li>
+                        <li class=""><a href="{{ config('app.url') }}contactus">CONTACT US</a></li>
+
+                        @if ($mainUser)
+                            <li class="welcome-user user-dropdown">
+                                <a href="#" id="welcome-message" class="dropdown-toggle">
+                                    <b class="WuserName">{{ $mainUser->fl_name }}</b>
+                                    <i class="fa fa-chevron-down dropdown-arrow"></i>
+                                </a>
+                                <div class="user-dropdown-menu">
+                                    <div class="dropdown-header">
+                                        <div class="user-avatar">
+                                            <i class="fa fa-user-circle"></i>
+                                        </div>
+                                        <div class="user-info">
+                                            <span class="user-name">{{ $mainUser->fl_name }}
+                                                {{ $mainUser->last_name }}</span>
+                                            <span class="user-email">{{ $mainUser->email }}</span>
+                                        </div>
+                                    </div>
+                                    <div class="dropdown-divider"></div>
+                                    <div class="dropdown-items">
+                                        <a href="{{ config('app.url') }}panel" class="dropdown-item">
+                                            <i class="fa fa-user"></i>
+                                            <span>Profile</span>
+                                        </a>
+                                        <a href="#" class="dropdown-item">
+                                            <i class="fa fa-cog"></i>
+                                            <span>Settings</span>
+                                        </a>
+                                        <div class="dropdown-divider"></div>
+                                        <a href="#" class="dropdown-item logout-item" onclick="logout()">
+                                            <i class="fa fa-sign-out"></i>
+                                            <span>Logout</span>
+                                        </a>
+                                    </div>
+                                </div>
+                            </li>
+                        @else
+                            <li class=""><a onclick="openLoginModal()">SIGN IN</a></li>
+                        @endif
+                        {{-- <li class=""><a href="{{ config('app.url') }}login" class="btn-login">   Login </a></li> --}}
+
+                    </ul>
+
+                </div>
+
+
+            </div>
         </nav><!-- /.site-navigation -->
-    </header><!-- /#mastheaed --> 
+    </header><!-- /#mastheaed -->
 
     <main id="main" class="site-main">
 
 
-    {{ $slot }}
+        {{ $slot }}
 
     </main>
 
+
     @livewire('footer')
+    <?php
+    $countryCode = countryCode();
+    
+    ?>
+
+    <!-- Signup Modal -->
+    <div id="signup-modal" class="modal-overlay" style="display: none;">
+        <div class="modal-container">
+            <!-- Close Button -->
+            <button class="modal-close" onclick="closeSignupModal()">×</button>
+
+            <!-- Header -->
+            <div class="modal-header">
+                <div class="modal-logo">
+                    {{-- BES<span class="logo-highlight">M</span>ANI --}}
+                    <img src="{{ config('app.url') }}assets-file/img/logo-footer.png" alt="logo"
+                        style="width: 150px;">
+                </div>
+                <div class="modal-title">Sign Up</div>
+            </div>
+
+            <!-- Form Container -->
+            <div class="modal-form-container">
+                <form id="signup-form" class="signup-form">
+                    <input type="text" id="fname" placeholder="First Name " class="modal-input" required>
+                    <input type="text" id="lname" placeholder="Last Name " class="modal-input" required>
+
+
+                    <div class="input-group">
+                        <select name="country-code" id="country-code" class="modal-input country-code">
+                            @foreach ($countryCode as $country)
+                                <option value="{{ $country->id }}"
+                                    {{ strtolower($country->name_en) == 'united states' || strtolower($country->name_en) == 'usa' || $country->code == '+1' ? 'selected' : '' }}>
+                                    {{ $country->code }} {{ $country->name_en }}</option>
+                            @endforeach
+                        </select>
+                        {{-- <input type="text" id="country-code" placeholder="+1" class="modal-input country-code" > --}}
+                        <input type="tel" id="phone" placeholder="Phone Number"
+                            class="modal-input phone-input" required>
+                    </div>
+                    <input type="email" id="email" placeholder="Email" class="modal-input" required>
+
+                    <input type="password" id="password" placeholder="Password" class="modal-input" required>
+
+
+                    <div class="button-container">
+                        <button type="submit" id="submit-btn" class="submit-button">
+                            Sign Up
+                            <i class="fa fa-spinner fa-spin" style="display: none; margin-left: 8px;"></i>
+                        </button>
+                    </div>
+                </form>
+
+                {{-- side confirm code after signup --}}
+                <div class="side-confirm-code">
+                    <p class="text-center text-white">Please enter the code below.</p>
+                    <b class="w-100 text-center" style="font-size: 22px;
+      color: #fff;">6630</b>
+                    <p>Confirm Code</p>
+                    <input type="text" id="confirm-code" placeholder="Confirm Code" class="modal-input">
+                    <button type="submit" id="confirm-btn" class="submit-button">
+                        Confirm
+                        <i class="fa fa-spinner fa-spin" style="display: none; margin-left: 8px;"></i>
+                    </button>
+                </div>
+
+
+
+            </div>
+        </div>
+    </div>
+
+    {{-- login modal --}}
+    <!-- Signup Modal -->
+    <div id="login-modal" class="modal-overlay" style="display: none;">
+        <div class="modal-container">
+            <!-- Close Button -->
+            <button class="modal-close" onclick="closeLoginModal()">×</button>
+
+            <!-- Header -->
+            <div class="modal-header">
+                <div class="modal-logo">
+                    {{-- BES<span class="logo-highlight">M</span>ANI --}}
+                    <img src="{{ config('app.url') }}assets-file/img/logo-footer.png" alt="logo"
+                        style="width: 150px;">
+                </div>
+                <div class="modal-title">Sign in</div>
+            </div>
+
+            <!-- Form Container -->
+            <div class="modal-form-container">
+                <form id="login-form" class="login-form">
+                    <input type="text" id="emailOrPhoneLogin" placeholder="Email Or Phone Number"
+                        class="modal-input" required>
+                    <input type="password" id="passwordLogin" placeholder="Password" class="modal-input" required>
+
+
+                    <div class="button-container">
+                        <button type="submit" id="submit-btn-login" class="submit-button">
+                            Login
+                            <i class="fa fa-spinner fa-spin" style="display: none; margin-left: 8px;"></i>
+                        </button>
+                    </div>
+                </form>
+
+                {{-- side confirm code after signup --}}
+                {{-- <div class="side-confirm-code">
+                    <p class="text-center text-white">Please enter the code below.</p>
+                    <b class="w-100 text-center" style="font-size: 22px;
+  color: #fff;">6630</b>
+                    <p>Confirm Code</p>
+                    <input type="text" id="confirm-code" placeholder="Confirm Code" class="modal-input">
+                    <button type="submit" id="confirm-btn" class="submit-button">
+                        Confirm
+                        <i class="fa fa-spinner fa-spin" style="display: none; margin-left: 8px;"></i>
+                    </button>
+                </div> --}}
+
+
+                <div class="text-left" style="margin-top: 25px;">
+                    <a href="#" style="color: #fff; text-decoration: none;">Forgot your password ? <b
+                            style="color:#ed2226">Click
+                            Here</b></a>
+                    <br>
+                    <br>
+                    <a onclick="openSignupModal()" style="color: #fff; text-decoration: none;">Have not registered yet
+                        ? <b style="color:#fe0002">Sign Up</b></a>
+                </div>
+
+
+
+            </div>
+        </div>
+    </div>
+
+
     @livewireScripts
+    <script src="{{ config('app.url') }}assets-file/js/sonnet-toast.js"></script>
 
-    <style>
-        /* Custom Right-to-Left Sliding Navigation - Override Default Slicknav */
-        
-        /* Hide default slicknav behavior */
-        .slicknav_nav {
-            display: none !important;
-        }
-        
-        /* Custom Mobile Navigation Container */
-        .custom-mobile-nav {
-            position: fixed;
-            top: 0;
-            right: -100%;
-            width: 300px;
-            height: 100vh;
-            background: #ffffff;
-            backdrop-filter: blur(25px);
-            border-left: 1px solid rgba(0, 0, 0, 0.1);
-            box-shadow: -10px 0 50px rgba(0, 0, 0, 0.2);
-            z-index: 9999;
-            transition: right 0.4s cubic-bezier(0.4, 0, 0.2, 1);
-            overflow-y: auto;
-            padding: 80px 0 30px 0;
-        }
+    <!-- Toast Container -->
+    <div class="sonner-toast-container" id="sonner-container"></div>
 
-        .custom-mobile-nav.active {
-            right: 0;
-        }
 
-        /* Overlay */
-        .mobile-nav-overlay {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: rgba(0, 0, 0, 0.5);
-            z-index: 9998;
-            opacity: 0;
-            visibility: hidden;
-            transition: all 0.3s ease;
-        }
-
-        .mobile-nav-overlay.active {
-            opacity: 1;
-            visibility: visible;
-        }
-
-        /* Navigation Items */
-        .custom-mobile-nav .nav-item {
-            margin: 8px 25px;
-            opacity: 0;
-            transform: translateX(50px);
-            transition: all 0.4s ease;
-        }
-
-        .custom-mobile-nav.active .nav-item {
-            opacity: 1;
-            transform: translateX(0);
-        }
-
-        /* Staggered Animation */
-        .custom-mobile-nav.active .nav-item:nth-child(1) { transition-delay: 0.1s; }
-        .custom-mobile-nav.active .nav-item:nth-child(2) { transition-delay: 0.15s; }
-        .custom-mobile-nav.active .nav-item:nth-child(3) { transition-delay: 0.2s; }
-        .custom-mobile-nav.active .nav-item:nth-child(4) { transition-delay: 0.25s; }
-        .custom-mobile-nav.active .nav-item:nth-child(5) { transition-delay: 0.3s; }
-        .custom-mobile-nav.active .nav-item:nth-child(6) { transition-delay: 0.35s; }
-        .custom-mobile-nav.active .nav-item:nth-child(7) { transition-delay: 0.4s; }
-
-        .custom-mobile-nav .nav-link {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            padding: 15px 25px;
-            color: #071021;
-            font-size: 17px;
-            font-weight: 700;
-            text-transform: uppercase;
-            letter-spacing: 1.5px;
-            background: rgba(7, 16, 33, 0.05);
-            border: 1px solid rgba(7, 16, 33, 0.1);
-            border-radius: 15px;
-            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
-            position: relative;
-            overflow: hidden;
-            text-decoration: none;
-        }
-
-        /* Shimmer Effect */
-        .custom-mobile-nav .nav-link::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: -100%;
-            width: 100%;
-            height: 100%;
-            background: linear-gradient(90deg, transparent, rgba(7, 16, 33, 0.1), transparent);
-            transition: left 0.8s ease;
-        }
-
-        .custom-mobile-nav .nav-link:hover::before {
-            left: 100%;
-        }
-
-        /* Hover Effects */
-        .custom-mobile-nav .nav-link:hover {
-            background: rgba(7, 16, 33, 0.1);
-            color: #071021;
-            transform: translateX(-8px) scale(1.02);
-            box-shadow: 0 6px 20px rgba(7, 16, 33, 0.2);
-            border-color: rgba(7, 16, 33, 0.2);
-        }
-
-        /* Active State */
-        .custom-mobile-nav .nav-item.active .nav-link {
-            background: linear-gradient(135deg, #fe0002 0%, #ff6b6b 100%);
-            color: #fff;
-            /* box-shadow: 0 8px 25px rgba(254, 0, 2, 0.5); */
-            transform: translateX(-5px);
-            /* border-color: rgba(254, 0, 2, 0.5); */
-        }
-
-        /* Close Button */
-        .mobile-nav-close {
-            position: absolute;
-            top: 20px;
-            right: 20px;
-            width: 40px;
-            height: 40px;
-            background: rgba(7, 16, 33, 0.1);
-            border: 1px solid rgba(7, 16, 33, 0.2);
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            color: #071021;
-            font-size: 20px;
-            cursor: pointer;
-            transition: all 0.3s ease;
-        }
-
-        .mobile-nav-close:hover {
-            background: rgba(7, 16, 33, 0.2);
-            transform: rotate(90deg);
-        }
-
-        /* Responsive */
-        @media (max-width: 480px) {
-            .custom-mobile-nav {
-                width: 280px;
-            }
-            .custom-mobile-nav .nav-link {
-                font-size: 15px;
-                padding: 12px 20px;
-            }
-        }
-
-        @media (max-width: 360px) {
-            .custom-mobile-nav {
-                width: 260px;
-            }
-            .custom-mobile-nav .nav-link {
-                font-size: 14px;
-                padding: 10px 15px;
-            }
-        }
-    </style>
 
     <!-- Custom Mobile Navigation HTML -->
     <div class="mobile-nav-overlay"></div>
     <div class="custom-mobile-nav">
         <div class="mobile-nav-close">&times;</div>
-        <div class="nav-item active">
-            <a href="{{ config('app.url') }}" class="nav-link">HOME</a>
-        </div>
+
         <div class="nav-item">
             <a href="{{ config('app.url') }}services" class="nav-link">SERVICES</a>
+        </div>
+        <div class="nav-item">
+            <a href="{{ config('app.url') }}orders" class="nav-link">ORDERS</a>
+        </div>
+        <div class="nav-item">
+            <a href="{{ config('app.url') }}design-style" class="nav-link">DESIGN STYLE</a>
+        </div>
+        <div class="nav-item">
+            <a href="{{ config('app.url') }}portfolios" class="nav-link">PORTFOLIOS</a>
         </div>
         <div class="nav-item">
             <a href="{{ config('app.url') }}careers" class="nav-link">CAREERS</a>
@@ -279,6 +311,9 @@
         <div class="nav-item">
             <a href="{{ config('app.url') }}contactus" class="nav-link">CONTACT US</a>
         </div>
+        <div class="nav-item">
+            <a onclick="openLoginModal()" class="nav-link">SIGN IN</a>
+        </div>
     </div>
 
     <script>
@@ -288,12 +323,12 @@
             $('.slicknav_btn').off('click').on('click', function(e) {
                 e.preventDefault();
                 e.stopPropagation();
-                
+
                 // Toggle custom mobile nav
                 $('.custom-mobile-nav').toggleClass('active');
                 $('.mobile-nav-overlay').toggleClass('active');
                 $('body').toggleClass('menu-open');
-                
+
                 // Update button state
                 $(this).toggleClass('act');
             });
@@ -365,7 +400,7 @@
         if (regexp.test(email) == false) {
             error = 1;
             $(".email-subscribe").focus();
-        }  
+        }
         if (error == 1) {
             return false;
         }
@@ -378,10 +413,370 @@
                 }
             })
             .done(function(msg) {
-                window.location = '{{ config('app.url') }}subscribe/check/'+email;
+                window.location = '{{ config('app.url') }}subscribe/check/' + email;
             })
-    }) 
+    })
+
+
+    // register script
+    $('#Subscribe').click(function() {
+        var subscribeEmail = $('.email-subscribe').val();
+
+        // Validate email is entered
+        if (!subscribeEmail) {
+            $('.email-subscribe').focus();
+            return;
+        }
+
+        // Validate email format
+        var emailRegex = /^\S+@\S+\.\S+$/;
+        if (!emailRegex.test(subscribeEmail)) {
+            alert('Please enter a valid email address.');
+            $('.email-subscribe').focus();
+            return;
+        }
+
+        // Show loading state
+        $('#Subscribe .fa-spinner').show();
+        $('#Subscribe').prop('disabled', true);
+
+        // Small delay for better UX
+        setTimeout(function() {
+            $('#Subscribe .fa-spinner').hide();
+            $('#Subscribe').prop('disabled', false);
+
+            // Open signup modal and pre-fill email
+            openSignupModal();
+            $('#email').val(subscribeEmail);
+
+            // Add visual indication that email was pre-filled
+            $('#email').css('background-color', '#f0f9ff');
+            setTimeout(function() {
+                $('#email').css('background-color', '');
+            }, 2000);
+        }, 500);
+    })
+
+    // Modal Functions
+    function openSignupModal() {
+        closeLoginModal();
+        $('#signup-modal').fadeIn(300);
+        $('body').css('overflow', 'hidden');
+    }
+
+    function closeSignupModal() {
+        $('#signup-modal').fadeOut(300);
+        $('body').css('overflow', 'auto');
+        resetForm();
+    }
+
+    function resetForm() {
+        $('#signup-form').removeClass('hide').addClass('signup-form');
+        $('.side-confirm-code').removeClass('show').hide();
+        $('#signup-form')[0].reset();
+        $('#confirm-code').val('');
+        $('.fa-spinner').hide();
+        $('#submit-btn').prop('disabled', false);
+        $('#confirm-btn').prop('disabled', false);
+        // Reset email background color
+        $('#email').css('background-color', '');
+    }
+
+    // Close modal when clicking outside
+    $('#signup-modal').click(function(e) {
+        if (e.target === this) {
+            closeSignupModal();
+        }
+    });
+
+    // Close modal with Escape key
+    $(document).keydown(function(e) {
+        if (e.keyCode === 27 && $('#signup-modal').is(':visible')) {
+            closeSignupModal();
+        }
+    });
+
+    // Form submission
+    $('#signup-form').submit(function(e) {
+        e.preventDefault();
+
+        var fname = $('#fname').val();
+        var lname = $('#lname').val();
+        var email = $('#email').val();
+        var countryCode = $('#country-code').val();
+        var phone = $('#phone').val();
+        var password = $('#password').val();
+
+        // Basic validation
+        if (!fname || !lname || !email || !password || !countryCode || !phone) {
+            toastWarning('Required Fields', 'Please fill in all required fields.', 4000);
+            return;
+        }
+
+
+        // Email validation
+        var emailRegex = /^\S+@\S+\.\S+$/;
+        if (!emailRegex.test(email)) {
+            toastWarning('Invalid Email', 'Please enter a valid email address.', 4000);
+            return;
+        }
+
+        if (!countryCode || !phone) {
+            toastWarning('Invalid Phone', 'Please enter a valid country code and phone number.', 4000);
+            return;
+        }
+
+        // Show loading spinner
+        $('.fa-spinner').show();
+        $('#submit-btn').prop('disabled', true);
+
+        // Submit the form via AJAX  
+        $.ajax({
+                url: '{{ route('signup') }}',
+                type: 'POST',
+                data: {
+                    fname: fname,
+                    lname: lname,
+                    email: email,
+                    country_code: countryCode,
+                    phone: phone,
+                    password: password,
+                }
+            })
+            .done(function(response) {
+                $('.fa-spinner').hide();
+                $('#submit-btn').prop('disabled', false);
+
+                if (response == 0) {
+                    // Hide signup form and show confirmation code section
+                    $('#signup-form').addClass('hide');
+                    $('.side-confirm-code').addClass('show').show();
+                    window.location.href = '/';
+
+                    // Store phone number for confirmation
+                    // window.signupPhone = phone;
+                }
+
+                if (response.success) {
+                    // Beautiful Sonner-like toast notification
+                    toastSuccess('Welcome to BESMANI!', 'Your account has been created successfully.',
+                    3000);
+
+                    setTimeout(function() {
+                        window.location.href = '/';
+                    }, 500);
+
+                    $('.WuserName').text(response.userName);
+                    $('.welcome-user').show();
+
+                    closeSignupModal();
+                }
+            })
+            .fail(function(xhr) {
+                $('.fa-spinner').hide();
+                $('#submit-btn').prop('disabled', false);
+
+                if (xhr.status === 422) {
+                    // Validation errors
+                    var errors = xhr.responseJSON?.errors;
+                    var message = xhr.responseJSON?.message || 'Please check your input and try again.';
+
+                    if (errors) {
+                        // Show specific field errors
+                        var errorMessages = [];
+                        for (var field in errors) {
+                            errorMessages.push(errors[field][0]);
+                        }
+                        toastError('Validation Error', errorMessages.join(', '), 5000);
+                    } else {
+                        toastError('Error', message, 4000);
+                    }
+                } else {
+                    toastError('Error', xhr.responseJSON?.message || 'An error occurred. Please try again.',
+                        4000);
+                }
+            });
+
+    });
+    $('#confirm-btn').click(function() {
+        var confirmCode = $('#confirm-code').val();
+
+        // Basic validation
+        if (!confirmCode) {
+            toastWarning('Confirmation Code', 'Please enter the confirmation code.', 4000);
+            return;
+        }
+
+        // Show loading spinner
+        $('#confirm-btn .fa-spinner').show();
+        $('#confirm-btn').prop('disabled', true);
+
+        $.ajax({
+                url: '{{ route('confirm-code') }}',
+                type: 'POST',
+                data: {
+                    confirmCode: confirmCode,
+                    phone: window.signupPhone,
+                }
+            })
+            .done(function(response) {
+                $('#confirm-btn .fa-spinner').hide();
+                $('#confirm-btn').prop('disabled', false);
+
+                if (response.success) {
+                    toastSuccess('Code Confirmed!', response.message || 'Welcome to BESMANI!', 3000);
+                    $('.WuserName').text(response.userName);
+                    $('.welcome-user').show();
+                    setTimeout(function() {
+                        closeSignupModal();
+                    }, 500);
+                } else {
+                    toastError('Invalid Code', response.message || 'Invalid confirmation code.', 4000);
+                }
+            })
+            .fail(function(xhr) {
+                $('#confirm-btn .fa-spinner').hide();
+                $('#confirm-btn').prop('disabled', false);
+                toastError('Error', xhr.responseJSON?.message || 'An error occurred. Please try again.',
+                    4000);
+            });
+    });
+
+    if (window.innerWidth < 768) {
+        $(window).scroll(function() {
+            var scrollTop = $(window).scrollTop();
+            if (scrollTop > 331) {
+                $('.inMobileRemoveCover').css('display', 'none');
+            }
+            if (scrollTop < 331) {
+                $('.inMobileRemoveCover').css('display', 'block');
+            }
+
+
+        });
+    }
+
+    $(document).ready(function() {
+        // Setup CSRF token for all AJAX requests
+        $.ajaxSetup({
+            headers: {
+                'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+            }
+        });
+
+        // Phone number formatting function
+        function formatPhoneNumber(value) {
+            // Remove all non-digit characters
+            const phoneNumber = value.replace(/\D/g, '');
+
+            // Format as (XXX) XXX-XXXX
+            if (phoneNumber.length >= 6) {
+                return '(' + phoneNumber.substring(0, 3) + ') ' + phoneNumber.substring(3, 6) + '-' +
+                    phoneNumber.substring(6, 10);
+            } else if (phoneNumber.length >= 3) {
+                return '(' + phoneNumber.substring(0, 3) + ') ' + phoneNumber.substring(3);
+            } else if (phoneNumber.length > 0) {
+                return '(' + phoneNumber;
+            }
+            return phoneNumber;
+        }
+
+        // Phone number input formatting and copy-paste prevention
+        $('#phone').on('input', function() {
+            const formatted = formatPhoneNumber($(this).val());
+            $(this).val(formatted);
+        });
+
+        // Prevent copy-paste on phone number field
+        $('#phone').on('paste', function(e) {
+            e.preventDefault();
+        });
+
+        $('#phone').on('copy cut', function(e) {
+            e.preventDefault();
+        });
+
+        // Prevent copy-paste on email field
+        $('#email').on('paste', function(e) {
+            e.preventDefault();
+        });
+
+        $('#email').on('copy cut', function(e) {
+            e.preventDefault();
+        });
+
+        // Also prevent right-click context menu on both fields
+        $('#phone, #email').on('contextmenu', function(e) {
+            e.preventDefault();
+        });
+
+        // Prevent keyboard shortcuts for copy/paste
+        $('#phone, #email').on('keydown', function(e) {
+            // Prevent Ctrl+C, Ctrl+V, Ctrl+X
+            if ((e.ctrlKey || e.metaKey) && (e.keyCode === 67 || e.keyCode === 86 || e.keyCode ===
+                    88)) {
+                e.preventDefault();
+            }
+        });
+    });
+
+
+    // sign in modal
+    function openLoginModal() {
+        $('#login-modal').fadeIn(300);
+        $('body').css('overflow', 'hidden');
+    }
+
+    function closeLoginModal() {
+        $('#login-modal').fadeOut(300);
+        $('body').css('overflow', 'auto');
+    }
+
+    // sign in form submission
+    $('#login-form').submit(function(e) {
+        e.preventDefault();
+        var emailOrPhone = $('#emailOrPhoneLogin').val();
+        var password = $('#passwordLogin').val();
+
+        // Show loading spinner
+        $('.fa-spinner').show();
+        $('#submit-btn-login').prop('disabled', true);
+
+        $.ajax({
+                url: '{{ route('login') }}',
+                type: 'POST',
+                data: {
+                    emailOrPhone: emailOrPhone,
+                    password: password,
+                }
+            })
+            .done(function(response) {
+                if (response.success) {
+                    // Beautiful Sonner-like toast notification
+                    toastSuccess('Welcome to BESMANI!', 'You have successfully signed in.', 3000);
+                    // get url address
+                    var url = window.location.href;
+                    setTimeout(function() {
+                        window.location.href = url;
+                    }, 4000);
+
+                    $('.WuserName').text(response.userName);
+                    $('.welcome-user').show();
+                    closeLoginModal();
+                } else {
+                    toastError('Login Failed', response.message ||
+                        'Invalid email or phone number or password!', 4000);
+                }
+                $('.fa-spinner').hide();
+                $('#submit-btn-login').prop('disabled', false);
+            })
+            .fail(function(xhr) {
+                $('.fa-spinner').hide();
+                $('#submit-btn-login').prop('disabled', false);
+                toastError('Error', xhr.responseJSON?.message || 'An error occurred. Please try again.',
+                    4000);
+            });
+    });
 </script>
+
 </html>
-
-

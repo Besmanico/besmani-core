@@ -54,6 +54,7 @@ class SliderResource extends Resource
         return $table
             ->columns([
                 ImageColumn::make('image')->label('Image')->circular(),
+                TextColumn::make('link')->label('Link'),
                 ToggleColumn::make('status')->label('Status'),
                 TextColumn::make('created_at')->sortable()->badge(),
 

@@ -55,270 +55,7 @@
 
     @livewireStyles
 
-    <style>
-        /* Modal Styles */
-        .modal-overlay {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background-color: rgba(0, 0, 0, 0.75);
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            z-index: 10000;
-            backdrop-filter: blur(4px);
-        }
-
-        .modal-container {
-            position: relative;
-            width: 500px;
-            max-width: 90vw;
-            background-color: #ffffff;
-            border-radius: 24px;
-            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
-            overflow: hidden;
-            animation: modalSlideIn 0.3s ease-out;
-            padding: 20px;
-        }
-
-        @keyframes modalSlideIn {
-            from {
-                opacity: 0;
-                transform: scale(0.9) translateY(-20px);
-            }
-
-            to {
-                opacity: 1;
-                transform: scale(1) translateY(0);
-            }
-        }
-
-        .modal-close {
-            position: absolute;
-            top: 24px;
-            left: 26px;
-            color: #ffffff;
-            font-size: 24px;
-            cursor: pointer;
-            background-color: transparent;
-            border: none;
-            z-index: 10;
-            width: 32px;
-            height: 32px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            border-radius: 50%;
-            transition: all 0.2s ease;
-        }
-
-        .modal-close:hover {
-            color: #d1d5db;
-            background-color: rgba(255, 255, 255, 0.1);
-        }
-
-        .modal-header {
-            background-color: #111827;
-            clip-path: polygon(0 0, 100% 0, 100% 60%, 85% 100%, 0 100%);
-            padding: 24px 32px;
-            position: relative;
-            border-radius: 15px 15px 0 0;
-        }
-
-        .modal-logo {
-            font-size: 36px;
-            color: #ffffff;
-            letter-spacing: 0.1em;
-            margin-bottom: 24px;
-            text-align: center;
-        }
-
-        .logo-highlight {
-            color: #dc2626;
-        }
-
-        .modal-title {
-            font-size: 20px;
-            font-weight: 600;
-            color: #ffffff;
-            padding-right: 96px;
-        }
-
-        .modal-form-container {
-            background-color: #111827;
-            padding: 26px 32px 26px 32px;
-            ;
-            border-radius: 0 0 20px 20px;
-        }
-
-        .modal-input {
-            width: 100%;
-            padding: 12px 16px;
-            border-radius: 8px;
-            border: none;
-            background-color: #ffffff;
-            margin-bottom: 16px;
-            font-size: 16px;
-            transition: all 0.2s ease;
-            box-sizing: border-box;
-        }
-
-        .modal-input:focus {
-            outline: none;
-            ring: 2px solid #dc2626;
-            box-shadow: 0 0 0 2px #dc2626;
-        }
-
-        .input-group {
-            display: flex;
-            gap: 12px;
-            margin-bottom: 16px;
-        }
-
-        .country-code {
-            width: 100px;
-            background-color: #4b5563;
-            color: #ffffff;
-            margin-bottom: 0;
-        }
-
-        .country-code::placeholder {
-            color: #d1d5db;
-        }
-
-        .phone-input {
-            flex: 1;
-            margin-bottom: 0;
-        }
-
-        .button-container {
-            display: flex;
-            justify-content: flex-end;
-            padding-top: 8px;
-        }
-
-        .submit-button {
-            background-color: #4b5563;
-            color: #ffffff;
-            font-weight: 600;
-            padding: 12px 40px;
-            border-radius: 8px;
-            border: none;
-            cursor: pointer;
-            font-size: 16px;
-            transition: background-color 0.2s ease;
-            display: flex;
-            align-items: center;
-        }
-
-        .submit-button:hover {
-            background-color: #374151;
-        }
-
-        .submit-button:disabled {
-            opacity: 0.7;
-            cursor: not-allowed;
-        }
-
-        /* Signup form and confirmation code visibility */
-        .signup-form {
-            display: block;
-        }
-
-        .signup-form.hide {
-            display: none;
-        }
-
-        .side-confirm-code {
-            display: none;
-            text-align: center;
-        }
-
-        .side-confirm-code.show {
-            display: block;
-        }
-
-        .side-confirm-code p {
-            margin-bottom: 16px;
-            color: #ffffff;
-        }
-
-        .side-confirm-code b {
-            display: block;
-            margin-bottom: 20px;
-            padding: 15px;
-            background-color: #374151;
-            border-radius: 8px;
-            letter-spacing: 3px;
-        }
-
-        /* Subscribe Section Enhancements */
-        .email-subscribe {
-            transition: all 0.3s ease;
-        }
-
-        .email-subscribe:focus {
-            border-color: #dc2626 !important;
-            box-shadow: 0 0 0 2px rgba(220, 38, 38, 0.2) !important;
-        }
-
-        .Subscribe-btn {
-            transition: all 0.3s ease;
-        }
-
-        .Subscribe-btn:hover {
-            transform: translateY(-1px);
-            box-shadow: 0 4px 12px rgba(220, 38, 38, 0.3);
-        }
-
-        .Subscribe-btn:disabled {
-            opacity: 0.7;
-            cursor: not-allowed;
-            transform: none;
-        }
-
-        /* Modal email pre-fill animation */
-        .modal-input.prefilled {
-            background-color: #f0f9ff;
-            border-color: #3b82f6;
-            animation: prefillPulse 0.6s ease-in-out;
-        }
-
-        @keyframes prefillPulse {
-            0% { background-color: #f0f9ff; }
-            50% { background-color: #dbeafe; }
-            100% { background-color: #f0f9ff; }
-        }
-
-        /* Responsive */
-        @media (max-width: 768px) {
-            .modal-container {
-                width: 95vw;
-                margin: 20px;
-            }
-
-            .modal-header {
-                padding: 20px 24px;
-                border-radius: 20px 20px 0 0;
-            }
-
-            .modal-logo {
-                font-size: 28px;
-                margin-bottom: 20px;
-            }
-
-            .modal-title {
-                font-size: 20px;
-                padding-right: 60px;
-            }
-
-            .modal-form-container {
-                padding: 16px 24px 36px 24px;
-            }
-        }
-    </style>
+    
 
 </head>
 
@@ -389,7 +126,7 @@
                     <img src="{{ config('app.url') }}assets-file/img/logo-footer.png" alt="logo"
                         style="width: 150px;">
                 </div>
-                <div class="modal-title">Sign Up</div>
+                <div class="modal-title" >Sign Up</div>
             </div>
 
             <!-- Form Container -->
@@ -443,6 +180,67 @@
         </div>
     </div>
 
+    {{-- login modal --}}
+    <!-- Signup Modal -->
+    <div id="login-modal" class="modal-overlay" style="display: none;">
+        <div class="modal-container">
+            <!-- Close Button -->
+            <button class="modal-close" onclick="closeLoginModal()">×</button>
+
+            <!-- Header -->
+            <div class="modal-header">
+                <div class="modal-logo">
+                    {{-- BES<span class="logo-highlight">M</span>ANI --}}
+                    <img src="{{ config('app.url') }}assets-file/img/logo-footer.png" alt="logo"
+                        style="width: 150px;">
+                </div>
+                <div class="modal-title">Sign in</div>
+            </div>
+
+            <!-- Form Container -->
+            <div class="modal-form-container">
+                <form id="login-form" class="login-form">
+                    <input type="text" id="emailOrPhoneLogin" placeholder="Email Or Phone Number"
+                        class="modal-input" required>
+                    <input type="password" id="passwordLogin" placeholder="Password" class="modal-input" required>
+
+
+                    <div class="button-container">
+                        <button type="submit" id="submit-btn-login" class="submit-button">
+                            Login
+                            <i class="fa fa-spinner fa-spin" style="display: none; margin-left: 8px;"></i>
+                        </button>
+                    </div>
+                </form>
+
+                {{-- side confirm code after signup --}}
+                {{-- <div class="side-confirm-code">
+                    <p class="text-center text-white">Please enter the code below.</p>
+                    <b class="w-100 text-center" style="font-size: 22px;
+  color: #fff;">6630</b>
+                    <p>Confirm Code</p>
+                    <input type="text" id="confirm-code" placeholder="Confirm Code" class="modal-input">
+                    <button type="submit" id="confirm-btn" class="submit-button">
+                        Confirm
+                        <i class="fa fa-spinner fa-spin" style="display: none; margin-left: 8px;"></i>
+                    </button>
+                </div> --}}
+
+
+                <div class="text-left" style="margin-top: 25px;">
+                     <a href="#" style="color: #fff; text-decoration: none;">Forgot your password ? <b style="color:#ed2226">Click
+                        Here</b></a>
+                        <br>
+                        <br>
+                     <a onclick="openSignupModal()" style="color: #fff; text-decoration: none;">Have not registered yet ? <b style="color:#fe0002">Sign Up</b></a>
+                </div>
+
+
+
+            </div>
+        </div>
+    </div>
+
     @livewireScripts
 </body>
 
@@ -459,13 +257,13 @@
 <script>
     $('#Subscribe').click(function() {
         var subscribeEmail = $('.email-subscribe').val();
-        
+
         // Validate email is entered
         if (!subscribeEmail) {
-             $('.email-subscribe').focus();
+            $('.email-subscribe').focus();
             return;
         }
-        
+
         // Validate email format
         var emailRegex = /^\S+@\S+\.\S+$/;
         if (!emailRegex.test(subscribeEmail)) {
@@ -473,20 +271,20 @@
             $('.email-subscribe').focus();
             return;
         }
-        
+
         // Show loading state
         $('#Subscribe .fa-spinner').show();
         $('#Subscribe').prop('disabled', true);
-        
+
         // Small delay for better UX
         setTimeout(function() {
             $('#Subscribe .fa-spinner').hide();
             $('#Subscribe').prop('disabled', false);
-            
+
             // Open signup modal and pre-fill email
             openSignupModal();
             $('#email').val(subscribeEmail);
-            
+
             // Add visual indication that email was pre-filled
             $('#email').css('background-color', '#f0f9ff');
             setTimeout(function() {
@@ -497,6 +295,8 @@
 
     // Modal Functions
     function openSignupModal() {
+        closeLoginModal();
+
         $('#signup-modal').fadeIn(300);
         $('body').css('overflow', 'hidden');
     }
@@ -588,18 +388,21 @@
                     // Hide signup form and show confirmation code section
                     $('#signup-form').addClass('hide');
                     $('.side-confirm-code').addClass('show').show();
+                    window.location.href = '/';
 
                     // Store phone number for confirmation
-                    window.signupPhone = phone;
+                    // window.signupPhone = phone;
                 }
 
                 if (response.success) {
                     alert('Welcome to BESMANI!');
+                    window.location.href = '/';
+
                     $('.WuserName').text(response.userName);
                     $('.welcome-user').show();
 
                     closeSignupModal();
-                } 
+                }
             })
             .fail(function(xhr) {
                 $('.fa-spinner').hide();
@@ -625,9 +428,9 @@
                 }
             });
 
-    }); 
+    });
     $('#confirm-btn').click(function() {
-        var confirmCode = $('#confirm-code').val(); 
+        var confirmCode = $('#confirm-code').val();
 
         // Basic validation
         if (!confirmCode) {
@@ -739,11 +542,62 @@
         $('#phone, #email').on('keydown', function(e) {
             // Prevent Ctrl+C, Ctrl+V, Ctrl+X
             if ((e.ctrlKey || e.metaKey) && (e.keyCode === 67 || e.keyCode === 86 || e.keyCode ===
-                88)) {
+                    88)) {
                 e.preventDefault();
             }
         });
     });
-</script>
 
-</html>
+
+    // sign in modal
+    function openLoginModal() {
+        $('#login-modal').fadeIn(300);
+        $('body').css('overflow', 'hidden');
+    }
+
+    function closeLoginModal() {
+        $('#login-modal').fadeOut(300);
+        $('body').css('overflow', 'auto');
+    }
+
+    // sign in form submission
+    $('#login-form').submit(function(e) {
+        e.preventDefault();
+        var emailOrPhone = $('#emailOrPhoneLogin').val();
+        var password = $('#passwordLogin').val();
+
+        // Show loading spinner
+        $('.fa-spinner').show();
+        $('#submit-btn-login').prop('disabled', true);
+
+        $.ajax({
+                url: '{{ route('login') }}',
+                type: 'POST',
+                data: {
+                    emailOrPhone: emailOrPhone,
+                    password: password,
+                }
+            })
+            .done(function(response) {
+                if (response.success) {
+                    alert('Welcome to BESMANI!');
+                    window.location.href = '/';
+                    $('.WuserName').text(response.userName);
+                    $('.welcome-user').show();
+                    closeLoginModal();
+                } else {
+                    alert(response.message || 'Invalid email or phone number or password!');
+                }
+                $('.fa-spinner').hide();
+                $('#submit-btn-login').prop('disabled', false);
+                // closeLoginModal();
+            })
+            .fail(function(xhr) {
+                $('.fa-spinner').hide();
+                $('#submit-btn-login').prop('disabled', false);
+                alert(xhr.responseJSON?.message || 'An error occurred. Please try again.');
+            });
+    });
+
+
+</script>

@@ -1,6 +1,8 @@
 <?php
 
+use App\Models\MainUser;
 use App\Models\PhoneCountry;
+use Illuminate\Support\Facades\Auth;
 
 
 
@@ -35,4 +37,10 @@ function rand_string($length)
     }
 
     return $final;
+}
+
+function UserInfoPublic()
+{
+    $userInfo = MainUser::where('id', Auth::guard('mainUsers')->user()->id)->with('InfoActivity')->first();
+    return $userInfo;
 }

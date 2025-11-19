@@ -9,4 +9,9 @@ class LicenseCheck extends Model
 {
     use HasFactory;
     protected $guarded = [];
+
+    // public function license()
+    // {
+    //     return $this->belongsTo(License::class);
+    // }
 }

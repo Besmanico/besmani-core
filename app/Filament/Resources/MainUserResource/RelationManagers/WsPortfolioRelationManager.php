@@ -9,11 +9,17 @@ use Filament\Tables;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
-
+use Illuminate\Database\Eloquent\Model;
 class WsPortfolioRelationManager extends RelationManager
 {
     protected static string $relationship = 'WsPortfolio';
-
+    protected static ?string $title = 'Portfolio';
+    
+    public static function getTitle(Model $ownerRecord, string $pageClass): string
+    {
+        $count = $ownerRecord->WsPortfolio()->count();
+        return "Portfolio ({$count})";
+    }
 
     public function form(Form $form): Form
     {

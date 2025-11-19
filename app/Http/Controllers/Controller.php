@@ -139,7 +139,6 @@ class Controller extends BaseController
                     'message' => 1,
                     'userName' => $user->fl_name,
                 ]);
-
             }
             // return response()->json([
             //     'error' => false,
@@ -148,6 +147,58 @@ class Controller extends BaseController
         }
     }
 
+
+    public function login(Request $request)
+    {
+        // $request->validate([
+        //     'emailOrPhone' => 'required',
+        //     'password' => 'required'
+        // ]);
+
+        $emailOrPhone = $request->emailOrPhone;
+
+        if (filter_var($emailOrPhone, FILTER_VALIDATE_EMAIL)) {
+
+            $user = MainUser::where('email', $emailOrPhone)->first();
+        } elseif (is_numeric($emailOrPhone)) {
+
+            $user = MainUser::where('mobile', $emailOrPhone)->first();
+        } else {
+            return response()->json([
+                'success' => false,
+                'message' => 'Invalid email or phone number!'
+            ], 422); 
+        }
+
+
+
+        $id = $user->id;
+
+        $hashed_password = $user->password;
+        $profile = $user->profile;
+        if (empty($user)) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Invalid email or phone number!'
+            ], 422);
+        }
+        // check password is valid
+        if (!Hash::check($request->password, $hashed_password)) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Invalid password!'
+            ], 422);
+        }
+
+        // login user
+        Auth::guard('mainUsers')->login($user);
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Login successful!',
+            'userName' => $user->fl_name,
+        ]);
+    }
 
     public function confirmCode(Request $request)
     {

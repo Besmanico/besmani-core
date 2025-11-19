@@ -14,9 +14,16 @@ class ServicePage extends Component
     }
     public function render()
     {
-        $metaData = ['title' => $this->slug];
-        $service = Service::where('slug', $this->slug)->first();
+        $service = Service::where('slug', $this->slug)
+             ->with(['packageItems', 'packageServices.packageServiceItems'])
+            ->firstOrFail();
+
+        $metaTitle = $service->title ?? $service->name ?? $service->slug ?? $this->slug;
+        $metaData = ['title' => $metaTitle];
+
         $data = ['service' => $service];
-        return view('livewire.service.service-page',$data)->layout('components.layouts.difheader',$metaData);
+
+        return view('livewire.service.service-page', $data)
+            ->layout('components.layouts.difheader', $metaData);
     }
 }

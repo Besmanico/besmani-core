@@ -144,8 +144,9 @@
                         @foreach ($sliders as $slider)
                             <div class="offer-item">
 
+                                <a href="{{ $slider->link }}">
                                 <img src="{{ config('app.url') }}storage/{{ $slider->image }}" class="img-res">
-
+                            </a>
                             </div>
                         @endforeach
 

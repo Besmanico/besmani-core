@@ -10,7 +10,7 @@
                     <a href="{{ config('app.url') }}services/service/<?= $infoService['slug'] ?>" >
 
                     <div class="col-sm-5">
-                        <img src="{{ config('app.url') }}assets-file/img/services/<?= $infoService['image'] ?>" alt="<?= $infoService['title'] ?>" class="w-100">
+                        <img src="{{ config('app.url') }}storage/<?= $infoService['image'] ?>" alt="<?= $infoService['title'] ?>" class="w-100">
                     </div>
                     <div class="col-sm-1"></div>
                     <div class="col-sm-5">

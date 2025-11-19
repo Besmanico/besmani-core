@@ -4,6 +4,7 @@ namespace App\Filament\Resources\ProvinceResource\RelationManagers;
 
 use Filament\Forms;
 use Filament\Tables;
+use App\Models\County;
 use Filament\Forms\Form;
 use Filament\Tables\Table;
 use Illuminate\Support\Facades\Auth;
@@ -23,11 +24,14 @@ class CitiesRelationManager extends RelationManager
         return $form
             ->schema([
                 Forms\Components\TextInput::make('name_en')
-                    
-                ->maxLength(191),
+                    ->required()
+
+                    ->maxLength(191),
                 Forms\Components\TextInput::make('name_fa')
-                ->required()
-                ->maxLength(191),
+                   
+                    ->maxLength(191),
+                Forms\Components\Select::make('county_id')->searchable()->label('County')
+                    ->options(County::all()->pluck('name', 'id')),
                 Hidden::make('user_id')->default(Auth::user()->id)->dehydrated(true),
 
                 Toggle::make('status')->label('publish'),
@@ -41,6 +45,7 @@ class CitiesRelationManager extends RelationManager
             ->columns([
                 Tables\Columns\TextColumn::make('name_en')->searchable(),
                 Tables\Columns\TextColumn::make('name_fa')->searchable(),
+                Tables\Columns\TextColumn::make('county.name')->searchable()->label('County'),
                 ToggleColumn::make('status')->label('publish'),
             ])
             ->filters([

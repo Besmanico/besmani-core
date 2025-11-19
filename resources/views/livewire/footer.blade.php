@@ -74,3 +74,109 @@
         </div>
     </div><!-- /.copyright -->
 </footer><!-- /#footer -->
+<script>
+    // Custom Mobile Navigation JavaScript
+    $(document).ready(function() {
+        // Override default slicknav button click
+        $('.slicknav_btn').off('click').on('click', function(e) {
+            e.preventDefault();
+            e.stopPropagation();
+            
+            // Toggle custom mobile nav
+            $('.custom-mobile-nav').toggleClass('active');
+            $('.mobile-nav-overlay').toggleClass('active');
+            $('body').toggleClass('menu-open');
+            
+            // Update button state
+            $(this).toggleClass('act');
+        });
+
+        // Close on overlay click
+        $('.mobile-nav-overlay').on('click', function() {
+            closeMobileNav();
+        });
+
+        // Close on close button click
+        $('.mobile-nav-close').on('click', function() {
+            closeMobileNav();
+        });
+
+        // Close on escape key
+        $(document).on('keyup', function(e) {
+            if (e.key === "Escape" && $('.custom-mobile-nav').hasClass('active')) {
+                closeMobileNav();
+            }
+        });
+
+        // Close on nav link click
+        $('.custom-mobile-nav .nav-link').on('click', function() {
+            closeMobileNav();
+        });
+
+        function closeMobileNav() {
+            $('.custom-mobile-nav').removeClass('active');
+            $('.mobile-nav-overlay').removeClass('active');
+            $('.slicknav_btn').removeClass('act');
+            $('body').removeClass('menu-open');
+        }
+
+        // Prevent body scroll when menu is open
+        $('body').on('menu-open', function() {
+            $('body').css('overflow', 'hidden');
+        });
+
+        $('body').on('menu-close', function() {
+            $('body').css('overflow', 'auto');
+        });
+
+        // User Dropdown Toggle
+        $('#welcome-message').on('click', function(e) {
+            e.preventDefault();
+            e.stopPropagation();
+            
+            const dropdown = $('.user-dropdown-menu');
+            const toggle = $(this);
+            
+            if (dropdown.hasClass('show')) {
+                dropdown.removeClass('show');
+                toggle.removeClass('active');
+            } else {
+                dropdown.addClass('show');
+                toggle.addClass('active');
+            }
+        });
+
+        // Close dropdown when clicking outside
+        $(document).on('click', function(e) {
+            if (!$(e.target).closest('.user-dropdown').length) {
+                $('.user-dropdown-menu').removeClass('show');
+                $('#welcome-message').removeClass('active');
+            }
+        });
+
+        // Prevent dropdown from closing when clicking inside
+        $('.user-dropdown-menu').on('click', function(e) {
+            e.stopPropagation();
+        });
+    });
+
+    // Logout function
+    function logout() {
+        if (confirm('Are you sure you want to logout?')) {
+            // Create a form and submit it
+            const form = document.createElement('form');
+            form.method = 'POST';
+            form.action = '{{ route('logout') }}';
+            
+            // Add CSRF token
+            const csrfToken = document.createElement('input');
+            csrfToken.type = 'hidden';
+            csrfToken.name = '_token';
+            csrfToken.value = '{{ csrf_token() }}';
+            form.appendChild(csrfToken);
+            
+            document.body.appendChild(form);
+            form.submit();
+        }
+    }
+</script>

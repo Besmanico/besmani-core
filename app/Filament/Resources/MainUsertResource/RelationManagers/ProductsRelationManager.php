@@ -9,10 +9,18 @@ use Filament\Tables;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
-
+use Illuminate\Database\Eloquent\Model;
 class ProductsRelationManager extends RelationManager
 {
     protected static string $relationship = 'products';
+    protected static ?string $title = 'Products';
+    
+    public static function getTitle(Model $ownerRecord, string $pageClass): string
+    {
+        $count = $ownerRecord->products()->count();
+        return "Products ({$count})";
+    }
+
 
     public function form(Form $form): Form
     {
