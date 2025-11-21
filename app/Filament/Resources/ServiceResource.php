@@ -71,40 +71,40 @@ class ServiceResource extends Resource
                                 ])
                                 ->columns(2),
                         ]),
-                    Wizard\Step::make('Package Items')
-                        ->icon('heroicon-o-list-bullet')
-                        ->schema([
-                            Section::make('Package Items')
-                                ->description('Add order items that will be available for this service')
-                              
-                                ->schema([
-                                    Repeater::make('packageItems')
-                                        ->relationship('packageItems')
-                                        ->label('Package Items')
-                                        ->grid([
-                                            'sm' => 1,
-                                            'md' => 3,
-                                        ])
-                                        ->schema([
-                                            Select::make('order_item_id')
-                                                ->label('Select Order Item')
-                                                ->options(OrderItem::all()->pluck('name', 'id'))
-                                                ->searchable()
-                                                ->required(),
-                                        ])
-                                        ->addActionLabel('Add package item')
-                                        ->columnSpanFull(),
-                                ]),
-                        ]),
+                    // Wizard\Step::make('Package Items')
+                    //     ->icon('heroicon-o-list-bullet')
+                    //     ->schema([
+                    //         Section::make('Package Items')
+                    //             ->description('Add order items that will be available for this service')
+
+                    //             ->schema([
+                    //                 Repeater::make('packageItems')
+                    //                     ->relationship('packageItems')
+                    //                     ->label('Package Items')
+                    //                     ->grid([
+                    //                         'sm' => 1,
+                    //                         'md' => 3,
+                    //                     ])
+                    //                     ->schema([
+                    //                         Select::make('order_item_id')
+                    //                             ->label('Select Order Item')
+                    //                             ->options(OrderItem::all()->pluck('name', 'id'))
+                    //                             ->searchable()
+                    //                             ->required(),
+                    //                     ])
+                    //                     ->addActionLabel('Add package item')
+                    //                     ->columnSpanFull(),
+                    //             ]),
+                    //     ]),
                     Wizard\Step::make('Package Services')
                         ->icon('heroicon-o-squares-2x2')
                         ->schema([
                             Section::make('Package Services')
                                 ->description('Configure service packages with pricing and included items')
                                 ->schema([
-                                        
+
                                     Repeater::make('packageServices')
-                                    
+
                                         ->relationship('packageServices')
                                         ->label('Package Services')
                                         ->grid([
@@ -112,77 +112,65 @@ class ServiceResource extends Resource
                                             'md' => 3,
                                         ])
                                         ->schema([
-                                            
+
                                             TextInput::make('title')
                                                 ->label('Title')
                                                 ->required()
                                                 ->maxLength(255),
+
                                             TextInput::make('price')
                                                 ->label('Price')
                                                 ->numeric()
                                                 ->prefix('$'),
+                                            TextInput::make('delivery')
+                                                ->label('Delivery')
+                                                
+                                                ->maxLength(255),
+                                                Textarea::make('description')
+                                                ->label('Description')
+                                                 
+                                                ->columnSpanFull(), 
+
+
                                             Repeater::make('packageServiceItems')
-                                            
+
                                                 ->relationship('packageServiceItems')
                                                 ->extraAttributes([
                                                     'style' => 'border: 2px solid green; border-radius: 8px; padding: 1.5rem;'
                                                 ])
                                                 ->label('Package Items')
-                                                
+
                                                 ->schema([
-                                                    Select::make('name')
+                                                    Select::make('orderitem_id')
                                                         ->label('Select Package Item')
                                                         ->options(function ($livewire) {
-                                                            $serviceId = $livewire->record->id ?? null;
-                                                            if (!$serviceId) {
-                                                                return [];
-                                                            }
-                                                            // order_item_id send with orderItem id send
-                                                            $packageItems = PackageItem::with('orderItem')->where('service_id', $serviceId)->get();
-                                                            return $packageItems->mapWithKeys(function ($item) {
-                                                                $orderItemName = $item->orderItem ? $item->orderItem->name : 'N/A';
-                                                                return [$item->id => $orderItemName . ' - ' . ($item->name ?? '')];
-                                                            })->toArray();
+                                                            return OrderItem::pluck('name', 'id');
                                                         })
                                                         ->searchable()
-                                                        // ->dehydrated(false)
                                                         ->live()
                                                         ->afterStateUpdated(function ($state, $set, $get) {
-                                                            if ($state) {
-                                                                $packageItem = PackageItem::with('orderItem')->find($state);
-                                                                if ($packageItem && $packageItem->orderItem) {
-                                                                    $quantity = $get('quantity') ?? 1;
-                                                                    $name = $packageItem->orderItem->name . ($quantity > 1 ? ' (Qty: ' . $quantity . ')' : '');
-                                                                    $oii = $packageItem->orderItem->id;
-                                                                    $set('name', $name);
-                                                                    $set('orderitem_id', $oii);  
-
-                                                                }
-
-                                                               
-
-                                                            }
+                                                            $orderItem = OrderItem::find($state);
+                                                            $set('name', $orderItem->name);
                                                         }),
-                                                        Hidden::make('name')
-                                                        ,
-                                                        TextInput::make('orderitem_id')
-                                                        ,
+                                                    // Hidden::make('name')
+                                                    // ,
+                                                    Hidden::make('name'),
                                                     TextInput::make('quantity')
                                                         ->label('Quantity')
                                                         ->numeric()
                                                         ->default(1)
-                                                     
-                                                        ->live()
-                                                        ->afterStateUpdated(function ($state, $set, $get) {
-                                                            $packageItemId = $get('package_item_select');
-                                                            if ($packageItemId && $state) {
-                                                                $packageItem = PackageItem::with('orderItem')->find($packageItemId);
-                                                                if ($packageItem && $packageItem->orderItem) {
-                                                                    $name = $packageItem->orderItem->name . ($state > 1 ? ' (Qty: ' . $state . ')' : '');
-                                                                    $set('name', $name);
-                                                                }
-                                                            }
-                                                        }),
+
+                                                        ->live(),
+                                                    // ->afterStateUpdated(function ($state, $set, $get) {
+                                                    //     $packageItemId = $get('package_item_select');
+                                                    //     if ($packageItemId && $state) {
+                                                    //         $packageItem = PackageItem::with('orderItem')->find($packageItemId);
+                                                    //         if ($packageItem && $packageItem->orderItem) {
+                                                    //             $name = $packageItem->orderItem->name . ($state > 1 ? ' (Qty: ' . $state . ')' : '');
+                                                    //             $set('name', $name);
+                                                    //         }
+                                                    //     }
+                                                    // }),
                                                     // TextInput::make('name')
                                                     //     ->label('Name')
                                                     //     ->required()
@@ -191,9 +179,9 @@ class ServiceResource extends Resource
                                                 ])
                                                 ->addActionLabel('Add Package Item')
                                                 ->defaultItems(0)
-                                                 ->collapsible()
+                                                ->collapsible()
                                                 // ->collapsed()
-                                                
+
                                                 // ->itemLabel(fn(array $state): ?string => $state['name'] ?? 'New Package Item')
                                                 ->columnSpanFull(),
                                         ])
@@ -202,8 +190,8 @@ class ServiceResource extends Resource
                                 ]),
                         ]),
                 ])
-                ->skippable()
-                ->columnSpanFull(),
+                    ->skippable()
+                    ->columnSpanFull(),
             ]);
     }
 

@@ -9,6 +9,7 @@ use App\Models\OrderItem;
 use Filament\Tables\Table;
 use Filament\Resources\Resource;
 use Illuminate\Support\Facades\Auth;
+use Filament\Forms\Components\Select;
 use Filament\Forms\Components\Section;
 use Illuminate\Database\Eloquent\Builder;
 use App\Filament\Resources\OrderItemResource\Pages;
@@ -36,7 +37,7 @@ class OrderItemResource extends Resource
                 //     ->maxLength(255),
                 Section::make('info')
                     ->schema([
-                     
+
                         Forms\Components\TextInput::make('name')
                             ->required()
                             ->maxLength(255),
@@ -45,21 +46,30 @@ class OrderItemResource extends Resource
                             ->numeric()
                             ->prefix('$'),
                         Forms\Components\TextInput::make('tax')
-
                             ->numeric(),
-                            Forms\Components\FileUpload::make('image')
-                            ->image()->directory('order-items')->optimize('webp')->helperText('100*100'),
+                        Select::make('discount_type')
+                            ->label('Discount Type')
+                            ->options([
+                                '%' => '%',
+                                '$' => '$',
+                            ])
+                            ->default('$'),
+
+
+                        Forms\Components\TextInput::make('discount'),
+                        // Forms\Components\FileUpload::make('image')
+                        // ->image()->directory('order-items')->optimize('webp')->helperText('100*100'),
                     ])->collapsed(false)->columns(2),
             ]);
     }
- 
+
     public static function table(Table $table): Table
     {
         return $table
             ->columns([
                 Tables\Columns\TextColumn::make('code')
                     ->searchable(),
-                Tables\Columns\ImageColumn::make('image'),
+                // Tables\Columns\ImageColumn::make('image'),
                 Tables\Columns\TextColumn::make('name')
                     ->searchable(),
                 Tables\Columns\TextColumn::make('price')
@@ -67,6 +77,13 @@ class OrderItemResource extends Resource
                     ->sortable(),
                 Tables\Columns\TextColumn::make('tax')
                     ->numeric()
+                    ->sortable(),
+                Tables\Columns\TextColumn::make('discount_type')
+                    ->label('Discount Type')
+
+                    ->sortable(),
+                Tables\Columns\TextColumn::make('discount')
+
                     ->sortable(),
                 Tables\Columns\TextColumn::make('created_at')
                     ->dateTime()

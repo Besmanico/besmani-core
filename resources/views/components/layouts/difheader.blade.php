@@ -58,6 +58,8 @@
 <body>
     @php
         $mainUser = Auth::guard('mainUsers')->user();
+        $CartCount = CartCount();
+
     @endphp
 
     <header id="masthead" class="site-header site-header-white">
@@ -76,7 +78,7 @@
                     <ul class="nav navbar-nav navbar-right desktop-nav">
 
                         <li class=""><a href="{{ config('app.url') }}services">SERVICES</a></li>
-                        <li class=""><a href="{{ config('app.url') }}orders">ORDERS</a></li>
+                        {{-- <li class=""><a href="{{ config('app.url') }}orders">ORDERS</a></li> --}}
                         <li class=""><a href="{{ config('app.url') }}design-style">DESIGN STYLE</a></li>
                         <li class=""><a href="{{ config('app.url') }}portfolios">PORTFOLIOS</a></li>
                         <li class=""><a href="{{ config('app.url') }}careers">CAREERS</a></li>
@@ -111,7 +113,7 @@
                                             <span>Settings</span>
                                         </a>
                                         <div class="dropdown-divider"></div>
-                                        <a href="#" class="dropdown-item logout-item" onclick="logout()">
+                                        <a class="dropdown-item logout-item" onclick="logout()">
                                             <i class="fa fa-sign-out"></i>
                                             <span>Logout</span>
                                         </a>
@@ -123,6 +125,14 @@
                         @endif
                         {{-- <li class=""><a href="{{ config('app.url') }}login" class="btn-login">   Login </a></li> --}}
 
+                        <li class="basket-item">
+                            <a href="{{ config('app.url') }}cart" class="basket-link">
+                                <i class="fa fa-shopping-cart"></i>
+                                
+                                    <span class="basket-badge">{{ CartCount() }}</span>
+                               
+                            </a>
+                        </li>
                     </ul>
 
                 </div>
@@ -293,9 +303,9 @@
         <div class="nav-item">
             <a href="{{ config('app.url') }}services" class="nav-link">SERVICES</a>
         </div>
-        <div class="nav-item">
+        {{-- <div class="nav-item">
             <a href="{{ config('app.url') }}orders" class="nav-link">ORDERS</a>
-        </div>
+        </div> --}}
         <div class="nav-item">
             <a href="{{ config('app.url') }}design-style" class="nav-link">DESIGN STYLE</a>
         </div>
@@ -311,9 +321,47 @@
         <div class="nav-item">
             <a href="{{ config('app.url') }}contactus" class="nav-link">CONTACT US</a>
         </div>
+        @if ($mainUser)
+        <div class="mobile-user-panel">
+            <div class="mobile-user-header">
+                <div class="avatar">
+                    <i class="fa fa-user-circle"></i>
+                </div>
+                <div class="details">
+                    <span class="name">{{ $mainUser->fl_name }} {{ $mainUser->last_name }}</span>
+                    <span class="email">{{ $mainUser->email }}</span>
+                </div>
+            </div>
+            <div class="mobile-user-links">
+                <a href="{{ config('app.url') }}panel" class="mobile-link">
+                    <i class="fa fa-user"></i>
+                    <span>Profile</span>
+                </a>
+                <a href="#" class="mobile-link">
+                    <i class="fa fa-cog"></i>
+                    <span>Settings</span>
+                </a>
+                <a href="#" class="mobile-link logout" onclick="logout()">
+                    <i class="fa fa-sign-out"></i>
+                    <span>Logout</span>
+                </a>
+            </div>
+        </div>
+    @else
         <div class="nav-item">
             <a onclick="openLoginModal()" class="nav-link">SIGN IN</a>
         </div>
+        @endif
+
+        <div class="nav-item">
+            <a href="{{ config('app.url') }}cart" class="basket-link">
+                <i class="fa fa-shopping-cart"></i>
+                
+                    <span class="basket-badge">{{ CartCount() }}</span>
+               
+            </a>
+        </div>
+
     </div>
 
     <script>
@@ -560,7 +608,7 @@
                 if (response.success) {
                     // Beautiful Sonner-like toast notification
                     toastSuccess('Welcome to BESMANI!', 'Your account has been created successfully.',
-                    3000);
+                        3000);
 
                     setTimeout(function() {
                         window.location.href = '/';
@@ -753,12 +801,12 @@
             .done(function(response) {
                 if (response.success) {
                     // Beautiful Sonner-like toast notification
-                    toastSuccess('Welcome to BESMANI!', 'You have successfully signed in.', 3000);
+                    toastSuccess('Welcome to BESMANI!', 'You have successfully signed in.', 2000);
                     // get url address
                     var url = window.location.href;
                     setTimeout(function() {
                         window.location.href = url;
-                    }, 4000);
+                    }, 2000);
 
                     $('.WuserName').text(response.userName);
                     $('.welcome-user').show();

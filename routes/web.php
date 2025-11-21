@@ -1,17 +1,19 @@
 <?php
 
 use App\Livewire\Home;
+use App\Livewire\Cart\CartPage;
 use App\Livewire\About\AboutPage;
 use App\Livewire\Besmo\BesmoPage;
 use App\Livewire\Careers\Careers;
+use App\Livewire\Order\OrderPage;
 use App\Livewire\Panel\Dashboard;
 use App\Livewire\Services\Services;
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Auth;
 use App\Livewire\Contact\ContactPage;
-use App\Livewire\Order\OrderPage;
 use App\Livewire\Service\ServicePage;
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\CartController;
 
 /*
 |--------------------------------------------------------------------------
@@ -44,3 +46,6 @@ Route::post('/logout', [Controller::class, 'logout'])->name('logout');
 Route::get('/order/{slug}/{service_id}', OrderPage::class)->name('order');
 // check guard is user
 Route::get('/panel', Dashboard::class);
+// cart
+Route::get('/cart', CartPage::class)->name('cart');
+Route::post('/addToCart', [CartController::class, 'addToCart'])->name('addToCart');

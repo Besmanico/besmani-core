@@ -15,8 +15,9 @@ class ServicePage extends Component
     public function render()
     {
         $service = Service::where('slug', $this->slug)
-             ->with(['packageItems', 'packageServices.packageServiceItems'])
+            ->with(['packageServices.packageServiceItems'])
             ->firstOrFail();
+
 
         $metaTitle = $service->title ?? $service->name ?? $service->slug ?? $this->slug;
         $metaData = ['title' => $metaTitle];

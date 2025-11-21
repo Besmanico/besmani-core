@@ -1,7 +1,10 @@
 <?php
 
+use App\Models\Cart;
 use App\Models\MainUser;
+use App\Models\OrderItem;
 use App\Models\PhoneCountry;
+use App\Models\PackageServiceItem;
 use Illuminate\Support\Facades\Auth;
 
 
@@ -43,4 +46,28 @@ function UserInfoPublic()
 {
     $userInfo = MainUser::where('id', Auth::guard('mainUsers')->user()->id)->with('InfoActivity')->first();
     return $userInfo;
+}
+
+function CartInfo()
+{
+    $cartInfo = Cart::where('user_id', Auth::guard('mainUsers')->user()->id)->where('status', 0)->first();
+
+    if ($cartInfo) {
+        $packageServiceItems = PackageServiceItem::where('package_service_id', $cartInfo->package_service_id)->get();
+
+        foreach ($packageServiceItems as $packageServiceItem) {
+
+            $packageServiceItem->orderItem = OrderItem::where('id', $packageServiceItem->orderitem_id)->first();
+        }
+    }else{
+        $packageServiceItems = [];
+        $cartInfo = null;
+    }
+
+    return ['cartInfo' => $cartInfo, 'packageServiceItems' => $packageServiceItems ?? []];
+}
+function CartCount()
+{
+    $cartCount = Cart::where('user_id', Auth::guard('mainUsers')->user()->id)->where('status', 0)->count();
+    return $cartCount;
 }

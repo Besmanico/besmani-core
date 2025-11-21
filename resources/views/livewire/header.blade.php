@@ -1,33 +1,36 @@
 <div>
-<header id="masthead" class="site-header">
+    <header id="masthead" class="site-header">
         <nav id="primary-navigation" class="site-navigation">
             <div class="container">
 
-                <div class="navbar-header" >
-                   
-                    <a href="{{ config('app.url') }}" class="site-title logo-header"><img src="{{ config('app.url') }}assets-file/img/logo.png" alt="logo"></a>
+                <div class="navbar-header">
+
+                    <a href="{{ config('app.url') }}" class="site-title logo-header"><img
+                            src="{{ config('app.url') }}assets-file/img/logo.png" alt="logo"></a>
 
                 </div><!-- /.navbar-header -->
 
                 <div class="collapse navbar-collapse" id="agency-navbar-collapse">
- 
+
                     <ul class="nav navbar-nav navbar-right desktop-nav">
-                         <li><a href="{{ config('app.url') }}services">SERVICES</a></li>
-                        <li><a href="{{ config('app.url') }}orders">ORDERS</a></li>
+                        <li><a href="{{ config('app.url') }}services">SERVICES</a></li>
+                        {{-- <li><a href="{{ config('app.url') }}orders">ORDERS</a></li> --}}
                         <li><a href="{{ config('app.url') }}design-style">DESIGN STYLE</a></li>
                         <li><a href="{{ config('app.url') }}portfolios">PORTFOLIOS</a></li>
                         <li><a href="{{ config('app.url') }}careers">CAREERS</a></li>
                         <li><a href="{{ config('app.url') }}aboutus">ABOUT US</a></li>
                         <li><a href="{{ config('app.url') }}contactus">CONTACT US</a></li>
-                        
+
+
                         @php
                             $mainUser = Auth::guard('mainUsers')->user();
+                            $CartCount = CartCount();
                         @endphp
 
                         @if ($mainUser)
                             <li class="welcome-user user-dropdown">
                                 <a href="#" id="welcome-message" class="dropdown-toggle">
-                                      <b class="WuserName">{{ $mainUser->fl_name }}</b>
+                                    <b class="WuserName">{{ $mainUser->fl_name }}</b>
                                     <i class="fa fa-chevron-down dropdown-arrow"></i>
                                 </a>
                                 <div class="user-dropdown-menu">
@@ -36,7 +39,8 @@
                                             <i class="fa fa-user-circle"></i>
                                         </div>
                                         <div class="user-info">
-                                            <span class="user-name">{{ $mainUser->fl_name }} {{ $mainUser->last_name }}</span>
+                                            <span class="user-name">{{ $mainUser->fl_name }}
+                                                {{ $mainUser->last_name }}</span>
                                             <span class="user-email">{{ $mainUser->email }}</span>
                                         </div>
                                     </div>
@@ -61,11 +65,20 @@
                         @else
                             {{-- <li class="login-item">
                                 <a href="{{ route('login') }}" class="btn-login">Login</a>
-                            </li> --}}  
+                            </li> --}}
                             <li onclick="openLoginModal()"><a>SIGN IN</a></li>
+                        @endif
+                        <li class="basket-item">
+                            <a href="{{ config('app.url') }}cart" class="basket-link">
+                                <i class="fa fa-shopping-cart"></i>
 
-                        @endif 
-                            {{-- <li class="">
+                                <span class="basket-badge">
+                                    {{ CartCount() }}
+                                </span>
+
+                            </a>
+                        </li>
+                        {{-- <li class="">
                             <a href="https://beauty.besmani.com/" target="_blank"  class="btn-login">   
                                 <img src="{{ config('app.url') }}assets-file/img/beauty-logo.png" alt="Logo" style="width: 70px;">
 
@@ -77,21 +90,21 @@
 
                 </div>
 
-            </div>   
+            </div>
         </nav><!-- /.site-navigation -->
     </header><!-- /#mastheaed -->
- 
+
     <!-- Custom Mobile Navigation HTML -->
     <div class="mobile-nav-overlay"></div>
     <div class="custom-mobile-nav">
         <div class="mobile-nav-close">&times;</div>
-        
+
         <div class="nav-item">
             <a href="{{ config('app.url') }}services" class="nav-link">SERVICES</a>
         </div>
-        <div class="nav-item">
+        {{-- <div class="nav-item">
             <a href="{{ config('app.url') }}orders" class="nav-link">ORDERS</a>
-        </div>
+        </div> --}}
         <div class="nav-item">
             <a href="{{ config('app.url') }}design-style" class="nav-link">DESIGN STYLE</a>
         </div>
@@ -108,7 +121,15 @@
             <a href="{{ config('app.url') }}contactus" class="nav-link">CONTACT US</a>
         </div>
         <div class="nav-item">
-            <a  onclick="openLoginModal()" class="nav-link">SIGN IN</a>
+            <a href="{{ config('app.url') }}cart" class="nav-link basket-link">
+                <i class="fa fa-shopping-cart"></i>
+
+                <span class="basket-badge">{{ CartCount() }}</span>
+
+            </a>
+        </div>
+        <div class="nav-item">
+            <a onclick="openLoginModal()" class="nav-link">SIGN IN</a>
         </div>
 
         @if ($mainUser)
@@ -123,7 +144,7 @@
                     </div>
                 </div>
                 <div class="mobile-user-links">
-                    <a href="#" class="mobile-link">
+                    <a href="{{ config('app.url') }}panel" class="mobile-link">
                         <i class="fa fa-user"></i>
                         <span>Profile</span>
                     </a>
@@ -144,5 +165,5 @@
         @endif
     </div>
 
-    
-    </div> 
+
+</div>
