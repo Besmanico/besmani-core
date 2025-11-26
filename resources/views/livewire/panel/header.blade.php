@@ -1,8 +1,9 @@
 <div>
     <header class="panel-header">
         <div>
-            <h1>Personal Panel</h1>
-            <p class="subtitle">Track your activity, manage projects, and stay on top of the latest updates.</p>
+            {{-- show title based on current page --}}
+            <h1>{{ $this->title }}</h1>
+            
         </div>
         <div class="user-summary">
             <div class="avatar">

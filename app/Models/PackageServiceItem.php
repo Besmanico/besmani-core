@@ -14,11 +14,15 @@ class PackageServiceItem extends Model
         return $this->belongsTo(PackageService::class, 'package_service_id');
     }
 
-    public function OrderItem()
+    public function orderItem()
     {
-        return $this->belongsTo(OrderItem::class, 'order_item_id');
+        return $this->belongsTo(OrderItem::class, 'orderitem_id');
     }
 
+    public function customeDeleteItem()
+    {
+        return $this->hasOne(CustomeDeleteItem::class, 'package_service_item_id');
+    }
     
 
 

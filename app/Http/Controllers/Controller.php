@@ -237,4 +237,73 @@ class Controller extends BaseController
         Auth::guard('mainUsers')->logout();
         return redirect('/');
     }
+
+    // other site login or signup
+    public function otherSiteLogin(Request $request)
+    {
+        
+    }
+    public function otherSiteSignup(Request $request)
+    {
+
+        $cleanPhone = preg_replace('/[^0-9]/', '', $request->phone_number);
+        return $cleanPhone;
+        
+
+        // check email and phone is unique has already exist
+        $user = MainUser::where('email', $request->signup_email)->orWhere('mobile', $cleanPhone)->first();
+
+      
+        if (!$user) {
+            // try {
+            $code_confirm = '6630';
+            $code = rand_Code(5);
+            $str_code = rand_string(6);
+            $child = $request->refrence;
+
+            $user = new MainUser();
+            $user->fl_name = $request->first_name;
+            $user->last_name = $request->last_name;
+            $user->pc_id = $request->country_code;
+            $user->mobile = $cleanPhone;
+            $user->email = $request->signup_email;
+            $user->confirm_code = $code_confirm;
+            $user->code = $code;
+            $user->password = Hash::make($request->signup_password);
+            $user->str_code = $str_code;
+            $user->child = $child;
+            $user->save();
+
+              // Access-Control-Allow-Headers: Content-Type, Authorization
+       
+            return response()->json([
+                'success' => true,
+                'message' => 'Account created successfully! Welcome to BESMANI!',
+                'user' => $user,
+            ]);
+            
+        } else {
+
+
+
+            // again check confirm code for user
+            // if ($user->confirm == 0) {
+            //     return 0;
+            // } else {
+            //     // User is already confirmed, log them in
+            //     Auth::guard('mainUsers')->login($user);
+            //     return response()->json([
+            //         'success' => true,
+            //         'message' => 1,
+            //         'userName' => $user->fl_name,
+            //     ]);
+            // }
+            return response()->json([
+                'error' => false,
+                'message' => 'Email or phone already exists!'
+            ]);
+        }
+    }
+
+
 }

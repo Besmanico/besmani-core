@@ -44,30 +44,57 @@ function rand_string($length)
 
 function UserInfoPublic()
 {
-    $userInfo = MainUser::where('id', Auth::guard('mainUsers')->user()->id)->with('InfoActivity')->first();
-    return $userInfo;
+    if (Auth::guard('mainUsers')->user()) {
+        $userInfo = MainUser::where('id', Auth::guard('mainUsers')->user()->id)->with('InfoActivity')->first();
+        return $userInfo;
+    } else {
+        return null;
+    }
 }
 
 function CartInfo()
 {
-    $cartInfo = Cart::where('user_id', Auth::guard('mainUsers')->user()->id)->where('status', 0)->first();
+    if (Auth::guard('mainUsers')->user()) {
 
-    if ($cartInfo) {
-        $packageServiceItems = PackageServiceItem::where('package_service_id', $cartInfo->package_service_id)->get();
+        $cartInfo = Cart::where('user_id', Auth::guard('mainUsers')->user()->id)
+            ->where('status', 0)
+            ->with(['cartServices.serviceInfo', 'cartServices.packageServiceItems.customeDeleteItem', 
+            'cartServices.packageServiceItems.orderItem', 'cartServices.customePackageItems.orderItem'])
+            ->first();
 
-        foreach ($packageServiceItems as $packageServiceItem) {
-
-            $packageServiceItem->orderItem = OrderItem::where('id', $packageServiceItem->orderitem_id)->first();
+        if ($cartInfo && $cartInfo->cartServices) {
+            foreach ($cartInfo->cartServices as $cartService) {
+                if ($cartService->packageServiceItems) {
+                    foreach ($cartService->packageServiceItems as $packageServiceItem) {
+                        if (!$packageServiceItem->orderItem) {
+                            $packageServiceItem->orderItem = OrderItem::where('id', $packageServiceItem->orderitem_id)->first();
+                        }
+                    }
+                }
+            }
+        } else {
+            $cartInfo = null;
         }
-    }else{
-        $packageServiceItems = [];
-        $cartInfo = null;
+    } else {
+        return $cartInfo = [];
     }
-
-    return ['cartInfo' => $cartInfo, 'packageServiceItems' => $packageServiceItems ?? []];
+    return $cartInfo;
 }
 function CartCount()
 {
-    $cartCount = Cart::where('user_id', Auth::guard('mainUsers')->user()->id)->where('status', 0)->count();
-    return $cartCount;
+    if (Auth::guard('mainUsers')->user()) {
+
+        
+        $cartCount = Cart::where('user_id', Auth::guard('mainUsers')->user()->id)
+            ->where('status', 0)
+            ->with('cartServices')->first();
+            if($cartCount){
+                return count($cartCount->cartServices);
+            }else{
+                return 0;
+            }
+
+    } else {
+        return 0;
+    }
 }

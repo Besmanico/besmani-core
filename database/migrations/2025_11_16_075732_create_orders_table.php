@@ -14,10 +14,11 @@ return new class extends Migration
         Schema::create('orders', function (Blueprint $table) {
             $table->id();
             $table->integer('user_id');
-            $table->integer('service_id');
-            $table->integer('package_service_id');
+            $table->integer('cart_id');
             $table->string('tracking_code');
             $table->decimal('total_payment', 10, 2)->default(0);
+            $table->decimal('tax_fee', 10, 2)->default(0);
+            $table->decimal('discount', 10, 2)->default(0);
             $table->integer('cuote')->default(0);
             $table->integer('invoice')->default(0);
             $table->boolean('is_admin')->default(0);

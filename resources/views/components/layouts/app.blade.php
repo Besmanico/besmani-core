@@ -49,13 +49,15 @@
     <link rel="stylesheet" href="{{ config('app.url') }}assets-file/css/owl.carousel.min.css">
     <link rel="stylesheet" href="{{ config('app.url') }}assets-file/css/owl.theme.default.min.css">
 
+    <link rel="stylesheet"
+        href="{{ config('app.url') }}assets-file/css/sonnet-toast.css?v=<?= filemtime('assets-file/css/sonnet-toast.css') ?>">
 
     <script src="{{ config('app.url') }}assets-file/js/jquery.min.js"></script>
 
 
     @livewireStyles
 
-    
+
 
 </head>
 
@@ -126,7 +128,7 @@
                     <img src="{{ config('app.url') }}assets-file/img/logo-footer.png" alt="logo"
                         style="width: 150px;">
                 </div>
-                <div class="modal-title" >Sign Up</div>
+                <div class="modal-title">Sign Up</div>
             </div>
 
             <!-- Form Container -->
@@ -228,11 +230,13 @@
 
 
                 <div class="text-left" style="margin-top: 25px;">
-                     <a href="#" style="color: #fff; text-decoration: none;">Forgot your password ? <b style="color:#ed2226">Click
-                        Here</b></a>
-                        <br>
-                        <br>
-                     <a onclick="openSignupModal()" style="color: #fff; text-decoration: none;">Have not registered yet ? <b style="color:#fe0002">Sign Up</b></a>
+                    <a href="#" style="color: #fff; text-decoration: none;">Forgot your password ? <b
+                            style="color:#ed2226">Click
+                            Here</b></a>
+                    <br>
+                    <br>
+                    <a onclick="openSignupModal()" style="color: #fff; text-decoration: none;">Have not registered yet
+                        ? <b style="color:#fe0002">Sign Up</b></a>
                 </div>
 
 
@@ -242,6 +246,11 @@
     </div>
 
     @livewireScripts
+    <script src="{{ config('app.url') }}assets-file/js/sonnet-toast.js"></script>
+
+    <!-- Toast Container -->
+    <div class="sonner-toast-container" id="sonner-container"></div>
+
 </body>
 
 
@@ -346,7 +355,7 @@
 
         // Basic validation
         if (!fname || !lname || !email || !password || !countryCode || !phone) {
-            alert('Please fill in all required fields.');
+            toastWarning('Please fill in all required fields.', 4000);
             return;
         }
 
@@ -354,12 +363,12 @@
         // Email validation
         var emailRegex = /^\S+@\S+\.\S+$/;
         if (!emailRegex.test(email)) {
-            alert('Please enter a valid email address.');
+            toastWarning('Please enter a valid email address.', 4000);
             return;
         }
 
         if (!countryCode || !phone) {
-            alert('Please enter a valid country code and phone number.');
+            toastWarning('Please enter a valid country code and phone number.', 4000);
             return;
         }
 
@@ -395,14 +404,19 @@
                 }
 
                 if (response.success) {
-                    alert('Welcome to BESMANI!');
-                    window.location.href = '/';
+                    // alert('Welcome to BESMANI!');
+                    toastSuccess('Welcome to BESMANI!', 'Your account has been created successfully.',
+                        3000);
+
+                    setTimeout(function() {
+                        closeSignupModal(); 
+                        window.location.href = '/';
+                    }, 3000);
 
                     $('.WuserName').text(response.userName);
                     $('.welcome-user').show();
 
-                    closeSignupModal();
-                }
+                 }
             })
             .fail(function(xhr) {
                 $('.fa-spinner').hide();
@@ -419,12 +433,16 @@
                         for (var field in errors) {
                             errorMessages.push(errors[field][0]);
                         }
-                        alert(errorMessages.join('\n'));
+                        // alert(errorMessages.join('\n'));
+                        toastError('Validation Error', errorMessages.join(', '), 5000);
                     } else {
-                        alert(message);
+                        // alert(message);
+                        toastError('Error', message, 4000);
                     }
                 } else {
-                    alert(xhr.responseJSON?.message || 'An error occurred. Please try again.');
+                    // alert(xhr.responseJSON?.message || 'An error occurred. Please try again.');
+                    toastError('Error', xhr.responseJSON?.message || 'An error occurred. Please try again.',
+                        4000);
                 }
             });
 
@@ -434,7 +452,7 @@
 
         // Basic validation
         if (!confirmCode) {
-            alert('Please enter the confirmation code.');
+            toastWarning('Please enter the confirmation code.', 4000);
             return;
         }
 
@@ -455,18 +473,26 @@
                 $('#confirm-btn').prop('disabled', false);
 
                 if (response.success) {
-                    alert(response.message || 'Code confirmed! Welcome to BESMANI!');
+                    // alert(response.message || 'Code confirmed! Welcome to BESMANI!');
+                    toastSuccess('Code Confirmed!', 'Welcome to BESMANI!', 3000);
+                    setTimeout(function() {
+                        closeSignupModal(); 
+                        window.location.href = '/';
+                    }, 3000);
                     $('.WuserName').text(response.userName);
                     $('.welcome-user').show();
-                    closeSignupModal();
+                   
                 } else {
-                    alert(response.message || 'Invalid confirmation code.');
+                    // alert(response.message || 'Invalid confirmation code.');
+                    toastError('Invalid Code', response.message || 'Invalid confirmation code.', 4000);
                 }
             })
             .fail(function(xhr) {
                 $('#confirm-btn .fa-spinner').hide();
                 $('#confirm-btn').prop('disabled', false);
-                alert(xhr.responseJSON?.message || 'An error occurred. Please try again.');
+                // alert(xhr.responseJSON?.message || 'An error occurred. Please try again.');
+                toastError('Error', xhr.responseJSON?.message || 'An error occurred. Please try again.',
+                    4000);
             });
     });
 
@@ -580,13 +606,19 @@
             })
             .done(function(response) {
                 if (response.success) {
-                    alert('Welcome to BESMANI!');
-                    window.location.href = '/';
+                    // alert('Welcome to BESMANI!');
+                    toastSuccess('Welcome to BESMANI!', 'You have successfully signed in.', 2000);
+                    setTimeout(function() {
+                        closeLoginModal();
+                        window.location.href = '/';
+                    }, 3000);
                     $('.WuserName').text(response.userName);
                     $('.welcome-user').show();
-                    closeLoginModal();
+                  
                 } else {
-                    alert(response.message || 'Invalid email or phone number or password!');
+                    // alert(response.message || 'Invalid email or phone number or password!');
+                    toastError('Login Failed', response.message ||
+                        'Invalid email or phone number or password!', 4000);
                 }
                 $('.fa-spinner').hide();
                 $('#submit-btn-login').prop('disabled', false);
@@ -595,9 +627,9 @@
             .fail(function(xhr) {
                 $('.fa-spinner').hide();
                 $('#submit-btn-login').prop('disabled', false);
-                alert(xhr.responseJSON?.message || 'An error occurred. Please try again.');
+                // alert(xhr.responseJSON?.message || 'An error occurred. Please try again.');
+                toastError('Error', xhr.responseJSON?.message || 'An error occurred. Please try again.',
+                    4000);
             });
     });
-
-
 </script>

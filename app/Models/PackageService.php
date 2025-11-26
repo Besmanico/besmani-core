@@ -13,5 +13,11 @@ class PackageService extends Model
     {
         return $this->hasMany(PackageServiceItem::class, 'package_service_id');
     }
+
+    public function customePackageItem()
+    {
+        return $this->hasOne(CustomePackageItem::class, 'package_service_id');
+    }
     
+     
 }

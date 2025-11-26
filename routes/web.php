@@ -14,6 +14,7 @@ use App\Livewire\Contact\ContactPage;
 use App\Livewire\Service\ServicePage;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\CartController;
+use App\Livewire\Panel\Invoice\InvoicePage;
 
 /*
 |--------------------------------------------------------------------------
@@ -38,14 +39,33 @@ Route::post('/contactus/AddContact', [Controller::class, 'AddContact']);
 Route::post('/subscribe/AddSubscribe', [Controller::class, 'AddSubscribe']);
 Route::post('/signup', [Controller::class, 'signup'])->name('signup');
 Route::post('/login', [Controller::class, 'login'])->name('login');
+// other site login or signup
+Route::post('/other-site-login', [Controller::class, 'otherSiteLogin'])->name('other-site-login');
+Route::post('/other-signup', [Controller::class, 'otherSiteSignup'])->name('other-site-signup');
 
 Route::post('/confirm-code', [Controller::class, 'confirmCode'])->name('confirm-code');
 Route::post('/logout', [Controller::class, 'logout'])->name('logout');
 
 // order
 Route::get('/order/{slug}/{service_id}', OrderPage::class)->name('order');
-// check guard is user
-Route::get('/panel', Dashboard::class);
+// check guard is user panel check if user is logged in
+Route::middleware(['auth:mainUsers'])->group(function () {
+    
+    Route::get('/panel', Dashboard::class);
+    Route::get('/panel/invoice', InvoicePage::class);
+    Route::get('/panel/invoice/details', [CartController::class, 'getInvoiceDetails'])->name('panel.invoice.details');
+});
+
+// end user panel
+
 // cart
 Route::get('/cart', CartPage::class)->name('cart');
 Route::post('/addToCart', [CartController::class, 'addToCart'])->name('addToCart');
+Route::post('/payCart', [CartController::class, 'payCart'])->name('payCart');
+Route::post('/cart/downloadPdf', [CartController::class, 'downloadPdf'])->name('cart.downloadPdf');
+Route::post('/deleteCartItem', [CartController::class, 'deleteCartItem'])->name('deleteCartItem');
+Route::post('/createCustomDeleteItem', [CartController::class, 'createCustomDeleteItem'])->name('createCustomDeleteItem');
+Route::get('/getOrderItems', [CartController::class, 'getOrderItems'])->name('getOrderItems');
+Route::post('/createCustomPackageItem', [CartController::class, 'createCustomPackageItem'])->name('createCustomPackageItem');
+Route::post('/deleteCustomPackageItem', [CartController::class, 'deleteCustomPackageItem'])->name('deleteCustomPackageItem');
+Route::post('/goPayAll', [CartController::class, 'goPayAll'])->name('goPayAll');

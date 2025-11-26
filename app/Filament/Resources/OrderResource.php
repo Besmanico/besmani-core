@@ -3,10 +3,11 @@
 namespace App\Filament\Resources;
 
 use Filament\Forms;
+use App\Models\Cart;
 use Filament\Tables;
 use App\Models\Order;
-use Filament\Forms\Get;
 use App\Models\Service;
+use Filament\Forms\Get;
 use App\Models\MainUser;
 use Filament\Forms\Form;
 use Filament\Tables\Table;
@@ -98,25 +99,26 @@ class OrderResource extends Resource
     {
         return $table
             ->columns([
-                Tables\Columns\TextColumn::make('user_id')
+                Tables\Columns\TextColumn::make('user.fl_name')
                     ->numeric()
                     ->sortable(),
-                Tables\Columns\TextColumn::make('tracking_code')
+                Tables\Columns\TextColumn::make('tracking_code')->badge()->color('danger')
                     ->searchable(),
                 Tables\Columns\TextColumn::make('total_payment')
-                    ->numeric()
+                    ->money()
                     ->sortable(),
-                Tables\Columns\TextColumn::make('invoice_cuote')
-                    ->numeric()
+                Tables\Columns\TextColumn::make('tax_fee')
+                    ->money()
                     ->sortable(),
-                Tables\Columns\IconColumn::make('is_admin')
-                    ->boolean(),
-                Tables\Columns\IconColumn::make('status')
-                    ->boolean(),
+                Tables\Columns\TextColumn::make('discount')
+                    ->money()
+                    ->sortable(),
+                    Tables\Columns\ToggleColumn::make('status')->label('Start'), 
+
                 Tables\Columns\TextColumn::make('created_at')
                     ->dateTime()
                     ->sortable()
-                    ->toggleable(isToggledHiddenByDefault: true),
+                   ->badge(),
                 Tables\Columns\TextColumn::make('updated_at')
                     ->dateTime()
                     ->sortable()
@@ -126,7 +128,9 @@ class OrderResource extends Resource
                 //
             ])
             ->actions([
+                Tables\Actions\ViewAction::make('Pay Order'),
                 Tables\Actions\EditAction::make(),
+                
             ])
             ->bulkActions([
                 Tables\Actions\BulkActionGroup::make([
@@ -150,6 +154,10 @@ class OrderResource extends Resource
             'edit' => Pages\EditOrder::route('/{record}/edit'),
         ];
     }
+    // public static function getEloquentQuery(): Builder
+    // {
+    //     return parent::getEloquentQuery()->where('status', 1);
+    // }
     public static function getNavigationBadge(): ?string
     {
         return static::getModel()::count();

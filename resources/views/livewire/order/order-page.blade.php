@@ -8,12 +8,11 @@
     @endphp
 
     <section class="site-section subpage-site-section ">
-
+{{-- 
         <div class="container">
             <div class="row">
                 <div class="col-12 col-md-5 mb-3 mb-md-0">
-                    {{-- <img src="{{ config('app.url') }}storage/<?= $service['image'] ?>" alt="<?= $service['title'] ?>"
-                        class="w-100"> --}}
+                   
                     image here....
                 </div>
 
@@ -25,13 +24,14 @@
                         test description.....
                     </p>
 
-                    {{ $service->id }}
+                    {{-- {{ $service->id }} --}}
 
 
-                </div>
+                {{-- </div>
 
             </div>
-        </div>
+        </div> --}}
+        
 
         <div class="container">
             <div class="row">
@@ -180,7 +180,9 @@
                                                 $TypeDiscount = '%';
                                                 $TypeDiscountDollar = '';
                                                 $itemTotalWithDiscount = $itemTotal - ($itemTotal * $packageServiceItem->orderItem->discount) / 100;
-                                            
+                                                if($itemTotalWithDiscount < 0){
+                                                        $itemTotalWithDiscount = 0;
+                                                    }
                                                 $TotalLatsCol = $itemTotalWithDiscount * ($packageServiceItem->orderItem->tax / 100);
                                                 $TotalLatsColumn = ($packageServiceItem->orderItem->tax * $itemTotal) / 100;
                                                 $TotalLastColumnFinal = $TotalLatsColumn + $itemTotalWithDiscount;
@@ -196,6 +198,9 @@
                                                 $taxAmount = $TotalLatsColumn;
                                             } else {
                                                 $itemTotalWithDiscount = $itemTotal - $packageServiceItem->orderItem->discount;
+                                                if($itemTotalWithDiscount < 0){
+                                                        $itemTotalWithDiscount = 0;
+                                                    }
                                                 $TypeDiscount = '';
                                                 $TypeDiscountDollar = '$';
                                                 $TotalLatsCol = $itemTotalWithDiscount * ($packageServiceItem->orderItem->tax / 100);
@@ -225,7 +230,7 @@
                                                 <td>
                                                     <div><strong>{{ $packageServiceItem->orderItem->name }}</strong>
                                                     </div>
-                                                    <div class="muted">-</div>
+                                                    {{-- <div class="muted">-</div> --}}
                                                 </td>
                                                 <td class="number">{{ $packageServiceItem->quantity }}</td>
                                                 <td class="money">{{ $packageServiceItem->orderItem->price }}
@@ -343,7 +348,7 @@
                         </div>
                         {{-- submit button --}}
                         <div class="text-left text-md-left submit-button-wrapper">
-                            <button class="btn-green btn-order-submit addToCart">ADD TO CART
+                            <button class="btn-green btn-order-submit addToCart">SUBMIT
 
                                 <i class="fa fa-spinner fa-spin" style="display: none; margin-left: 8px;"></i>
                             </button>
@@ -445,212 +450,6 @@
             });
         </script>
 
-        <style>
-            /* Cart Success Modal Styles */
-            .cart-success-modal-overlay {
-                position: fixed;
-                top: 0;
-                left: 0;
-                width: 100%;
-                height: 100%;
-                background-color: rgba(0, 0, 0, 0.75);
-                display: flex;
-                justify-content: center;
-                align-items: center;
-                z-index: 10000;
-                backdrop-filter: blur(4px);
-                animation: fadeIn 0.3s ease-out;
-            }
-
-            @keyframes fadeIn {
-                from {
-                    opacity: 0;
-                }
-                to {
-                    opacity: 1;
-                }
-            }
-
-            .cart-success-modal-container {
-                position: relative;
-                width: 90%;
-                max-width: 480px;
-                background: linear-gradient(135deg, #ffffff 0%, #f8f9fa 100%);
-                border-radius: 24px;
-                box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
-                overflow: hidden;
-                animation: modalSlideUp 0.3s ease-out;
-                padding: 0;
-            }
-
-            @keyframes modalSlideUp {
-                from {
-                    opacity: 0;
-                    transform: translateY(30px) scale(0.95);
-                }
-                to {
-                    opacity: 1;
-                    transform: translateY(0) scale(1);
-                }
-            }
-
-            .cart-success-modal-close {
-                position: absolute;
-                top: 15px;
-                right: 15px;
-                background: transparent;
-                border: none;
-                font-size: 28px;
-                color: #666;
-                cursor: pointer;
-                width: 36px;
-                height: 36px;
-                display: flex;
-                align-items: center;
-                justify-content: center;
-                border-radius: 50%;
-                transition: all 0.3s ease;
-                z-index: 1;
-            }
-
-            .cart-success-modal-close:hover {
-                background-color: rgba(0, 0, 0, 0.05);
-                color: #000;
-                transform: rotate(90deg);
-            }
-
-            .cart-success-modal-content {
-                padding: 50px 40px 40px;
-                text-align: center;
-            }
-
-            .cart-success-icon {
-                margin-bottom: 24px;
-            }
-
-            .cart-success-icon i {
-                font-size: 60px;
-                color: #10b981;
-                animation: successScale 0.5s ease-out;
-            }
-
-            @keyframes successScale {
-                0% {
-                    transform: scale(0);
-                }
-                50% {
-                    transform: scale(1.2);
-                }
-                100% {
-                    transform: scale(1);
-                }
-            }
-
-            .cart-success-title {
-                font-size: 22px;
-                font-weight: 700;
-                color: #071021;
-                margin-bottom: 7px;
-                line-height: 1.1;
-            }
-
-            .cart-success-message {
-                font-size: 13px;
-                color: #6b7280;
-                margin-bottom: 32px;
-                line-height: 1.6;
-            }
-
-            .cart-success-actions {
-                display: flex;
-                gap: 12px;
-                flex-direction: column;
-            }
-
-            .btn-continue-shopping {
-                padding: 14px 24px;
-                background-color: #f3f4f6;
-                color: #374151;
-                border: 2px solid #e5e7eb;
-                border-radius: 12px;
-                font-size: 14px;
-                font-weight: 600;
-                cursor: pointer;
-                transition: all 0.3s ease;
-                width: 100%;
-            }
-
-            .btn-continue-shopping:hover {
-                background-color: #e5e7eb;
-                border-color: #d1d5db;
-                transform: translateY(-2px);
-                box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-            }
-
-            .btn-go-to-cart {
-                display: flex;
-                align-items: center;
-                justify-content: center;
-                gap: 10px;
-                padding: 14px 24px;
-                background: linear-gradient(135deg, #fe0002 0%, #dc2626 100%);
-                color: #ffffff;
-                border: none;
-                border-radius: 12px;
-                font-size: 15px;
-                font-weight: 600;
-                text-decoration: none;
-                cursor: pointer;
-                transition: all 0.3s ease;
-                width: 100%;
-                box-shadow: 0 4px 14px rgba(254, 0, 2, 0.3);
-            }
-
-            .btn-go-to-cart:hover {
-                background: linear-gradient(135deg, #dc2626 0%, #b91c1c 100%);
-                transform: translateY(-2px);
-                box-shadow: 0 6px 20px rgba(254, 0, 2, 0.4);
-                color: #ffffff;
-                text-decoration: none;
-            }
-
-            .btn-go-to-cart i {
-                font-size: 18px;
-            }
-
-            @media (min-width: 640px) {
-                .cart-success-actions {
-                    flex-direction: row;
-                }
-
-                .btn-continue-shopping,
-                .btn-go-to-cart {
-                    flex: 1;
-                }
-            }
-
-            @media (max-width: 640px) {
-                .cart-success-modal-container {
-                    width: 95%;
-                    margin: 20px;
-                }
-
-                .cart-success-modal-content {
-                    padding: 40px 30px 30px;
-                }
-
-                .cart-success-icon i {
-                    font-size: 60px;
-                }
-
-                .cart-success-title {
-                    font-size: 24px;
-                }
-
-                .cart-success-message {
-                    font-size: 15px;
-                }
-            }
-        </style>
+       
 
 </div>

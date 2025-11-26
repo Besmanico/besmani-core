@@ -385,6 +385,244 @@ body.no-scroll {
     font-weight: 500;
 }
 
+/* order invoice */
+.show-more-row {
+    border-top: 2px solid #e5e7eb;
+}
+
+.show-more-row td {
+    background-color: #f8f9fa !important;
+}
+
+.btn-show-more {
+    color: #555;
+    border: none;
+    border-radius: 10px;
+    padding: 10px 10px;
+    font-size: 12px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    min-width: 200px;
+    justify-content: center;
+    letter-spacing: 0.3px;
+    background: white;
+border: 1px solid;
+}
+  /* Show More/Less Styles */
+  .hidden-item {
+    display: none;
+    opacity: 0;
+    max-height: 0;
+    overflow: hidden;
+    transition: opacity 0.4s ease-in-out, max-height 0.5s ease-in-out;
+}
+
+.hidden-item.show {
+    display: table-row !important;
+    opacity: 1;
+    max-height: 500px;
+    /* animation: slideDown 0.5s ease-out; */
+}
+
+@keyframes slideDown {
+    from {
+        opacity: 0;
+        transform: translateY(-10px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.show-more-row {
+    border-top: 2px solid #e5e7eb;
+}
+
+.show-more-row td {
+    background-color: #f8f9fa !important;
+}
+
+.btn-show-more {
+    color: #555;
+    border: none;
+    border-radius: 10px;
+    padding: 10px 10px;
+    font-size: 12px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    min-width: 200px;
+    justify-content: center;
+    letter-spacing: 0.3px;
+    background: white;
+border: 1px solid;
+}
+
+
+
+.btn-show-more:active {
+    transform: translateY(0);
+}
+
+.btn-show-more i {
+    transition: transform 0.3s ease;
+    font-size: 14px;
+}
+
+.btn-show-more.active .show-more-icon {
+    display: none;
+}
+
+.btn-show-more.active .show-less-icon {
+    display: inline-block !important;
+}
+
+.btn-show-more.active .show-more-text {
+    display: none;
+}
+
+.btn-show-more.active .show-less-text {
+    display: inline !important;
+}
+
+/* order invoice end */
+
+/* invoice detail modal */
+.besmani-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 0;
+}
+
+.besmani-table thead {
+    background-color: #f8f9fa;
+}
+
+.besmani-table th {
+    padding: 15px;
+    text-align: left;
+    font-weight: 600;
+    color: #333;
+    border-bottom: 2px solid #e5e7eb;
+    font-size: 14px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.besmani-table td {
+    padding: 15px;
+    border-bottom: 1px solid #e5e7eb;
+    color: #555;
+}
+
+.besmani-table tbody tr {
+    transition: background-color 0.2s ease;
+}
+
+.besmani-table tbody tr:hover {
+    background-color: #f8f9fa;
+}
+
+.invoice-id {
+    font-weight: 600;
+    color: #2563eb;
+}
+
+.invoice-date {
+    color: #6b7280;
+}
+
+.invoice-amount {
+    font-weight: 600;
+    color: #059669;
+}
+
+.status-badge {
+    display: inline-block;
+    padding: 6px 12px;
+    border-radius: 20px;
+    font-size: 12px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.status-paid {
+    background-color: #d1fae5;
+    color: #065f46;
+}
+
+.status-pending {
+    background-color: #fef3c7;
+    color: #92400e;
+}
+
+.status-overdue {
+    background-color: #fee2e2;
+    color: #991b1b;
+}
+
+.invoice-actions {
+    display: flex;
+    gap: 8px;
+}
+
+.btn-action {
+    background: none;
+    border: 1px solid #e5e7eb;
+    padding: 8px 12px;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    color: #6b7280;
+    font-size: 14px;
+}
+
+.btn-action:hover {
+    background-color: #f3f4f6;
+    border-color: #d1d5db;
+    color: #2563eb;
+}
+
+.btn-view:hover {
+    color: #2563eb;
+}
+
+.btn-download:hover {
+    color: #059669;
+}
+
+@media (max-width: 768px) {
+    .invoice-section {
+        padding: 10px;
+    }
+
+    .table-responsive {
+        overflow-x: auto;
+    }
+
+    .besmani-table {
+        min-width: 600px;
+    }
+
+    .besmani-table th,
+    .besmani-table td {
+        padding: 10px 8px;
+        font-size: 13px;
+    }
+}
+/* invoice detail modal end */
+
+
 @media (max-width: 1100px) {
     .panel-dashboard {
         grid-template-columns: 1fr;

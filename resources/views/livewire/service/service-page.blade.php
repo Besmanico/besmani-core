@@ -132,7 +132,7 @@
                                         <button onclick="openLoginModal()"
                                             class="btn btn-green btn-order-now w-100">Order Now</button>
                                     @else
-                                        <a
+                                        <a class="w-100"
                                             href="{{ config('app.url') }}order/{{ $packageService->id }}/{{ $service['id'] }}">
                                             <button class="btn btn-green btn-order-now w-100">Order Now</button>
                                         </a>

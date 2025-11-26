@@ -18,4 +18,8 @@ class OrderItem extends Model
     {
         return $this->hasMany(PackageItem::class, 'order_item_id');
     }
+    public function customePackageItem()
+    {
+        return $this->hasOne(CustomePackageItem::class, 'order_item_id');
+    }
 }

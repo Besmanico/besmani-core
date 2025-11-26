@@ -72,22 +72,30 @@
             </div>
 
             <nav class="sidebar-nav">
-                <a href="#" class="nav-link active">
+                <a href="{{ config('app.url') }}panel" class="nav-link active">
                     <i class="fa fa-home"></i>
                     <span>Dashboard</span>
                 </a>
+                <a href="{{ config('app.url') }}panel/invoice" class="nav-link">
+                    <i class="fa fa-shopping-cart"></i>
+                    <span>Orders</span>
+                </a>
                 <a href="#" class="nav-link">
                     <i class="fa fa-briefcase"></i>
-                    <span>My Projects</span>
+                    <span>Payments</span>
                 </a>
+                {{-- <a href="#" class="nav-link">
+                    <i class="fa fa-briefcase"></i>
+                    <span>My Projects</span>
+                </a> --}}
                 <a href="#" class="nav-link">
                     <i class="fa fa-briefcase"></i>
                     <span>My Profile</span>
                 </a>
-                <a href="#" class="nav-link">
+                {{-- <a href="#" class="nav-link">
                     <i class="fa fa-calendar"></i>
                     <span>Schedule</span>
-                </a>
+                </a> --}}
                 <a href="#" class="nav-link">
                     <i class="fa fa-envelope"></i>
                     <span>Messages</span>
