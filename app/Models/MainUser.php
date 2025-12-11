@@ -4,12 +4,13 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
+use Laravel\Sanctum\HasApiTokens;
 use App\Models\Product;
 use App\Models\InfoActivity;
 
 class MainUser extends Authenticatable
 {
-    use HasFactory;
+    use HasFactory, HasApiTokens;
     protected $guarded = [];
     
     // Define the password field for authentication
@@ -17,10 +18,8 @@ class MainUser extends Authenticatable
         'password',
     ];
     
-    // Cast password as hashed
-     protected $casts = [
-        'password' => 'hashed',
-    ];
+    // Note: Password hashing is handled manually with Hash::make() in controllers
+    // Removed 'hashed' cast to avoid conflicts with existing passwords
 
     public function license_checks()
     {

@@ -11,6 +11,13 @@ class ListClinics extends ListRecords
 {
     protected static string $resource = ClinicResource::class;
 
+    protected function getHeaderActions(): array
+    {
+        return [
+            Actions\CreateAction::make(),
+        ];
+    }
+
     protected function getHeaderWidgets(): array
     {
         return [

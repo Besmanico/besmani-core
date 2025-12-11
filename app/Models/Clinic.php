@@ -17,6 +17,6 @@ class Clinic extends Model
     public function category()
     {
         return $this->belongsTo(ClinicCategory::class,'category_id');
-    }
+    } 
 
 }

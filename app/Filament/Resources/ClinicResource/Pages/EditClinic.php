@@ -16,4 +16,9 @@ class EditClinic extends EditRecord
             Actions\DeleteAction::make(),
         ];
     }
+    protected function mutateFormDataBeforeSave(array $data): array
+    {
+        $data['slug'] = str_replace(' ', '-', $data['title']);
+        return $data;
+    }
 }

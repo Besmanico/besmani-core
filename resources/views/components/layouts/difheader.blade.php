@@ -79,8 +79,8 @@
 
                         <li class=""><a href="{{ config('app.url') }}services">SERVICES</a></li>
                         {{-- <li class=""><a href="{{ config('app.url') }}orders">ORDERS</a></li> --}}
-                        <li class=""><a href="{{ config('app.url') }}design-style">DESIGN STYLE</a></li>
-                        <li class=""><a href="{{ config('app.url') }}portfolios">PORTFOLIO</a></li>
+                        {{-- <li class=""><a href="{{ config('app.url') }}design-style">DESIGN STYLE</a></li>
+                        <li class=""><a href="{{ config('app.url') }}portfolios">PORTFOLIO</a></li> --}}
                         <li class=""><a href="{{ config('app.url') }}careers">CAREERS</a></li>
                         <li class=""><a href="{{ config('app.url') }}aboutus">ABOUT US</a></li>
                         <li class=""><a href="{{ config('app.url') }}contactus">CONTACT US</a></li>
@@ -306,12 +306,12 @@
         {{-- <div class="nav-item">
             <a href="{{ config('app.url') }}orders" class="nav-link">ORDERS</a>
         </div> --}}
-        <div class="nav-item">
+        {{-- <div class="nav-item">
             <a href="{{ config('app.url') }}design-style" class="nav-link">DESIGN STYLE</a>
         </div>
         <div class="nav-item">
             <a href="{{ config('app.url') }}portfolios" class="nav-link">PORTFOLIO</a>
-        </div>
+        </div> --}}
         <div class="nav-item">
             <a href="{{ config('app.url') }}careers" class="nav-link">CAREERS</a>
         </div>

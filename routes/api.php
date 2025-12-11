@@ -1,10 +1,10 @@
 <?php
 
+use App\Http\Controllers\Api\UserController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Route;
-use App\Http\Controllers\api\UserController;
-
+ 
 /*
 |--------------------------------------------------------------------------
 | API Routes
@@ -22,4 +22,15 @@ Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
 
 
 
-Route::post('loginRegister', [UserController::class, 'loginRegister']);
+Route::post('signup', [UserController::class, 'signup']);
+Route::post('login', [UserController::class, 'login']);
+Route::get('get-users', [UserController::class, 'getUsers']);
+Route::get('get-user/{id}', [UserController::class, 'getUser']);
+Route::get('get-Clinic-services/{id}', [UserController::class, 'getClinicServices']); 
+
+
+// panel api
+
+Route::get('get-appointments/{id}', [UserController::class, 'getAppointments']);
+Route::get('get-user-info/{id}', [UserController::class, 'getUserInfo']);
+

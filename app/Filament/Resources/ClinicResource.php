@@ -21,7 +21,7 @@ class ClinicResource extends Resource
     protected static ?string $navigationIcon = 'heroicon-o-building-office';
     protected static ?string $navigationGroup = 'BEAUTY';
     protected static ?int $navigationSort = 3;
-    protected static ?string $navigationLabel = "  Clinic  ";
+    protected static ?string $navigationLabel = "   Clinic  ";
     protected static ?string $modelLabel = "   Clinic  ";
     protected static ?string $pluralModelLabel = "  Clinic    ";
 
@@ -36,47 +36,42 @@ class ClinicResource extends Resource
                             ->maxLength(255)
                             ->label('Title'),
                         
-                        Forms\Components\TextInput::make('slug')
-                            ->required()
-                            ->maxLength(255)
-                            ->label('Slug'),
+                        // Forms\Components\TextInput::make('slug')
+                        //     ->required()
+                        //     ->maxLength(255)
+                        //     ->label('Slug'),
                         
-                        Forms\Components\TextInput::make('img')
-                            ->maxLength(255)
-                            ->label('Image URL'),
+                        // Forms\Components\TextInput::make('img')
+                        //     ->maxLength(255)
+                        //     ->label('Image URL'),
                         
                         Forms\Components\Textarea::make('description')
                             ->maxLength(1000)
                             ->label('Description'),
                         
-                        Forms\Components\Textarea::make('meta')
-                            ->label('Meta Description'),
+                        // Forms\Components\Textarea::make('meta')
+                        //     ->label('Meta Description'),
                         
-                        Forms\Components\Textarea::make('keywords')
-                            ->label('Keywords'),
+                        // Forms\Components\Textarea::make('keywords')
+                        //     ->label('Keywords'),
                         
                         Forms\Components\Select::make('category_id')
                             ->relationship('category', 'title')
                             ->required()
                             ->label('Category'),
                         
-                        Forms\Components\TextInput::make('technical_code')
-                            ->maxLength(255)
-                            ->label('Technical Code'),
+                        // Forms\Components\TextInput::make('technical_code')
+                        //     ->maxLength(255)
+                        //     ->label('Technical Code'),
                         
-                        Forms\Components\TextInput::make('times')
-                            ->maxLength(255)
-                            ->label('Working Hours'),
+                        // Forms\Components\TextInput::make('times')
+                        //     ->maxLength(255)
+                        //     ->label('Working Hours'),
                         
                         Forms\Components\Toggle::make('status')
                             ->label('Active Status'),
                         
-                        Forms\Components\Toggle::make('locked')
-                            ->label('Locked'),
-                        
-                        Forms\Components\TextInput::make('create_at')
-                            ->label('Created At (Persian Date)')
-                            ->helperText('Format: YYYY/MM/DD'),
+                      
                     ])
                     ->columns(2),
             ]);
@@ -120,6 +115,7 @@ class ClinicResource extends Resource
                     ->label('Category'),
             ])
             ->actions([
+                Tables\Actions\CreateAction::make(),
                 Tables\Actions\ViewAction::make(),
                 // Tables\Actions\EditAction::make(),
             ])
@@ -149,7 +145,7 @@ class ClinicResource extends Resource
         return [
             'index' => Pages\ListClinics::route('/'),
             'create' => Pages\CreateClinic::route('/create'),
-            'edit' => Pages\EditClinic::route('/{record}/edit'),
+            'edit' => Pages\EditClinic::route('/{record}/edit'), 
         ];
     }
     public static function getNavigationBadge(): ?string

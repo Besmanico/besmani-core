@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\Api\UserController;
 use App\Livewire\Home;
 use App\Livewire\Cart\CartPage;
 use App\Livewire\About\AboutPage;
@@ -69,3 +70,6 @@ Route::get('/getOrderItems', [CartController::class, 'getOrderItems'])->name('ge
 Route::post('/createCustomPackageItem', [CartController::class, 'createCustomPackageItem'])->name('createCustomPackageItem');
 Route::post('/deleteCustomPackageItem', [CartController::class, 'deleteCustomPackageItem'])->name('deleteCustomPackageItem');
 Route::post('/goPayAll', [CartController::class, 'goPayAll'])->name('goPayAll');
+
+// check referense api
+Route::get('/check-referense/{id}', [UserController::class, 'checkReferenseApi'])->name('check-referense');
