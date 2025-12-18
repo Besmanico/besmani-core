@@ -20,6 +20,10 @@ class User extends Authenticatable implements FilamentUser
     {
         return $this->status === 1;
     }
+    public function data_entries()
+    {
+        return $this->hasMany(DataEntry::class,'data_entry_user_id');
+    }
 
 
     // public function mainuser_works()

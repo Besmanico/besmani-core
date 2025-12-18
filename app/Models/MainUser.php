@@ -58,5 +58,9 @@ class MainUser extends Authenticatable
     {
         return $this->hasMany(MenAcademyCourse::class,'user_id'); 
     } 
+    public function customer_apis()
+    {
+        return $this->hasMany(CustomerApi::class,'user_id'); 
+    }  
 }
  

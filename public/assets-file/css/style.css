@@ -1837,12 +1837,12 @@ a.linkedin-bg:hover {
  */
 /* Section: Contact-us */
 .section-contact-us h2 {
-    font-size: 23px;
+    font-size: 17px;
     text-transform: uppercase;
     padding-bottom: 22px;
     letter-spacing: 1px;
-    margin-top: 49px;
-}
+    margin-top: 0;
+} 
 .service-body{
     font-size: 16px !important;
     line-height: 29px !important;

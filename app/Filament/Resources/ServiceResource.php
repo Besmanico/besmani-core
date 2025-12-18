@@ -57,9 +57,16 @@ class ServiceResource extends Resource
                                         ->label('Name')
                                         ->maxLength(255)
                                         ->columnSpanFull(),
+                                        TextInput::make('subtitle')
+                                        
+                                        ->label('Subtitle')
+                                        ->maxLength(255)
+                                        ->columnSpanFull(),
                                     FileUpload::make('image')
                                         ->label('Image')
                                         ->directory('services')
+                                        ->imageEditor()
+                                        ->downloadable()
                                         ->optimize('webp')
                                         ->helperText('Recommended size: 2000x2000 pixels')
                                         ->image()

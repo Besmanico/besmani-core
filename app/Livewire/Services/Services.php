@@ -9,7 +9,7 @@ class Services extends Component
 {
     public function render()
     {
-        $services = Service::where('status', 1)->get();
+        $services = Service::where('status', 1)->orderBy('sort', 'asc')->get();
         $metaData = ['title' => 'Services'];
         $data = ['services' => $services];
         return view('livewire.services.services',$data)->layout('components.layouts.difheader',$metaData);

@@ -16,7 +16,8 @@ return new class extends Migration
             $table->string('title');
             $table->string('slug');
             $table->string('meta');
-            $table->text('keywords');
+            $table->string('subtitle')->nullable();
+          $table->text('keywords');
             $table->text('body');
             $table->string('image');
             $table->string('icon');

@@ -2,19 +2,21 @@
 
 namespace App\Filament\Resources;
 
-use App\Filament\Resources\ClinicResource\Pages;
-use App\Filament\Resources\ClinicResource\RelationManagers;
-use App\Models\Clinic;
-use App\Filament\Widgets\ClinicStatsWidget;
 use Filament\Forms;
-use Filament\Forms\Form;
-use Filament\Resources\Resource;
 use Filament\Tables;
+use App\Models\Clinic;
+use Filament\Forms\Form;
 use Filament\Tables\Table;
+use App\Models\ClinicCategory;
+use Filament\Resources\Resource;
+use Filament\Forms\Components\FileUpload;
 use Illuminate\Database\Eloquent\Builder;
+use App\Filament\Widgets\ClinicStatsWidget;
+use App\Filament\Resources\ClinicResource\Pages;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
+use App\Filament\Resources\ClinicResource\RelationManagers;
 
-class ClinicResource extends Resource 
+class ClinicResource extends Resource
 {
     protected static ?string $model = Clinic::class;
 
@@ -31,47 +33,58 @@ class ClinicResource extends Resource
             ->schema([
                 Forms\Components\Section::make('Clinic Information')
                     ->schema([
+
+
+                        Forms\Components\Select::make('category_id')
+                            ->label('Select Clinic Category')
+                            ->options(ClinicCategory::all()->pluck('title', 'id'))
+                            ->searchable(),
+
+
                         Forms\Components\TextInput::make('title')
                             ->required()
                             ->maxLength(255)
                             ->label('Title'),
-                        
+                        FileUpload::make('img')
+                            ->label('Image')
+                            ->directory('clinics')
+                            ->imageEditor()
+                            ->downloadable()
+                            ->optimize('webp')
+                            ->helperText('Recommended size: 70*70 pixels')
+                            ->image()
+                            ->columnSpanFull(),
+
                         // Forms\Components\TextInput::make('slug')
                         //     ->required()
                         //     ->maxLength(255)
                         //     ->label('Slug'),
-                        
+
                         // Forms\Components\TextInput::make('img')
                         //     ->maxLength(255)
                         //     ->label('Image URL'),
-                        
+
                         Forms\Components\Textarea::make('description')
                             ->maxLength(1000)
                             ->label('Description'),
-                        
+
                         // Forms\Components\Textarea::make('meta')
                         //     ->label('Meta Description'),
-                        
+
                         // Forms\Components\Textarea::make('keywords')
                         //     ->label('Keywords'),
-                        
-                        Forms\Components\Select::make('category_id')
-                            ->relationship('category', 'title')
-                            ->required()
-                            ->label('Category'),
-                        
-                        // Forms\Components\TextInput::make('technical_code')
-                        //     ->maxLength(255)
-                        //     ->label('Technical Code'),
-                        
-                        // Forms\Components\TextInput::make('times')
-                        //     ->maxLength(255)
-                        //     ->label('Working Hours'),
-                        
+
+
+
+                        Forms\Components\Textarea::make('meta')
+                            ->label('Meta Description'),
+                        Forms\Components\TagsInput::make('keywords')
+                            ->label('Meta Keywords'),
+
+
                         Forms\Components\Toggle::make('status')
-                            ->label('Active Status'),
-                        
-                      
+                            ->label('Status'),
+
                     ])
                     ->columns(2),
             ]);
@@ -80,19 +93,12 @@ class ClinicResource extends Resource
     public static function table(Table $table): Table
     {
         return $table
-        ->defaultPaginationPageOption(50)
-             ->columns([
+            ->defaultPaginationPageOption(50)
+            ->columns([
                 Tables\Columns\TextColumn::make(name: 'title')->searchable()->sortable(),
-                Tables\Columns\ImageColumn::make('img') 
-                ->label('Image')
-                ->circular()
-                ->getStateUsing(function ($record) {
-                    if (!$record || !$record->img) {
-                        return null; 
-                    }
-                    $beautyUrl = env('BEAUTY_URL', 'https://beauty.besmani.com');
-                    return $record->img ? $beautyUrl  . $record->img : null;
-                 }), 
+                Tables\Columns\ImageColumn::make('img')
+                    ->label('Image')
+                    ->circular(), 
                 Tables\Columns\TextColumn::make('category.title')->label('Category')->badge()->color('info'),
                 Tables\Columns\TextColumn::make('technical_code')->label('Technical Code'),
                 Tables\Columns\IconColumn::make('status')->label('Status')->boolean(),
@@ -102,7 +108,7 @@ class ClinicResource extends Resource
                     ->color('info')
                     ->searchable()
                     ->sortable(),
-            ])
+            ]) 
             ->filters([
                 Tables\Filters\SelectFilter::make('status')
                     ->options([
@@ -145,7 +151,7 @@ class ClinicResource extends Resource
         return [
             'index' => Pages\ListClinics::route('/'),
             'create' => Pages\CreateClinic::route('/create'),
-            'edit' => Pages\EditClinic::route('/{record}/edit'), 
+            'edit' => Pages\EditClinic::route('/{record}/edit'),
         ];
     }
     public static function getNavigationBadge(): ?string

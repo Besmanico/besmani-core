@@ -2,15 +2,17 @@
 
 namespace App\Filament\Resources;
 
+use Filament\Forms;
+use Filament\Tables;
+use Filament\Forms\Form;
+use Filament\Tables\Table;
+use App\Models\WomenService;
+use Filament\Resources\Resource;
+use App\Models\WomenServiceCategory;
+use Filament\Forms\Components\FileUpload;
+use Illuminate\Database\Eloquent\Builder;
 use App\Filament\Resources\WomenServiceResource\Pages;
 use App\Filament\Resources\WomenServiceResource\RelationManagers;
-use App\Models\WomenService;
-use Filament\Forms;
-use Filament\Forms\Form;
-use Filament\Resources\Resource;
-use Filament\Tables;
-use Filament\Tables\Table;
-use Illuminate\Database\Eloquent\Builder;
  use Filament\Tables\Columns\TextColumn;
 
 class WomenServiceResource extends Resource
@@ -31,9 +33,52 @@ class WomenServiceResource extends Resource
     public static function form(Form $form): Form
     {
         return $form
-            ->schema([
-                //
-            ]);
+        ->schema([
+            Forms\Components\Section::make('Women Service Information')
+                ->schema([
+
+
+                    Forms\Components\Select::make('category_id')
+                        ->label('Select Women Service Category')
+                        ->options(WomenServiceCategory::where('man',0)->pluck('title', 'id'))
+                        ->searchable(),
+
+
+                    Forms\Components\TextInput::make('title')
+                        ->required()
+                        ->maxLength(255)
+                        ->label('Title'),
+                    FileUpload::make('img')
+                        ->label('Image')
+                        ->directory('women_services')
+                        ->imageEditor()
+                        ->downloadable()
+                        ->optimize('webp')
+                        ->helperText('Recommended size: 70*70 pixels')
+                        ->image()
+                        ->columnSpanFull(),
+
+                  
+
+                    Forms\Components\Textarea::make('description')
+                        ->maxLength(1000)
+                        ->label('Description'),
+
+                 
+
+
+                    Forms\Components\Textarea::make('meta')
+                        ->label('Meta Description'),
+                    Forms\Components\TagsInput::make('keywords')
+                        ->label('Meta Keywords'),
+
+
+                    Forms\Components\Toggle::make('status')
+                        ->label('Status'),
+
+                ])
+                ->columns(2),
+        ]);
     }
 
     public static function table(Table $table): Table
@@ -45,17 +90,17 @@ class WomenServiceResource extends Resource
                 Tables\Columns\TextColumn::make(name: 'title')->searchable()->sortable(),
                 Tables\Columns\ImageColumn::make('img') 
                 ->label('Image')
-                ->circular()
-                ->getStateUsing(function ($record) {
-                    if (!$record || !$record->img) {
-                        return null; 
-                    }
-                    $beautyUrl = env('BEAUTY_URL', 'https://beauty.besmani.com');
-                    return $record->img ? $beautyUrl  . $record->img : null;
-                 }), 
+                ->circular(),
+                // ->getStateUsing(function ($record) {
+                //     if (!$record || !$record->img) {
+                //         return null; 
+                //     }
+                //     $beautyUrl = env('BEAUTY_URL', 'https://beauty.besmani.com');
+                //     return $record->img ? $beautyUrl  . $record->img : null;
+                //  }),  
                 Tables\Columns\TextColumn::make('category.title')->label('Category')->badge()->color('info'),
                 Tables\Columns\TextColumn::make('technical_code')->label('Technical Code'),
-                Tables\Columns\IconColumn::make('status')->label('Status')->boolean(),
+                Tables\Columns\ToggleColumn::make('status')->label('Status'),
                 Tables\Columns\TextColumn::make('create_at')
                     ->label('Created At')
                     ->badge()
@@ -100,6 +145,6 @@ class WomenServiceResource extends Resource
     public static function getEloquentQuery(): Builder
     {
         return parent::getEloquentQuery()
-            ->orderBy('id', 'desc');
+            ->orderBy('id', 'asc');
     }
 }
