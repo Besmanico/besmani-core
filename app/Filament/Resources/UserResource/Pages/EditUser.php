@@ -29,7 +29,10 @@ class EditUser extends EditRecord
         // travel
         $Edit->name = $data['name'];
         $Edit->email = $data['email'];
-        $Edit->password = $data['password'];
+        // Only update password if it's provided
+        if (isset($data['password']) && filled($data['password'])) {
+            $Edit->password = $data['password'];
+        }
         $Edit->status = $data['status'];
         $Edit->update();
 
@@ -37,9 +40,17 @@ class EditUser extends EditRecord
  
         $EditShop->name = $data['name'];
         $EditShop->email = $data['email']; 
-        $EditShop->password = $data['password'];
+        // Only update password if it's provided
+        if (isset($data['password']) && filled($data['password'])) {
+            $EditShop->password = $data['password'];
+        }
         $EditShop->status = $data['status'];
         $EditShop->update();
+
+        // Remove password from data if empty to keep current password
+        if (empty($data['password'])) {
+            unset($data['password']);
+        }
 
         return $data;
     }

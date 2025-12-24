@@ -802,8 +802,15 @@
                 if (response.success) {
                     // Beautiful Sonner-like toast notification
                     toastSuccess('Welcome to BESMANI!', 'You have successfully signed in.', 2000);
-                    // get url address
-                    var url = window.location.href;
+                    // Check for stored redirect URL
+                    var redirectUrl = localStorage.getItem('loginRedirectUrl');
+                    var url = redirectUrl || window.location.href;
+                    
+                    // Clear the stored redirect URL
+                    if (redirectUrl) {
+                        localStorage.removeItem('loginRedirectUrl');
+                    }
+                    
                     setTimeout(function() {
                         window.location.href = url;
                     }, 2000);

@@ -4,13 +4,14 @@ namespace App\Filament\Resources;
 
 use Filament\Forms;
 use App\Models\User;
-use App\Models\MainUser;
 use Filament\Tables;
+use App\Models\MainUser;
 use Filament\Forms\Form;
 use Filament\Tables\Table;
 use Filament\Resources\Resource;
 use Filament\Tables\Actions\Action;
 use Filament\Support\Enums\MaxWidth;
+use Filament\Forms\Components\Select;
 use Filament\Forms\Components\Toggle;
 use Filament\Forms\Components\Section;
 use Filament\Tables\Columns\IconColumn;
@@ -29,8 +30,8 @@ class UserResource extends Resource
 
  
     
-    protected static ?string $navigationLabel = "admin";
-    protected static ?string $modelLabel = "  admin   ";
+    protected static ?string $navigationLabel = "Admin";
+    protected static ?string $modelLabel = "  Admin   ";
     protected static ?string $navigationGroup = 'Settings';
 
     protected static ?int $navigationSort = 1;
@@ -49,10 +50,13 @@ class UserResource extends Resource
                     TextInput::make('email')->label('email')->email()->required(),
                     TextInput::make('phone')->label('phone')->required(),
                     // TextInput::make('mac_address')->label('mac_address')->required(),
-                    TextInput::make('password')->minLength(6)
-                        ->password()->required()
-                        ->label('password')->helperText('Password must be at least 6 characters 
-                '),
+                    TextInput::make('password')
+                        ->password()
+                        ->minLength(6)
+                        ->label('password')
+                        ->helperText('Leave empty to keep current password. Password must be at least 6 characters if provided.')
+                        ->dehydrated(fn ($state) => filled($state))
+                        ->dehydrateStateUsing(fn ($state) => filled($state) ? bcrypt($state) : null),
                 Toggle::make('status')->label('status'),
 
                     // Select::make('roles')
@@ -60,6 +64,11 @@ class UserResource extends Resource
                     //     ->multiple()
                     //     ->preload()
                     //     ->searchable(),
+                    Select::make('roles')
+                    ->relationship('roles', 'name')
+                    ->multiple()
+                    ->preload()
+                    ->searchable(),
 
                 ])->collapsible()->columns(2),
         ]);
@@ -73,6 +82,7 @@ class UserResource extends Resource
                 TextColumn::make('name')->searchable()->label('name'),
                 TextColumn::make('email')->searchable()->label('email'),
                 TextColumn::make('phone')->searchable()->label('phone'),
+                TextColumn::make('roles.name')->searchable()->label('roles')->badge()->color('info'),
                 TextColumn::make('data_entries_count')->counts('data_entries')->badge()->label('Data Entries'),
                 // TextColumn::make('mac_address')->label('mac_address'),
                 // TextColumn::make('mainuser_works_count')->counts('mainuser_works')->badge()->label('Works'),

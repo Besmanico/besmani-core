@@ -25,7 +25,7 @@ class WbCommentResource extends Resource
     protected static ?string $navigationLabel = "  Comments  ";
     protected static ?string $modelLabel = "   Comments  ";
     protected static ?string $pluralModelLabel = "  Comments   ";
-    protected static ?int $navigationSort = 4;
+    protected static ?int $navigationSort = 7;
 
     public static function form(Form $form): Form
     {

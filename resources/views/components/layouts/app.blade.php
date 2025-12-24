@@ -608,10 +608,20 @@
                 if (response.success) {
                     // alert('Welcome to BESMANI!');
                     toastSuccess('Welcome to BESMANI!', 'You have successfully signed in.', 2000);
+                    
+                    // Check for stored redirect URL
+                    var redirectUrl = localStorage.getItem('loginRedirectUrl');
+                    var url = redirectUrl || '/';
+                    
+                    // Clear the stored redirect URL
+                    if (redirectUrl) {
+                        localStorage.removeItem('loginRedirectUrl');
+                    }
+                    
                     setTimeout(function() {
                         closeLoginModal();
-                        window.location.href = '/';
-                    }, 3000);
+                        window.location.href = url;
+                    }, 2000);
                     $('.WuserName').text(response.userName);
                     $('.welcome-user').show();
                   

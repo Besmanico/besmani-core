@@ -127,18 +127,22 @@
                             <div class="addr-box mb-3 mb-md-0 me-md-3">
                                 <div class="addr-title">Billing Address</div>
                                 <div class="addr-body">
-                                    Vascular Cosmetics<br>
-                                    113 Waterworks Way #140,<br>
-                                    Irvine, CA 92618
+                                    {{ $CompaniName }}
+                                    <br>
+                                    {{-- 113 Waterworks Way #140,<br> --}}
+                                   {{ $userInfo->address }} {{ $userInfo->postal_code }} 
                                 </div>
                             </div>
                             <div class="addr-box">
                                 <div class="addr-title">Shipping Address</div>
                                 <div class="addr-body">
-
-                                    <textarea class="w-100 bg-none">Vascular Cosmetics  113 Waterworks Way #140, 
+                                    {{ $CompaniName }}
+                                    <br>
+                                    {{-- 113 Waterworks Way #140,<br> --}}
+                                   {{ $userInfo->address }} {{ $userInfo->postal_code }} 
+                                    {{-- <textarea class="w-100 bg-none">Vascular Cosmetics  113 Waterworks Way #140, 
                                     Irvine, CA 92618
-                                </textarea>
+                                </textarea> --}}
 
                                 </div>
                             </div>
@@ -155,7 +159,7 @@
                                             <th style="min-width:100px;">Item Total*</th>
                                             <th style="min-width:100px;">Discount</th>
                                             <th style="min-width:120px;">Total After Discount*</th>
-                                            <th style="min-width:120px;">testttt*</th>
+                                            {{-- <th style="min-width:120px;">testttt*</th> --}}
                                             <th style="min-width:140px;">Tax & Fee</th>
                                             <th style="min-width:90px;">Total</th>
                                         </tr>
@@ -253,7 +257,7 @@
                                                     {{ number_format($itemTotalWithDiscount, 2) }}
                                                 </td>
                                                 <td class="money">{{ number_format($itemTotalWithDiscount, 2) }} </td>
-                                                <td class="money">{{ number_format($testttt, 2) }}</td>
+                                                {{-- <td class="money">{{ number_format($testttt, 2) }}</td> --}}
                                                 <td class="muted">
                                                     {{ $packageServiceItem->orderItem->tax }}%
                                                     <br>

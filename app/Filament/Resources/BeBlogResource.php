@@ -20,7 +20,7 @@ class BeBlogResource extends Resource
 
     protected static ?string $navigationIcon = 'heroicon-o-newspaper';
     protected static ?string $navigationGroup = 'BEAUTY';
-    protected static ?int $navigationSort = 6;
+    protected static ?int $navigationSort = 7;
     protected static ?string $navigationLabel = "  Blogs  ";
     protected static ?string $modelLabel = "   Blogs  ";
     protected static ?string $pluralModelLabel = " Blogs ";

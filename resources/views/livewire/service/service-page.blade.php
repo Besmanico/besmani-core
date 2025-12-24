@@ -14,9 +14,7 @@
                 <p class="service-body">
                     <?= $service['body'] ?>
                 </p>
-
             </div>
-
         </div>
 
 
@@ -79,7 +77,7 @@
                             @endphp
                             <div class="pricing-comparison__cell pricing-comparison__cell--package">
                                 @if (!Auth::guard('mainUsers')->check())
-                                    <a class="w-100" onclick="openLoginModal()">
+                                    <a class="w-100" onclick="storeRedirectUrlAndOpenLogin('{{ config('app.url') }}order/{{ $packageService->id }}/{{ $service['id'] }}')">
                                     @else
                                         <a class="w-100"
                                             href="{{ config('app.url') }}order/{{ $packageService->id }}/{{ $service['id'] }}">
@@ -129,7 +127,7 @@
 
                                     </div>
                                     @if (!Auth::guard('mainUsers')->check())
-                                        <button onclick="openLoginModal()"
+                                        <button onclick="storeRedirectUrlAndOpenLogin('{{ config('app.url') }}order/{{ $packageService->id }}/{{ $service['id'] }}')"
                                             class="btn btn-green btn-order-now w-100">Order Now</button>
                                     @else
                                         <a class="w-100"
@@ -177,6 +175,20 @@
 
 
     <script>
+        // Store redirect URL and open login modal
+        function storeRedirectUrlAndOpenLogin(redirectUrl) {
+            // Store the intended URL in localStorage
+            localStorage.setItem('loginRedirectUrl', redirectUrl);
+            // Open login modal
+            if (typeof openLoginModal === 'function') {
+                openLoginModal();
+            } else {
+                // Fallback if openLoginModal is not available
+                $('#login-modal').fadeIn(300);
+                $('body').css('overflow', 'hidden');
+            }
+        }
+
         // Description Modal Functions - Global scope
         function openDescriptionModal(modalId, title, description) {
             $('#description-modal-title').text(title);

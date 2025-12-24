@@ -4,12 +4,13 @@ namespace App\Filament\Resources;
 
 use Filament\Forms;
 use Filament\Tables;
+use App\Models\MainUser;
 use Filament\Forms\Form;
 use Filament\Tables\Table;
 use App\Models\CustomerApi;
 use Filament\Resources\Resource;
+use Filament\Forms\Components\Section;
 use Illuminate\Database\Eloquent\Builder;
-use Filament\Infolists\Components\Section;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
 use App\Filament\Resources\CustomerApiResource\Pages;
 use App\Filament\Resources\CustomerApiResource\RelationManagers;
@@ -29,11 +30,19 @@ class CustomerApiResource extends Resource
             Section::make('info')
             ->schema([ 
 
-            Forms\Components\TextInput::make('api_url') 
-                
+                Forms\Components\Select::make('user_id') 
+                ->options(MainUser::all()->pluck('fl_name', 'id'))->searchable()->required(),
+              
+
+            Forms\Components\TextInput::make('api_url')->label('API URL')->columnSpanFull() 
+            ->placeholder('https://api.example.com')->required(),
+
+            
+            
+            
           
           
-            ])->collapsed(false)->columns(2),
+            ])->collapsed(false)->columns(3),
         ]);
     }
 

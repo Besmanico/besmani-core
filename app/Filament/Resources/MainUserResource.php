@@ -124,6 +124,8 @@ class MainUserResource extends Resource
                 TextColumn::make('mobile_moaref')->searchable()->label('Reference Phone No.')->toggleable(),
                 TextColumn::make('child')->searchable()->label('Site')->toggleable()->badge()->color('success'),
                 TextColumn::make('code_moaref')->searchable()->label('Code')->badge()->toggleable(false),
+                TextColumn::make('created_at')->searchable()->label('Created At')->badge()->color('info')->toggleable(),
+                TextColumn::make('updated_at')->searchable()->label('Updated At')->badge()->color('info')->toggleable(),
                 // ToggleColumn::make('approved')->label('Approved')->toggleable(false), 
 
                
