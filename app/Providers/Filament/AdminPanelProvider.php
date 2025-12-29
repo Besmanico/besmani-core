@@ -35,22 +35,22 @@ use Tapp\FilamentAuthenticationLog\FilamentAuthenticationLogPlugin;
             ->plugins([
                 // FilamentAuthenticationLogPlugin::make()
                     // ->panelName('admin') // Optional: specify the panel name if needed
-                    \BezhanSalleh\FilamentShield\FilamentShieldPlugin::make()
-                    ->gridColumns([
-                        'default' => 1,
-                        'sm' => 2,
-                        'lg' => 3
-                    ])
-                    ->sectionColumnSpan(1)
-                    ->checkboxListColumns([
-                        'default' => 1,
-                        'sm' => 2,
-                        'lg' => 4,
-                    ])
-                    ->resourceCheckboxListColumns([
-                        'default' => 1,
-                        'sm' => 2,
-                    ]),
+                    // \BezhanSalleh\FilamentShield\FilamentShieldPlugin::make()
+                    // ->gridColumns([
+                    //     'default' => 1,
+                    //     'sm' => 2,
+                    //     'lg' => 3
+                    // ])
+                    // ->sectionColumnSpan(1)
+                    // ->checkboxListColumns([
+                    //     'default' => 1,
+                    //     'sm' => 2,
+                    //     'lg' => 4,
+                    // ])
+                    // ->resourceCheckboxListColumns([
+                    //     'default' => 1,
+                    //     'sm' => 2,
+                    // ]),
             ])
             // ->globalSearch(true)
             ->discoverResources(in: app_path('Filament/Resources'), for: 'App\\Filament\\Resources')

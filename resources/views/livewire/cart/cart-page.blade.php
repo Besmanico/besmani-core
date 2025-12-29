@@ -356,7 +356,7 @@
                                                         }
                                                         
                                                         ?>
-                                                        <tr class="cart-item-row {{ $itemIndex >= 1 ? 'hidden-item' : '' }} {{ $isDeleted ? 'deleted-item-row' : '' }} {{ $isPriceZero ? 'price-zero-row' : '' }}"
+                                                        <tr class="cart-item-row {{ $isDeleted ? 'deleted-item-row' : '' }} {{ $isPriceZero ? 'price-zero-row' : '' }}"
                                                             data-service="{{ $serviceId }}"
                                                             style="{{ $isDeleted ? 'border: 2px solid red !important;' : '' }} {{ $isPriceZero ? 'display: none !important;' : '' }}">
                                                             <td class="number">
@@ -459,7 +459,7 @@
                                                                 $totalDiscount += $customDiscountAmount;
                                                                 $grandTotal += $customTotalLastColumnFinal;
                                                                 ?>
-                                                                <tr class="cart-item-row custom-package-item-row {{ $itemIndex >= 1 ? 'hidden-item' : '' }} {{ $customIsPriceZero ? 'price-zero-row' : '' }}"
+                                                                <tr class="cart-item-row custom-package-item-row {{ $customIsPriceZero ? 'price-zero-row' : '' }}"
                                                                     data-service="{{ $serviceId }}"
                                                                     style="border: 2px solid #28a745 !important; {{ $customIsPriceZero ? 'display: none !important;' : '' }}">
                                                                     <td class="number">
@@ -510,35 +510,21 @@
                                                             @endif
                                                         @endforeach
                                                     @endif
-                                                    @if ($totalItems > 3)
+                                                    @if ($totalItems > 0)
                                                         <tr class="show-more-row" data-service="{{ $serviceId }}">
                                                             <td colspan="7"
                                                                 style="text-align: center; padding: 6px; background-color: #f8f9fa; border-top: 2px solid #e5e7eb;">
                                                                 <div
-                                                                    style="display: flex;  justify-content: space-between; align-items: center; gap: 15px;">
+                                                                    style="display: flex;  justify-content: flex-start; align-items: center; gap: 15px;">
                                                                     <button class="btn-edit-cart-items"
                                                                         data-service="{{ $serviceId }}"
                                                                         style="   background: #fac9ac;
-  color: #000;   border: none; padding: 8px 16px; border-radius: 4px; cursor: pointer;font-weight: bold; font-size: 14px; display: flex; align-items: center; gap: 6px; transition: all 0.3s ease;">
+ color: #000;   border: none; padding: 8px 16px; border-radius: 4px; cursor: pointer;font-weight: bold; font-size: 14px; display: flex; align-items: center; gap: 6px; transition: all 0.3s ease;">
                                                                         <i class="fa fa-edit"></i>
                                                                         <span class="edit-text">Edit</span>
                                                                         <span class="cancel-text"
                                                                             style="display: none;">Cancel</span>
                                                                     </button>
-                                                                    <button class="btn-show-more"
-                                                                        data-service="{{ $serviceId }}">
-                                                                        <span class="show-more-text">Show More
-                                                                            {{-- ({{ $totalItems - 3 }} more items) --}}
-                                                                        </span>
-                                                                        <span class="show-less-text"
-                                                                            style="display: none;">Show Less</span>
-                                                                        <i
-                                                                            class="fa fa-chevron-down show-more-icon"></i>
-                                                                        <i class="fa fa-chevron-up show-less-icon"
-                                                                            style="display: none;"></i>
-                                                                    </button>
-                                                                    <p></p>
-
                                                                 </div>
                                                                 {{-- add new item button --}}
                                                                 <div class="text-left mt-2 " style="display: none;">
@@ -1124,35 +1110,6 @@
 
         });
 
-        // Show More/Less functionality
-        $(document).ready(function() {
-            $('body').on('click', '.btn-show-more', function() {
-                var serviceId = $(this).data('service');
-                var $button = $(this);
-                var $hiddenItems = $('.hidden-item[data-service="' + serviceId + '"]');
-
-                if ($button.hasClass('active')) {
-                    // Hide items
-                    $hiddenItems.each(function(index) {
-                        var $item = $(this);
-                        setTimeout(function() {
-                            $item.removeClass('show');
-                        }, index * 30); // Stagger the animation
-                    });
-                    $button.removeClass('active');
-                } else {
-                    // Show items
-                    $hiddenItems.each(function(index) {
-                        var $item = $(this);
-                        setTimeout(function() {
-                            $item.addClass('show');
-                        }, index * 30); // Stagger the animation
-                    });
-                    $button.addClass('active');
-                }
-            });
-        });
-        // Show More/Less functionality
 
         // go-pdf-download
         // PDF Download functionality
@@ -1164,8 +1121,6 @@
             $spinner.show();
             $button.prop('disabled', true);
 
-            // Show all hidden items before printing
-            $('.hidden-item').addClass('show');
 
             $.ajax({
                 url: '{{ route('cart.downloadPdf') }}',
