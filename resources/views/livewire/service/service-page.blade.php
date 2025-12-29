@@ -85,19 +85,19 @@
                                     ->toArray();
                             @endphp
                             <div class="pricing-comparison__cell pricing-comparison__cell--package">
-                                @if (!Auth::guard('mainUsers')->check())
+                                {{-- @if (!Auth::guard('mainUsers')->check())
                                     <a class="w-100" onclick="storeRedirectUrlAndOpenLogin('{{ config('app.url') }}order/{{ $packageService->id }}/{{ $service['id'] }}')">
                                     @else
                                         <a class="w-100"
                                             href="{{ config('app.url') }}order/{{ $packageService->id }}/{{ $service['id'] }}">
-                                @endif
+                                @endif --}}
 
-                                @if (!blank($packageService->title))
+                                {{-- @if (!blank($packageService->title)) --}}
                                     <div class="pricing-comparison__title">{{ $packageService->title }}</div>
-                                @endif
-                                @if (!blank($package['price_display']))
+                                {{-- @endif --}}
+                                {{-- @if (!blank($package['price_display'])) --}}
                                     <div class="pricing-comparison__price">{{ $package['price_display'] }}</div>
-                                @endif
+                                {{-- @endif --}}
 
                                 @if (!blank($packageService->description))
                                     @php
@@ -141,20 +141,32 @@
                                                 @else
                                                     <span class="feature-icon feature-cross">✕</span>
                                                 @endif
-                                                {{ $feature['name'] }}
+                                                {{ $feature['name'] }} ({{ $feature['quantity'] }})
                                             </span>
                                         @endforeach
                                        
 
                                     </div>
                                     @if (!Auth::guard('mainUsers')->check())
-                                        <button onclick="storeRedirectUrlAndOpenLogin('{{ config('app.url') }}order/{{ $packageService->id }}/{{ $service['id'] }}')"
-                                            class="btn btn-green btn-order-now w-100">Order Now</button>
+                                        {{-- <button onclick="storeRedirectUrlAndOpenLogin('{{ config('app.url') }}order/{{ $packageService->id }}/{{ $service['id'] }}')"
+                                            class="btn btn-green btn-order-now w-100">Order Now</button> --}}
+
+                                            <button onclick="storeRedirectUrlAndOpenLogin('{{ config('app.url') }}order/{{ $packageService->id }}/{{ $service['id'] }}')"
+                                                class="btn btn-green btn-order-now w-100">Add to Cart</button>
+
                                     @else
-                                        <a class="w-100"
+                                        {{-- <a class="w-100"
                                             href="{{ config('app.url') }}order/{{ $packageService->id }}/{{ $service['id'] }}">
                                             <button class="btn btn-green btn-order-now w-100">Order Now</button>
-                                        </a>
+                                        </a> --}}
+
+                                       
+                                        <button onclick="addToCart('{{ $packageService->id }}', '{{ $service['id'] }}', this)" class="btn btn-green btn-order-now w-100">
+                                            <span class="button-text">Add to Cart</span>
+                                            <i class="fa fa-spinner fa-spin" style="display: none; margin-left: 8px;"></i>
+                                        </button>
+                                    
+                                        
                                     @endif
                                 @endif
                                 </a>
@@ -194,6 +206,53 @@
     </div>
 
 
+    <script>
+        //    addToCart
+        function addToCart(package_service_id, service_id, buttonElement) {
+            var $button = $(buttonElement);
+            var $spinner = $button.find('.fa-spinner');
+            var $buttonText = $button.find('.button-text');
+            
+            // Show loading spinner and disable button
+            $spinner.show();
+            $button.prop('disabled', true);
+            $button.css('opacity', '0.7');
+            $button.css('cursor', 'not-allowed');
+
+            $.ajax({
+                url: '{{ route('addToCart') }}',
+                type: 'POST',
+                data: {
+                    service_id: service_id,
+                    package_service_id: package_service_id,
+                    _token: '{{ csrf_token() }}'
+                },
+                success: function(response) {
+                    // Hide loading spinner and re-enable button
+                    $spinner.hide();
+                    $button.prop('disabled', false);
+                    $button.css('opacity', '1');
+                    $button.css('cursor', 'pointer');
+                    
+                    // Show success modal
+                    if (response.success) {
+                        window.location.href = '{{ route('cart') }}';
+                        // openCartSuccessModal();
+                    }
+                },
+                error: function(response) {
+                    // Hide loading spinner and re-enable button
+                    $spinner.hide();
+                    $button.prop('disabled', false);
+                    $button.css('opacity', '1');
+                    $button.css('cursor', 'pointer');
+                    
+                    // Show error message
+                    alert('An error occurred. Please try again.');
+                }
+            });
+        }
+    </script> 
 
     <script>
         // Store redirect URL and open login modal
