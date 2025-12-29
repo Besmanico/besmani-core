@@ -124,7 +124,7 @@
                             </div>
                             <button class="btn-checkout-pay go-pay goPayAllNow">
                                 <i class="fa fa-credit-card"></i>
-                                Pay Orders
+                               Checkout
                             </button>
                         </div>
                     </div>
@@ -241,14 +241,15 @@
                                         <div class="addr-box mb-3 mb-md-0 me-md-3">
                                             <div class="addr-title">Billing Address</div>
                                             <div class="addr-body">
-                                                <textarea class="w-100 bg-none BillingAddressEdit-{{ $packageService->id }}">{{ $BillingAddress }}</textarea>
+                                               <textarea class="w-100 bg-none BillingAddressEdit-{{ $packageService->id }}">{{ $userInfo->address }} {{ $userInfo->city }} {{ $userInfo->province }} {{ $userInfo->postal_code }} {{ $userInfo->country_name }}</textarea> 
+                                               
                                             </div>
                                         </div>
                                         <div class="addr-box">
                                             <div class="addr-title">Shipping Address</div>
-                                            <div class="addr-body">
+                                            <div class="addr-body" style="text-align: left !important;">
 
-                                                <textarea class="w-100 bg-none ShipingAddressEdit-{{ $packageService->id }}">{{ $shippingAddress }}</textarea>
+                                                <textarea  class="w-100 bg-none ShipingAddressEdit-{{ $packageService->id }}">{{ $userInfo->address }} {{ $userInfo->city }} {{ $userInfo->province }} {{ $userInfo->postal_code }} {{ $userInfo->country_name }}  </textarea>
 
                                             </div>
                                         </div>
@@ -271,10 +272,7 @@
                                                         <th>Item Name</th>
                                                         <th style="min-width:80px;">Quantity</th>
                                                         <th style="min-width:90px;"> $Price</th>
-                                                        <th style="min-width:100px;">Item Total*</th>
                                                         <th style="min-width:100px;">Discount</th>
-                                                        <th style="min-width:120px;">Total After Discount*</th>
-                                                        <th style="min-width:120px;">testttt*</th>
                                                         <th style="min-width:140px;">Tax & Fee</th>
                                                         <th style="min-width:90px;">Total</th>
                                                     </tr>
@@ -296,6 +294,9 @@
                                                         
                                                         // Check if item is deleted (has customeDeleteItem)
                                                         $isDeleted = $packageServiceItem->customeDeleteItem !== null;
+                                                        
+                                                        // Check if price is 0
+                                                        $isPriceZero = ($packageServiceItem->orderItem->price == 0);
                                                         
                                                         // Add to subtotal only if not deleted
                                                         if (!$isDeleted) {
@@ -355,9 +356,9 @@
                                                         }
                                                         
                                                         ?>
-                                                        <tr class="cart-item-row {{ $itemIndex >= 1 ? 'hidden-item' : '' }} {{ $isDeleted ? 'deleted-item-row' : '' }}"
+                                                        <tr class="cart-item-row {{ $itemIndex >= 1 ? 'hidden-item' : '' }} {{ $isDeleted ? 'deleted-item-row' : '' }} {{ $isPriceZero ? 'price-zero-row' : '' }}"
                                                             data-service="{{ $serviceId }}"
-                                                            style="{{ $isDeleted ? 'border: 2px solid red !important;' : '' }}">
+                                                            style="{{ $isDeleted ? 'border: 2px solid red !important;' : '' }} {{ $isPriceZero ? 'display: none !important;' : '' }}">
                                                             <td class="number">
                                                                 <div
                                                                     style="display: flex; align-items: center; gap: 8px;">
@@ -391,23 +392,12 @@
                                                                 = {{ number_format($itemTotal, 2) }}
 
                                                             </td>
-
-
-
-                                                            <td class="money">{{ number_format($itemTotal, 2) }}
-
-
-                                                            </td>
                                                             <td class="money">
                                                                 {{ $TypeDiscountDollar }}{{ $packageServiceItem->orderItem->discount }}{{ $TypeDiscount }}
                                                                 <br>
                                                                 =
                                                                 {{ number_format($itemTotalWithDiscount, 2) }}
                                                             </td>
-                                                            <td class="money">
-                                                                {{ number_format($itemTotalWithDiscount, 2) }}
-                                                            </td>
-                                                            <td class="money">{{ number_format($testttt, 2) }}</td>
                                                             <td class="muted">
                                                                 {{ $packageServiceItem->orderItem->tax }}%
                                                                 <br>
@@ -431,6 +421,9 @@
                                                                 // Calculate for custom package item (quantity = 1)
                                                                 $customQuantity = 1;
                                                                 $customItemTotal = $customQuantity * $customePackageItem->orderItem->price;
+                                                                
+                                                                // Check if price is 0
+                                                                $customIsPriceZero = ($customePackageItem->orderItem->price == 0);
                                                                 
                                                                 // Add to subtotal
                                                                 $subtotal += $customItemTotal;
@@ -466,9 +459,9 @@
                                                                 $totalDiscount += $customDiscountAmount;
                                                                 $grandTotal += $customTotalLastColumnFinal;
                                                                 ?>
-                                                                <tr class="cart-item-row custom-package-item-row {{ $itemIndex >= 1 ? 'hidden-item' : '' }}"
+                                                                <tr class="cart-item-row custom-package-item-row {{ $itemIndex >= 1 ? 'hidden-item' : '' }} {{ $customIsPriceZero ? 'price-zero-row' : '' }}"
                                                                     data-service="{{ $serviceId }}"
-                                                                    style="border: 2px solid #28a745 !important;">
+                                                                    style="border: 2px solid #28a745 !important; {{ $customIsPriceZero ? 'display: none !important;' : '' }}">
                                                                     <td class="number">
                                                                         <div
                                                                             style="display: flex; align-items: center; gap: 8px;">
@@ -497,18 +490,11 @@
                                                                         = {{ number_format($customItemTotal, 2) }}
                                                                     </td>
                                                                     <td class="money">
-                                                                        {{ number_format($customItemTotal, 2) }}</td>
-                                                                    <td class="money">
                                                                         {{ $customTypeDiscountDollar }}{{ $customePackageItem->orderItem->discount }}{{ $customTypeDiscount }}
                                                                         <br>
                                                                         =
                                                                         {{ number_format($customItemTotalWithDiscount, 2) }}
                                                                     </td>
-                                                                    <td class="money">
-                                                                        {{ number_format($customItemTotalWithDiscount, 2) }}
-                                                                    </td>
-                                                                    <td class="money">
-                                                                        {{ number_format($customTestttt, 2) }}</td>
                                                                     <td class="muted">
                                                                         {{ $customePackageItem->orderItem->tax }}%
                                                                         <br>
@@ -526,13 +512,14 @@
                                                     @endif
                                                     @if ($totalItems > 3)
                                                         <tr class="show-more-row" data-service="{{ $serviceId }}">
-                                                            <td colspan="10"
+                                                            <td colspan="7"
                                                                 style="text-align: center; padding: 6px; background-color: #f8f9fa; border-top: 2px solid #e5e7eb;">
                                                                 <div
-                                                                    style="display: flex; justify-content: space-between; align-items: center; gap: 15px;">
+                                                                    style="display: flex;  justify-content: space-between; align-items: center; gap: 15px;">
                                                                     <button class="btn-edit-cart-items"
                                                                         data-service="{{ $serviceId }}"
-                                                                        style="background: #f8f9fa; color: #000; border: none; padding: 8px 16px; border-radius: 4px; cursor: pointer; font-size: 14px; display: flex; align-items: center; gap: 6px; transition: all 0.3s ease;">
+                                                                        style="   background: #fac9ac;
+  color: #000;   border: none; padding: 8px 16px; border-radius: 4px; cursor: pointer;font-weight: bold; font-size: 14px; display: flex; align-items: center; gap: 6px; transition: all 0.3s ease;">
                                                                         <i class="fa fa-edit"></i>
                                                                         <span class="edit-text">Edit</span>
                                                                         <span class="cancel-text"
@@ -541,7 +528,7 @@
                                                                     <button class="btn-show-more"
                                                                         data-service="{{ $serviceId }}">
                                                                         <span class="show-more-text">Show More
-                                                                            ({{ $totalItems - 3 }} more items)
+                                                                            {{-- ({{ $totalItems - 3 }} more items) --}}
                                                                         </span>
                                                                         <span class="show-less-text"
                                                                             style="display: none;">Show Less</span>
@@ -575,7 +562,7 @@
 
                                     <div class="quote-footer">
                                         <div class="note">
-                                            Thank you for your business. Prices in USD. This quote is valid for 30 days
+                                            Thank you for your business. Prices are in USD. This quote is valid for 30 days
                                             from
                                             the
                                             issued date.
@@ -605,14 +592,20 @@
                                         <div class="signature-container">
                                             <div class="signature-row">
                                                 <div class="title-signature">Client
-                                                    Sign. </div>
+                                                    Signature. </div>
                                                 <div class="signature-input-wrapper">
 
                                                     <div class="signature-input-border">
-                                                        <input type="text"
+                                                        <select class="w-100 input-signature signature-besmani-formal">
+                                                            <option value="">select</option>
+                                                            <option value="{{ $mainUser->fl_name }} {{ $mainUser->last_name }}">{{ $mainUser->fl_name }} {{ $mainUser->last_name }}</option>
+                                                        </select>
+                                                        {{-- <input type="text"
                                                             class="w-100 input-signature signature-besmani-formal"
                                                             value="{{ $mainUser->fl_name }} {{ $mainUser->last_name }}">
-                                                    </div>
+                                                   --}}
+                                                  
+                                                        </div>
                                                 </div>
                                                 <div class="title-signature">Date:</div>
                                                 <div class="signature-date-wrapper">
@@ -632,11 +625,12 @@
                                                     {{-- font cursive --}}
                                                     Besmani
 
-                                                    Sign.</div>
+                                                    Signature.</div>
                                                 <div class="signature-input-wrapper">
 
                                                     <div class="signature-input-border">
                                                         <input type="text"
+                                                        disabled
                                                             class="w-100 input-signature signature-besmani-formal"
                                                             value="Besmani">
 
@@ -647,6 +641,7 @@
 
                                                     <div class="signature-input-border">
                                                         <input type="text"
+                                                        disabled
                                                             class="w-100 input-signature date-signature"
                                                             value="{{ \Carbon\Carbon::today()->format('m/d/Y') }}">
                                                     </div>
@@ -724,9 +719,9 @@
                     <div class="description-modal-title" id="description-modal-title">Pay
 
 
-                        <strong class="text-green"
+                        {{-- <strong class="text-green"
                             style="color: #47da47;">${{ number_format($grandTotal ?? ($grandGrandTotal ?? 0), 2) }}
-                        </strong>
+                        </strong> --}}
 
                     </div>
                 </div>
@@ -794,9 +789,42 @@
                             {{-- row-item-amount-date --}}
                             <br>
                             <br>
+                            
+                            {{-- Payment Options Message and Radio Buttons --}}
+                            <div class="payment-options-section" style="margin-bottom: 20px; padding: 15px; background-color: #f8f9fa; border-radius: 8px; border: 1px solid #e5e7eb;">
+                                <p style="font-size: 14px; color: #333; margin-bottom: 15px; font-weight: 500;">
+                                    Online payment is currently not available.<br>
+                                    To complete your purchase, please choose one of the payment options below.
+                                </p>
+                                
+                                <div class="payment-radio-group" style="margin-left: 10px;">
+                                    <div class="payment-option" style="margin-bottom: 15px; padding: 12px; background-color: #ffffff; border-radius: 6px; border: 2px solid #e5e7eb; transition: all 0.3s ease;">
+                                        <label style="display: flex; align-items: flex-start; cursor: pointer; font-size: 14px; color: #333; margin: 0;">
+                                            <input type="radio" name="payment_method" value="phone" 
+                                                style="margin-right: 12px; margin-top: 3px; cursor: pointer; width: 18px; height: 18px; accent-color: #10b981;">
+                                            <span style="flex: 1;">
+                                                <strong style="display: block; margin-bottom: 4px; color: #1f2937;">1. Pay by Phone <b class="text-green" style="color: #10b981;">[ Zelle:  +1(949)432-8383 ]</b></strong>
+                                                <span style="color: #666; font-size: 13px; line-height: 1.4;">Call us to complete payment securely.</span>
+                                            </span>
+                                        </label>
+                                    </div>
+                                    
+                                    <div class="payment-option" style="padding: 12px; background-color: #ffffff; border-radius: 6px; border: 2px solid #e5e7eb; transition: all 0.3s ease;">
+                                        <label style="display: flex; align-items: flex-start; cursor: pointer; font-size: 14px; color: #333; margin: 0;">
+                                            <input type="radio" name="payment_method" value="check" 
+                                                style="margin-right: 12px; margin-top: 3px; cursor: pointer; width: 18px; height: 18px; accent-color: #10b981;">
+                                            <span style="flex: 1;">
+                                                <strong style="display: block; margin-bottom: 4px; color: #1f2937;">2. Pay by Check</strong>
+                                                <span style="color: #666; font-size: 13px; line-height: 1.4;">Mail or deliver a check using the billing details provided.</span>
+                                            </span>
+                                        </label>
+                                    </div>
+                                </div>
+                            </div>
+
                             <div class="form-group mt-3 flex justify-content-between">
 
-                                <button type="submit" class="btn-green btn-order-submit-pay  goCheckoutPay">Submit
+                                <button type="submit" class="btn-green btn-order-submit-pay  goCheckoutPay" disabled style="opacity: 0.6; cursor: not-allowed;">Submit
 
                                     <i class="fa fa-spinner fa-spin" style="display: none; margin-left: 8px;"></i>
                                 </button>
@@ -806,6 +834,7 @@
                                         style="color: #ea1617;">${{ number_format($grandGrandTotal ?? 0, 2) }}</b>
                                 </div>
                             </div>
+
                         </form>
                     </div>
                 </div>
@@ -813,6 +842,40 @@
             </div>
         </div>
         <!-- pay Modal end -->
+
+        <!-- Order Confirmation Modal -->
+        <div id="order-confirmation-modal" class="description-modal-overlay" style="display: none;">
+            <div class="description-modal-container">
+                <button class="description-modal-close" onclick="closeOrderConfirmationModal()">×</button>
+                <div class="description-modal-header">
+                    <div class="description-modal-title">Order Confirmation</div>
+                </div>
+                <div class="description-modal-body">
+                    <div style="text-align: center; padding: 20px;">
+                        <div style="font-size: 48px; color: #10b981; margin-bottom: 20px;">
+                            <i class="fa fa-check-circle"></i>
+                        </div>
+                        <h2 style="color: #1f2937; margin-bottom: 15px; font-size: 24px;">Thank you for your order.</h2>
+                        <p style="color: #4b5563; font-size: 16px; margin-bottom: 10px;">
+                            <strong>Confirmation:</strong> <span id="confirmation-number" style="color: #10b981; font-weight: bold; font-size: 18px;">######</span>
+                        </p>
+                        <strong>
+                            You can view, edit, or track your order anytime from the Orders menu.
+                        </strong>
+                        <p style="color: #6b7280; font-size: 14px; line-height: 1.6; margin-top: 20px;">
+                            Our team will confirm your payment and begin your project immediately.
+                        </p>
+                        <div style="margin-top: 30px;">
+                            <button onclick="closeOrderConfirmationModal(); window.location.href='{{ config('app.url') }}panel';" 
+                                class="btn-green btn-order-submit-pay" style="min-width: 150px;">
+                                Go to Dashboard
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!-- Order Confirmation Modal end -->
 
         <style>
             .payment-form .row-item-amount-date {
@@ -826,6 +889,44 @@
             }
 
             .payment-form .error-field {
+                border: 2px solid #dc3545 !important;
+                background-color: #fff5f5 !important;
+            }
+
+            /* Payment Radio Button Styles */
+            .payment-option {
+                position: relative;
+            }
+
+            .payment-option:hover {
+                border-color: #10b981 !important;
+                background-color: #f0fdf4 !important;
+            }
+
+            .payment-option input[type="radio"]:checked + span {
+                color: #059669;
+            }
+
+            .payment-option.selected {
+                border-color: #10b981 !important;
+                background-color: #f0fdf4 !important;
+                box-shadow: 0 0 0 3px rgba(16, 185, 129, 0.1);
+            }
+
+            .payment-option label {
+                width: 100%;
+            }
+
+            .payment-option input[type="radio"] {
+                flex-shrink: 0;
+            }
+
+            /* Validation error styles for required fields */
+            .ContactNameEdit.error-field,
+            .BillingAddressEdit.error-field,
+            .ShipingAddressEdit.error-field,
+            .signature-besmani-formal.error-field,
+            .date-signature.error-field {
                 border: 2px solid #dc3545 !important;
                 background-color: #fff5f5 !important;
             }
@@ -846,6 +947,45 @@
                 color: red !important;
             }
 
+            /* Hide rows with zero price */
+            .price-zero-row {
+                display: none !important;
+            }
+
+            /* Lighter colors for buttons */
+            .btn-order-submit-pay {
+                background-color: #6ee068 !important;
+                opacity: 0.85;
+                color: #000;
+            }
+
+            .btn-order-submit-pay:hover {
+                background-color: #5dd357 !important;
+                opacity: 0.9;
+            }
+
+            .btn-order-submit-yellow {
+                background-color: #f9d085 !important;
+                opacity: 0.85;
+                color: #000;
+            }
+
+            .btn-order-submit-yellow:hover {
+                background-color: #f8c266 !important;
+                opacity: 0.9;
+            }
+
+            .delete-button {
+                background-color: #f15c5d !important;
+                opacity: 0.85;
+                color: #000;
+            }
+
+            .delete-button:hover {
+                background-color: #f04a4b !important;
+                opacity: 0.9;
+            }
+
             /* Custom package item row style */
             .custom-package-item-row {
                 border: 2px solid #28a745 !important;
@@ -858,6 +998,7 @@
             /* Edit button and delete icon styles for cart */
             .btn-edit-cart-items {
                 transition: all 0.3s ease;
+                border:2px solid #fa8d4d  !important;
             }
 
             .btn-edit-cart-items:hover {
@@ -1116,6 +1257,108 @@
 
         // goPayAllNow
         $('body').on('click', '.goPayAllNow', function(e) {
+            e.preventDefault();
+            
+            var isValid = true;
+            var errorMessages = [];
+            
+            // Validate Contact Name - check all contact name inputs
+            var $contactNames = $('.ContactNameEdit');
+            $contactNames.each(function() {
+                var contactName = $(this).val().trim();
+                if (!contactName) {
+                    isValid = false;
+                    $(this).css('border', '2px solid #dc3545').addClass('error-field');
+                    if (errorMessages.indexOf('Contact Name is required') === -1) {
+                        errorMessages.push('Contact Name is required');
+                    }
+                } else {
+                    $(this).css('border', '').removeClass('error-field');
+                }
+            });
+            
+            // Validate Billing Address - check all billing address textareas
+            var $billingAddresses = $('.BillingAddressEdit');
+            $billingAddresses.each(function() {
+                var billingAddress = $(this).val().trim();
+                if (!billingAddress) {
+                    isValid = false;
+                    $(this).css('border', '2px solid #dc3545').addClass('error-field');
+                    if (errorMessages.indexOf('Billing Address is required') === -1) {
+                        errorMessages.push('Billing Address is required');
+                    }
+                } else {
+                    $(this).css('border', '').removeClass('error-field');
+                }
+            });
+            
+            // Validate Shipping Address - check all shipping address textareas
+            var $shippingAddresses = $('.ShipingAddressEdit');
+            $shippingAddresses.each(function() {
+                var shippingAddress = $(this).val().trim();
+                if (!shippingAddress) {
+                    isValid = false;
+                    $(this).css('border', '2px solid #dc3545').addClass('error-field');
+                    if (errorMessages.indexOf('Shipping Address is required') === -1) {
+                        errorMessages.push('Shipping Address is required');
+                    }
+                } else {
+                    $(this).css('border', '').removeClass('error-field');
+                }
+            });
+            
+            // Validate Client Signature - check only select elements (not disabled Besmani inputs)
+            var $signatures = $('.signature-row').not('.signature-row-second').find('.signature-besmani-formal');
+            $signatures.each(function() {
+                var signature = $(this).val();
+                if (!signature || signature === '' || signature === null) {
+                    isValid = false;
+                    $(this).css('border', '2px solid #dc3545').addClass('error-field');
+                    if (errorMessages.indexOf('Client Signature is required') === -1) {
+                        errorMessages.push('Client Signature is required');
+                    }
+                } else {
+                    $(this).css('border', '').removeClass('error-field');
+                }
+            });
+            
+            // Validate Date Signature - check all date signature inputs (only client dates, not Besmani)
+            // Select date inputs in signature-row but not in signature-row-second
+            $('.signature-row').not('.signature-row-second').each(function() {
+                var $dateInput = $(this).find('.date-signature');
+                var dateSignature = $dateInput.val().trim();
+                if (!dateSignature) {
+                    isValid = false;
+                    $dateInput.css('border', '2px solid #dc3545').addClass('error-field');
+                    if (errorMessages.indexOf('Date Signature is required') === -1) {
+                        errorMessages.push('Date Signature is required');
+                    }
+                } else {
+                    $dateInput.css('border', '').removeClass('error-field');
+                }
+            });
+            
+            // If validation fails, show error message and scroll to first error
+            if (!isValid) {
+                var errorMessage = 'Please fill in all required fields:\n' + errorMessages.join('\n');
+                alert(errorMessage);
+                
+                // Scroll to first error field
+                var $firstError = $('.ContactNameEdit, .BillingAddressEdit, .ShipingAddressEdit, .signature-besmani-formal, .date-signature').filter(function() {
+                    return $(this).css('border-color') === 'rgb(220, 53, 69)' || $(this).css('border-color') === '#dc3545';
+                }).first();
+                
+                if ($firstError.length > 0) {
+                    $('html, body').animate({
+                        scrollTop: $firstError.offset().top - 100
+                    }, 500);
+                    $firstError.focus();
+                }
+                
+                return false;
+            }
+            
+            // If all validations pass, open the modal
             openDescriptionModal();
             // Initialize balance and button state
             setTimeout(function() {
@@ -1129,9 +1372,21 @@
             e.preventDefault();
             e.stopPropagation();
 
-            var ContactName = $('.ContactNameEdit-{{ $packageService->id ?? 0 }} ?: ""').val();
-            var BillingAddress = $('.BillingAddressEdit-{{ $packageService->id ?? 0 }} ?: ""').val();
-            var ShipingAddress = $('.ShipingAddressEdit-{{ $packageService->id ?? 0 }} ?: ""').val();
+            var ContactName = $('.ContactNameEdit-{{ $packageService->id ?? 0 }}').val() || '';
+            var BillingAddress = $('.BillingAddressEdit-{{ $packageService->id ?? 0 }}').val() || '';
+            var ShipingAddress = $('.ShipingAddressEdit-{{ $packageService->id ?? 0 }}').val() || '';
+            
+            // Get signature values - check all signature fields (client signatures only, not Besmani)
+            var signature_client = '';
+            var signature_date = '';
+            var $clientSignatureRow = $('.signature-row').not('.signature-row-second').first();
+            if ($clientSignatureRow.length > 0) {
+                var $signatureSelect = $clientSignatureRow.find('.signature-besmani-formal');
+                signature_client = $signatureSelect.val() || '';
+                
+                var $dateInput = $clientSignatureRow.find('.date-signature');
+                signature_date = $dateInput.val().trim() || '';
+            }
 
             // Get the form element
             var $form = $(this).closest('form');
@@ -1162,6 +1417,97 @@
                 $firstDate.addClass('error-field');
                 $firstDate.focus();
                 isValid = false;
+            }
+
+            // Validate signature_client - check all client signature fields
+            var signatureValid = true;
+            var signatureErrorMessage = '';
+            var $firstInvalidSignature = null;
+            
+            $('.signature-row').not('.signature-row-second').each(function() {
+                var $signatureSelect = $(this).find('.signature-besmani-formal');
+                var sigValue = $signatureSelect.val();
+                
+                if (!sigValue || sigValue === '' || sigValue === null) {
+                    signatureValid = false;
+                    $signatureSelect.css('border', '2px solid #dc3545').addClass('error-field');
+                    if (!$firstInvalidSignature) {
+                        $firstInvalidSignature = $signatureSelect;
+                        signatureErrorMessage = 'Please select a Client Signature for all service cards.';
+                    }
+                } else {
+                    $signatureSelect.css('border', '').removeClass('error-field');
+                }
+            });
+            
+            if (!signatureValid) {
+                isValid = false;
+                alert(signatureErrorMessage || 'Please select a Client Signature.');
+                if ($firstInvalidSignature && $firstInvalidSignature.length > 0) {
+                    $('html, body').animate({
+                        scrollTop: $firstInvalidSignature.offset().top - 100
+                    }, 500);
+                    $firstInvalidSignature.focus();
+                }
+                $('.fa-spinner').hide();
+                $('.goCheckoutPay').prop('disabled', false);
+                return false;
+            }
+
+            // Validate signature_date - check all client date signature fields
+            var dateValid = true;
+            var dateErrorMessage = '';
+            var $firstInvalidDate = null;
+            
+            $('.signature-row').not('.signature-row-second').each(function() {
+                var $dateInput = $(this).find('.date-signature');
+                var dateValue = $dateInput.val().trim();
+                
+                if (!dateValue || dateValue === '') {
+                    dateValid = false;
+                    $dateInput.css('border', '2px solid #dc3545').addClass('error-field');
+                    if (!$firstInvalidDate) {
+                        $firstInvalidDate = $dateInput;
+                        dateErrorMessage = 'Please enter a Date Signature for all service cards.';
+                    }
+                } else {
+                    $dateInput.css('border', '').removeClass('error-field');
+                }
+            });
+            
+            if (!dateValid) {
+                isValid = false;
+                alert(dateErrorMessage || 'Please enter a Date Signature.');
+                if ($firstInvalidDate && $firstInvalidDate.length > 0) {
+                    $('html, body').animate({
+                        scrollTop: $firstInvalidDate.offset().top - 100
+                    }, 500);
+                    $firstInvalidDate.focus();
+                }
+                $('.fa-spinner').hide();
+                $('.goCheckoutPay').prop('disabled', false);
+                return false;
+            }
+            
+            // Update signature_client and signature_date values from first valid row
+            var $firstClientSignatureRow = $('.signature-row').not('.signature-row-second').first();
+            if ($firstClientSignatureRow.length > 0) {
+                signature_client = $firstClientSignatureRow.find('.signature-besmani-formal').val() || '';
+                signature_date = $firstClientSignatureRow.find('.date-signature').val().trim() || '';
+            }
+
+            // Validate payment method radio button
+            var paymentMethod = $form.find('input[name="payment_method"]:checked').val();
+            if (!paymentMethod) {
+                alert('Please select a payment method (Pay by Phone or Pay by Check).');
+                $('.payment-options-section').css('border-color', '#dc3545');
+                isValid = false;
+                // Stop execution if payment method not selected
+                $('.fa-spinner').hide();
+                $('.goCheckoutPay').prop('disabled', false);
+                return false;
+            } else {
+                $('.payment-options-section').css('border-color', '#e5e7eb');
             }
 
             // If validation fails, stop here
@@ -1203,20 +1549,19 @@
                     ContactName: ContactName,
                     BillingAddress: BillingAddress,
                     ShipingAddress: ShipingAddress,
+                    payment_method: paymentMethod,
+                    signature_client: signature_client,
+                    signature_date: signature_date,
                     _token: '{{ csrf_token() }}'
                 },
-                success: function(response) {
-                    $('.fa-spinner').hide();
+                success: function(response) { 
+                     $('.fa-spinner').hide();
                     $('.goCheckoutPay').prop('disabled', false);
 
-                    // Show success modal
+                    // Show success modal with confirmation
                     if (response.success) {
-                        if (typeof openCartSuccessModal === 'function') {
-                            openCartSuccessModal();
-                        } else {
-                            window.location.href = '{{ config('app.url') }}panel';
-
-                        }
+                        var confirmationNumber = response.tracking_code ||  '######';
+                        openOrderConfirmationModal(confirmationNumber);
                     }
                 },
                 error: function(response) {
@@ -1247,6 +1592,34 @@
             $('#description-modal').fadeOut(300);
             $('body').css('overflow', 'auto');
         }
+
+        // Order Confirmation Modal Functions
+        function openOrderConfirmationModal(confirmationNumber) {
+            $('#confirmation-number').text(confirmationNumber);
+            $('#order-confirmation-modal').fadeIn(300);
+            $('body').css('overflow', 'hidden');
+            // Close payment modal
+            closeDescriptionModal();
+        }
+
+        function closeOrderConfirmationModal() {
+            $('#order-confirmation-modal').fadeOut(300);
+            $('body').css('overflow', 'auto');
+        }
+
+        // Close confirmation modal when clicking outside
+        $(document).on('click', '#order-confirmation-modal', function(e) {
+            if ($(e.target).hasClass('description-modal-overlay')) {
+                closeOrderConfirmationModal();
+            }
+        });
+
+        // Close confirmation modal with Escape key
+        $(document).on('keydown', function(e) {
+            if (e.key === 'Escape' && $('#order-confirmation-modal').is(':visible')) {
+                closeOrderConfirmationModal();
+            }
+        });
 
         // Calculate balance and update button state
         function calculateBalance() {
@@ -1588,5 +1961,91 @@
             if (e.key === 'Escape' && $('#add-item-modal').is(':visible')) {
                 closeAddItemModal();
             }
+        });
+
+        // Payment Radio Button Interaction
+        $(document).ready(function() {
+            // Function to check payment method and enable/disable submit button
+            function checkPaymentMethod() {
+                var paymentMethod = $('input[name="payment_method"]:checked').val();
+                var $submitButton = $('.goCheckoutPay');
+                
+                if (paymentMethod) {
+                    // Enable submit button
+                    $submitButton.prop('disabled', false);
+                    $submitButton.css('opacity', '1');
+                    $submitButton.css('cursor', 'pointer');
+                } else {
+                    // Disable submit button
+                    $submitButton.prop('disabled', true);
+                    $submitButton.css('opacity', '0.6');
+                    $submitButton.css('cursor', 'not-allowed');
+                }
+            }
+
+            // Handle radio button change
+            $(document).on('change', 'input[name="payment_method"]', function() {
+                // Remove error styling when a selection is made
+                $('.payment-options-section').css('border-color', '#e5e7eb');
+                
+                // Visual feedback for selected option
+                $('.payment-option').removeClass('selected');
+                $(this).closest('.payment-option').addClass('selected');
+                
+                // Enable/disable submit button
+                checkPaymentMethod();
+            });
+
+            // Make entire payment option clickable
+            $(document).on('click', '.payment-option', function(e) {
+                // Don't trigger if clicking directly on the radio button (it handles itself)
+                if (!$(e.target).is('input[type="radio"]') && !$(e.target).closest('input[type="radio"]').length) {
+                    var $radio = $(this).find('input[type="radio"]');
+                    $radio.prop('checked', true).trigger('change');
+                }
+            });
+
+            // Initialize selected state if a radio is already checked
+            $('input[name="payment_method"]:checked').each(function() {
+                $(this).closest('.payment-option').addClass('selected');
+            });
+
+            // Check payment method when modal opens
+            $(document).on('click', '.goPayAllNow', function() {
+                setTimeout(function() {
+                    checkPaymentMethod();
+                }, 300);
+            });
+
+            // Initial check
+            checkPaymentMethod();
+        });
+
+        // Clear validation errors when user starts typing/selecting
+        $(document).ready(function() {
+            // Clear error styling on Contact Name input
+            $(document).on('input', '.ContactNameEdit', function() {
+                $(this).css('border', '').removeClass('error-field');
+            });
+            
+            // Clear error styling on Billing Address textarea
+            $(document).on('input', '.BillingAddressEdit', function() {
+                $(this).css('border', '').removeClass('error-field');
+            });
+            
+            // Clear error styling on Shipping Address textarea
+            $(document).on('input', '.ShipingAddressEdit', function() {
+                $(this).css('border', '').removeClass('error-field');
+            });
+            
+            // Clear error styling on Client Signature select
+            $(document).on('change', '.signature-besmani-formal', function() {
+                $(this).css('border', '').removeClass('error-field');
+            });
+            
+            // Clear error styling on Date Signature input
+            $(document).on('input', '.date-signature', function() {
+                $(this).css('border', '').removeClass('error-field');
+            });
         });
     </script>

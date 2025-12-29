@@ -127,22 +127,20 @@
                             <div class="addr-box mb-3 mb-md-0 me-md-3">
                                 <div class="addr-title">Billing Address</div>
                                 <div class="addr-body">
-                                    {{ $CompaniName }}
-                                    <br>
+                                    {{-- {{ $CompaniName }}
+                                    <br> --}}
                                     {{-- 113 Waterworks Way #140,<br> --}}
-                                   {{ $userInfo->address }} {{ $userInfo->postal_code }} 
+                                   {{ $userInfo->address }} {{ $userInfo->city }} {{ $userInfo->province }} {{ $userInfo->postal_code }} {{ $userInfo->country_name }} 
                                 </div>
                             </div>
                             <div class="addr-box">
                                 <div class="addr-title">Shipping Address</div>
                                 <div class="addr-body">
-                                    {{ $CompaniName }}
-                                    <br>
+                                    {{-- {{ $CompaniName }}
+                                    <br> --}}
                                     {{-- 113 Waterworks Way #140,<br> --}}
-                                   {{ $userInfo->address }} {{ $userInfo->postal_code }} 
-                                    {{-- <textarea class="w-100 bg-none">Vascular Cosmetics  113 Waterworks Way #140, 
-                                    Irvine, CA 92618
-                                </textarea> --}}
+                                   
+                         <textarea class="w-100 bg-none">{{ $userInfo->address }} {{ $userInfo->city }} {{ $userInfo->province }} {{ $userInfo->postal_code }} {{ $userInfo->country_name }}</textarea>  
 
                                 </div>
                             </div>
@@ -156,9 +154,7 @@
                                             <th>Item Name</th>
                                             <th style="min-width:80px;">Quantity</th>
                                             <th style="min-width:90px;"> $Price</th>
-                                            <th style="min-width:100px;">Item Total*</th>
                                             <th style="min-width:100px;">Discount</th>
-                                            <th style="min-width:120px;">Total After Discount*</th>
                                             {{-- <th style="min-width:120px;">testttt*</th> --}}
                                             <th style="min-width:140px;">Tax & Fee</th>
                                             <th style="min-width:90px;">Total</th>
@@ -243,20 +239,12 @@
                                                     = {{ number_format($itemTotal, 2) }}
 
                                                 </td>
-
-
-
-                                                <td class="money">{{ number_format($itemTotal, 2) }}
-
-
-                                                </td>
                                                 <td class="money">
                                                     {{ $TypeDiscountDollar }}{{ $packageServiceItem->orderItem->discount }}{{ $TypeDiscount }}
                                                     <br>
                                                     =
                                                     {{ number_format($itemTotalWithDiscount, 2) }}
                                                 </td>
-                                                <td class="money">{{ number_format($itemTotalWithDiscount, 2) }} </td>
                                                 {{-- <td class="money">{{ number_format($testttt, 2) }}</td> --}}
                                                 <td class="muted">
                                                     {{ $packageServiceItem->orderItem->tax }}%
@@ -274,7 +262,7 @@
                         </div>
                         <div class="quote-footer">
                             <div class="note">
-                                Thank you for your business. Prices in USD. This quote is valid for 30 days from the
+                                Thank you for your business. Prices are in USD. This quote is valid for 30 days from the
                                 issued date.
                             </div>
                             <div class="totals">
@@ -302,13 +290,22 @@
                             <div class="signature-container">
                                 <div class="signature-row">
                                     <div class="title-signature">Client
-                                        Sign. </div>
+                                        Signature. </div>
                                     <div class="signature-input-wrapper">
 
                                         <div class="signature-input-border">
-                                            <input type="text" class="w-100 input-signature signature-besmani-formal"
+
+
+                                            <select class="w-100 input-signature signature-besmani-formal">
+                                                <option value="">Select</option>
+                                                <option value="{{ $mainUser->fl_name }} {{ $mainUser->last_name }}">{{ $mainUser->fl_name }} {{ $mainUser->last_name }}</option>
+                                               
+                                            </select>
+
+                                            {{-- <input type="text" class="w-100 input-signature signature-besmani-formal"
                                                 value="{{ $mainUser->fl_name }} {{ $mainUser->last_name }}">
-                                        </div>
+                                       --}}
+                                            </div>
                                     </div>
                                     <div class="title-signature">Date:</div>
                                     <div class="signature-date-wrapper">
@@ -327,7 +324,7 @@
                                         {{-- font cursive --}}
                                         Besmani
 
-                                        Sign.</div>
+                                        Signature.</div>
                                     <div class="signature-input-wrapper">
 
                                         <div class="signature-input-border">
@@ -352,10 +349,14 @@
                         </div>
                         {{-- submit button --}}
                         <div class="text-left text-md-left submit-button-wrapper">
-                            <button class="btn-green btn-order-submit addToCart">SUBMIT
-
+                            <button class="btn-green btn-order-submit addToCart">
+                                <span class="btn-text">Save & Continue</span>
                                 <i class="fa fa-spinner fa-spin" style="display: none; margin-left: 8px;"></i>
                             </button>
+                            <p class="muted ml-3" style="font-size: 16px;margin-left: 14px;margin-top: 10px;">
+                                <i class="fa fa-info-circle"></i>
+                                After saving, you can view, edit, cancel, or print your order anytime.
+                            </p>
                         </div>
                     </div>
                 </div>
@@ -389,7 +390,8 @@
                         
                         // Show success modal
                         if (response.success) {
-                            openCartSuccessModal();
+                           return window.location.href = '{{ route('cart') }}';
+                            // openCartSuccessModal();
                         }
                     },
                     error: function(response) {
@@ -454,6 +456,95 @@
             });
         </script>
 
-       
+        <style>
+            /* Enhanced Green AddToCart Button Styles */
+            .btn-green.btn-order-submit.addToCart {
+                background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+                color: #ffffff;
+                border: none;
+                width: 100%;
+                max-width: 200px;
+                height: 48px;
+                border-radius: 12px;
+                font-size: 15px;
+                font-weight: 600;
+                cursor: pointer;
+                transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+                box-shadow: 0 4px 14px rgba(16, 185, 129, 0.3);
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                position: relative;
+                overflow: hidden;
+                text-transform: uppercase;
+                letter-spacing: 0.5px;
+            }
+
+            .btn-green.btn-order-submit.addToCart::before {
+                content: '';
+                position: absolute;
+                top: 0; 
+                left: -100%;
+                width: 100%;
+                height: 100%;
+                background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+                transition: left 0.5s;
+            }
+
+            .btn-green.btn-order-submit.addToCart:hover::before {
+                left: 100%;
+            }
+
+            .btn-green.btn-order-submit.addToCart:hover {
+                background: linear-gradient(135deg, #059669 0%, #047857 100%);
+                transform: translateY(-2px);
+                box-shadow: 0 6px 20px rgba(16, 185, 129, 0.4);
+            }
+
+            .btn-green.btn-order-submit.addToCart:active {
+                transform: translateY(0);
+                box-shadow: 0 2px 10px rgba(16, 185, 129, 0.3);
+            }
+
+            .btn-green.btn-order-submit.addToCart:disabled {
+                background: linear-gradient(135deg, #9ca3af 0%, #6b7280 100%);
+                cursor: not-allowed;
+                transform: none;
+                box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+            }
+
+            .btn-green.btn-order-submit.addToCart .btn-text {
+                position: relative;
+                z-index: 1;
+            }
+
+            .btn-green.btn-order-submit.addToCart .fa-spinner {
+                position: relative;
+                z-index: 1;
+            }
+
+            .submit-button-wrapper {
+                padding: 20px 16px;
+                display: flex;
+                justify-content: flex-start;
+            }
+
+            @media (max-width: 767px) {
+                .btn-green.btn-order-submit.addToCart {
+                    max-width: 100%;
+                    width: 100%;
+                }
+
+                .submit-button-wrapper {
+                    justify-content: center;
+                }
+            }
+
+            @media (min-width: 768px) {
+                .submit-button-wrapper {
+                    justify-content: flex-start;
+                }
+            }
+        </style>
 
 </div>

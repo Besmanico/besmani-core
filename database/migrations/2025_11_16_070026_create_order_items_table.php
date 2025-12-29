@@ -17,6 +17,8 @@ return new class extends Migration
             $table->string('image')->nullable();
             $table->string('name');
             $table->decimal('price', 10, 2)->default(0);
+            $table->decimal('cost', 10, 2)->default(0);
+            $table->boolean('visible')->default(0);
             $table->decimal('tax', 10, 2)->default(0);
              $table->timestamps();
         });

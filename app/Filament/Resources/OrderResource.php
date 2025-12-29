@@ -98,6 +98,7 @@ class OrderResource extends Resource
     public static function table(Table $table): Table
     {
         return $table
+        
             ->columns([
                 Tables\Columns\TextColumn::make('user.fl_name')
                     ->numeric()
@@ -128,7 +129,7 @@ class OrderResource extends Resource
                 //
             ])
             ->actions([
-                Tables\Actions\ViewAction::make('Pay Order'),
+                Tables\Actions\ViewAction::make(),
                 Tables\Actions\EditAction::make(),
                 
             ])
@@ -146,11 +147,18 @@ class OrderResource extends Resource
         ];
     }
 
+    public static function getEloquentQuery(): Builder
+    {
+        return parent::getEloquentQuery()
+           ->orderBy('id', 'desc');
+    }
+
     public static function getPages(): array
     {
         return [
             'index' => Pages\ListOrders::route('/'),
             'create' => Pages\CreateOrder::route('/create'),
+            'view' => Pages\ViewOrder::route('/{record}'),
             'edit' => Pages\EditOrder::route('/{record}/edit'),
         ];
     }

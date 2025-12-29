@@ -19,4 +19,9 @@ class Order extends Model
     {
         return $this->belongsTo(MainUser::class, 'user_id');
     }
+
+    public function installmentPays()
+    {
+        return $this->hasMany(InstallmentPay::class, 'cart_id', 'cart_id');
+    }
 }

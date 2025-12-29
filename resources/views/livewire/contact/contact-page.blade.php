@@ -50,11 +50,11 @@
                             <h3><i class="fa fa-envelope" aria-hidden="true"></i> E-mail</h3>
                             <a href="mailto:Besmanico@gmail.com" target="_blank">Besmanico@gmail.com</a>
                             <h3><i class="fa fa-phone" aria-hidden="true"></i> Phone</h3>
-                            <a href="tel:+19494328383" target="_blank">+194 94 32 83 83</a>
-                            <h3><i class="fa fa-whatsapp" aria-hidden="true"></i> whats app</h3>
-                            <a href="https://wa/me/+19515264212" target="_blank">+195 15 26 42 12</a>
-                            <h3><i class="fa fa-telegram" aria-hidden="true"></i> telegram</h3>
-                            <a href="https://t.me/+19514750995" target="_blank">+195 14 75 09 95</a>
+                            <a href="tel:+19494328383" target="_blank">+1 949 432 8383</a>
+                            <h3><i class="fa fa-whatsapp" aria-hidden="true"></i> WhatsApp</h3>
+                            <a href="https://wa/me/+19515264212" target="_blank">+1 951 526 4212</a>
+                            <h3><i class="fa fa-telegram" aria-hidden="true"></i> Telegram</h3>
+                            <a href="https://t.me/+19514750995" target="_blank">+1 951 475 0995</a>
 
                         </div>
                     </div>

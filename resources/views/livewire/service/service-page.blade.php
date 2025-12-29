@@ -19,8 +19,10 @@
 
 
         @php
+        
             $rawPackageServices = optional($service)->packageServices;
             $packageServices = collect($rawPackageServices)->values();
+                
         @endphp
 
         <section class="section-services tab-request-user text-center">
@@ -64,13 +66,20 @@
                                 /** @var \App\Models\PackageService $packageService */
                                 $packageService = $package['model'];
 
-                                // Directly get all package service items for this package
+                                // Directly get all package service items for this package with quantity
                                 $packageFeatures = collect($packageService->packageServiceItems ?? [])
                                     ->map(function ($item) {
-                                        return trim($item->name ?? '');
+                                        $name = trim($item->name ?? '');
+                                        if (blank($name)) {
+                                            return null;
+                                        }
+                                        return [
+                                            'name' => $name,
+                                            'quantity' => $item->quantity ?? 0
+                                        ];
                                     })
-                                    ->filter(function ($name) {
-                                        return !blank($name);
+                                    ->filter(function ($item) {
+                                        return $item !== null;
                                     })
                                     ->values()
                                     ->toArray();
@@ -115,15 +124,27 @@
 
 
                                 @if (!blank($packageService->delivery))
-                                    <div class="pricing-comparison__delivery">Delivery: {{ $packageService->delivery }}
+                                    <div class="pricing-comparison__delivery">Delivery: {{ $packageService->delivery }} Days
                                     </div>
                                 @endif
 
                                 @if (count($packageFeatures) > 0)
                                     <div class="pricing-comparison__features">
                                         @foreach ($packageFeatures as $feature)
-                                            <span class="pricing-comparison__feature-item">{{ $feature }}</span>
+                                            @php
+                                                $quantity = $feature['quantity'] ?? 0;
+                                                $isAvailable = $quantity > 0;
+                                            @endphp
+                                            <span class="pricing-comparison__feature-item {{ $isAvailable ? 'feature-available' : 'feature-unavailable' }}">
+                                                @if ($isAvailable)
+                                                    <span class="feature-icon feature-check">✓</span>
+                                                @else
+                                                    <span class="feature-icon feature-cross">✕</span>
+                                                @endif
+                                                {{ $feature['name'] }}
+                                            </span>
                                         @endforeach
+                                       
 
                                     </div>
                                     @if (!Auth::guard('mainUsers')->check())
@@ -274,5 +295,59 @@
         });
     </script>
 
+    <style>
+        /* Feature Item Quantity Indicators */
+        .pricing-comparison__feature-item {
+            display: flex !important;
+            align-items: center;
+            gap: 8px;
+            margin-bottom: 0.875rem;
+            line-height: 1.6;
+            font-size: 1.4rem;
+            color: #4a5568;
+            font-weight: 400;
+            padding: 0.5rem 0;
+            position: relative;
+            padding-left: 0 !important; /* Remove default padding */
+        }
+
+        /* Remove the default ::before checkmark */
+        .pricing-comparison__feature-item::before {
+            display: none !important;
+        }
+
+        .feature-icon {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 15px;
+            height: 15px;
+            border-radius: 50%;
+            font-size: 10px;
+            font-weight: bold;
+            flex-shrink: 0;
+            line-height: 1;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.15);
+        }
+
+        .feature-check {
+            background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+            color: #ffffff;
+        }
+
+        .feature-cross {
+            background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
+            color: #ffffff;
+        }
+
+        .feature-available {
+            color: #1f2937;
+        }
+
+        .feature-unavailable {
+            color: #6b7280;
+            opacity: 0.8;
+        }
+    </style>
 
 </section><!-- /.section-contact-us -->

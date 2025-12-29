@@ -21,6 +21,12 @@ return new class extends Migration
             $table->decimal('discount', 10, 2)->default(0);
             $table->integer('cuote')->default(0);
             $table->integer('invoice')->default(0);
+            $table->string('pay_method');
+            $table->string('contact_name');
+            $table->string('billing_address');
+            $table->string('shipping_address');
+            $table->string('signature_client');
+            $table->string('signature_date');
             $table->boolean('is_admin')->default(0);
             $table->boolean('status')->default(0);
             $table->timestamps();

@@ -41,7 +41,11 @@ class OrderItemResource extends Resource
                         Forms\Components\TextInput::make('name')
                             ->required()
                             ->maxLength(255),
-                        Forms\Components\TextInput::make('price')
+                       
+                        Forms\Components\TextInput::make('cost')
+                            ->numeric()
+                            ->prefix('$'),
+                            Forms\Components\TextInput::make('price')
 
                             ->numeric()
                             ->prefix('$'),
@@ -72,7 +76,11 @@ class OrderItemResource extends Resource
                 // Tables\Columns\ImageColumn::make('image'),
                 Tables\Columns\TextColumn::make('name')
                     ->searchable(),
-                Tables\Columns\TextColumn::make('price')
+          
+                    Tables\Columns\TextColumn::make('cost')
+                    ->money()
+                    ->sortable(),
+                    Tables\Columns\TextColumn::make('price')
                     ->money()
                     ->sortable(),
                 Tables\Columns\TextColumn::make('tax')
@@ -84,6 +92,11 @@ class OrderItemResource extends Resource
                     ->sortable(),
                 Tables\Columns\TextColumn::make('discount')
 
+                    ->sortable(),
+                Tables\Columns\ToggleColumn::make('visible')
+                    ->label('Visible')
+                    ->onColor('success')
+                    ->offColor('danger')
                     ->sortable(),
                 Tables\Columns\TextColumn::make('created_at')
                     ->dateTime()

@@ -46,6 +46,9 @@ function UserInfoPublic()
 {
     if (Auth::guard('mainUsers')->user()) {
         $userInfo = MainUser::where('id', Auth::guard('mainUsers')->user()->id)->with('InfoActivity')->first();
+        // get country name
+        $userInfo->country_name = PhoneCountry::find($userInfo->country_id)->name_en;
+        
         return $userInfo;
     } else {
         return null;
