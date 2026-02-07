@@ -28,7 +28,7 @@ use Tapp\FilamentAuthenticationLog\FilamentAuthenticationLogPlugin;
              ->default()
             ->id('admin')
             ->path('admin') 
-            ->login(Login::class)
+            ->login(Login::class) 
             ->colors([
                 'primary' => Color::Cyan,
             ])

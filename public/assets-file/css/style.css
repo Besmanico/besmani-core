@@ -4306,3 +4306,43 @@ text-align: left;
         }
 
    /* Cart Success Modal Styles end */
+
+   .terms-checkbox-input,
+   #agree-terms-signup {
+       background-color: #ffffff !important;
+       border: 2px solid #d1d5db !important;
+       opacity: 1 !important;
+       visibility: visible !important;
+       display: inline-block !important;
+   }
+   
+   .terms-checkbox-input:checked,
+   #agree-terms-signup:checked {
+       background-color: #ed2929 !important;
+       border-color: #ed2929 !important;
+   }
+   
+   .terms-checkbox-input:checked::after,
+   #agree-terms-signup:checked::after {
+       content: '✓';
+       position: absolute;
+       top: 50%;
+       left: 50%;
+       transform: translate(-50%, -50%);
+       color: #ffffff;
+       font-size: 14px;
+       font-weight: bold;
+       line-height: 1;
+       display: block;
+       z-index: 1;
+   }
+   
+   .terms-checkbox-input:hover,
+   #agree-terms-signup:hover {
+       border-color: #ed2929 !important;
+       box-shadow: 0 0 0 2px rgba(74, 222, 128, 0.2);
+   }
+   
+   .terms-checkbox-container a:hover {
+       opacity: 0.8;
+   }

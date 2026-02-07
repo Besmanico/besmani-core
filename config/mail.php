@@ -15,7 +15,7 @@ return [
 
     'default' => env('MAIL_MAILER', 'smtp'),
 
-    /*
+    /* 
     |--------------------------------------------------------------------------
     | Mailer Configurations
     |--------------------------------------------------------------------------
@@ -35,7 +35,7 @@ return [
 
     'mailers' => [
         'smtp' => [
-            'transport' => 'smtp',
+            'transport' => 'sendgrid',
             'url' => env('MAIL_URL'),
             'host' => env('MAIL_HOST', 'smtp.mailgun.org'),
             'port' => env('MAIL_PORT', 587),
@@ -45,7 +45,7 @@ return [
             'timeout' => null,
             'local_domain' => env('MAIL_EHLO_DOMAIN'),
         ],
-
+ 
         'ses' => [
             'transport' => 'ses',
         ],
@@ -63,6 +63,16 @@ return [
             // 'client' => [
             //     'timeout' => 5,
             // ],
+        ],
+
+        'sendgrid' => [
+            'transport' => 'sendgrid',
+            'host' => 'smtp.sendgrid.net',
+            'port' => env('MAIL_PORT', 587),
+            'encryption' => env('MAIL_ENCRYPTION', 'tls'),
+            'username' => 'apikey',
+            'password' => env('SENDGRID_API_KEY', env('MAIL_PASSWORD')),
+            'timeout' => null,
         ],
 
         'sendmail' => [
@@ -108,8 +118,8 @@ return [
     */
 
     'from' => [
-        'address' => env('MAIL_FROM_ADDRESS', 'hello@example.com'),
-        'name' => env('MAIL_FROM_NAME', 'Example'),
+        'address' => env('MAIL_FROM_ADDRESS', 'support@besmani.com'),
+        'name' => env('MAIL_FROM_NAME', 'Besmani'),
     ],
 
     /*

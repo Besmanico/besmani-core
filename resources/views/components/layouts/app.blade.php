@@ -67,14 +67,21 @@
         <div class="hero-content aos" data-aos="fade-up">
             <div class="hero-text -mt-150">
                 <h1>Your story begins from here.</h1>
-                <a href="{{ config('app.url') }}" style="position:relative" class="site-title mt-sm-logo"><img
+                {{-- <a href="{{ config('app.url') }}" style="position:relative" class="site-title mt-sm-logo"><img
                         style="margin-top:15px;width:450px;" src="{{ config('app.url') }}assets-file/img/header.png"
-                        alt="besmani"></a>
+                        alt="besmani"></a> --}}
+
+                        <div class="text-center service-section-center">
+                             
+                        </div>
+
+
+
 
                 <p style="margin-top:55px;">BESMANI EXPERIENCE OF THE FUTURE TECHNOLOGY AND DESIGN </p>
 
                 {{-- subscribe --}}
-                <section class="site-section section-newsletter Subscribe-section text-center ">
+                {{-- <section class="site-section section-newsletter Subscribe-section text-center ">
                     <div class="success-subscribe"> Success Subscribe </div>
 
                     <div class="form-group newsletter-group">
@@ -85,7 +92,7 @@
                         </button>
                     </div><!-- /.newsletter-group -->
 
-                </section><!-- /.section-newsletter -->
+                </section><!-- /.section-newsletter --> --}}
 
                 {{-- subscribeEnd --}}
 
@@ -154,6 +161,23 @@
 
                     <input type="password" id="password" placeholder="Password" class="modal-input" required>
 
+                    <!-- Terms & Conditions Checkbox -->
+                    <div class="terms-checkbox-container" style="margin: 15px 0; display: flex; align-items: flex-start; gap: 12px;">
+                        <input type="checkbox" id="agree-terms-signup" name="agree-terms-signup" class="terms-checkbox-input" required
+                            style="margin-top: 2px; cursor: pointer; width: 20px; height: 20px; min-width: 20px; min-height: 20px; flex-shrink: 0; 
+                                   appearance: none; -webkit-appearance: none; -moz-appearance: none;
+                                   background-color: #ffffff; border: 2px solid #d1d5db; border-radius: 4px;
+                                   position: relative; outline: none; opacity: 1; visibility: visible;">
+                        <label for="agree-terms-signup" style="color: #ffffff; font-size: 14px; line-height: 1.6; cursor: pointer; flex: 1; user-select: none;">
+                            I agree to the 
+                            <a href="{{ url('/terms') }}" target="_blank" style="color: #ed2929; text-decoration: underline; transition: opacity 0.2s;">Terms & Conditions</a>
+                           <br>
+                            and 
+                            <a href="{{ url('/privacy') }}" target="_blank" style="color: #ed2929; text-decoration: underline; transition: opacity 0.2s;">Privacy Policy</a>
+                        </label>
+                    </div>
+                    
+                   
 
                     <div class="button-container">
                         <button type="submit" id="submit-btn" class="submit-button">
@@ -356,6 +380,12 @@
         // Basic validation
         if (!fname || !lname || !email || !password || !countryCode || !phone) {
             toastWarning('Please fill in all required fields.', 4000);
+            return;
+        }
+
+        // Check if terms checkbox is checked
+        if (!$('#agree-terms-signup').is(':checked')) {
+            toastWarning('Please agree to the Terms & Conditions and Privacy Policy to continue.', 4000);
             return;
         }
 
@@ -605,22 +635,25 @@
                 }
             })
             .done(function(response) {
+              
                 if (response.success) {
                     // alert('Welcome to BESMANI!');
                     toastSuccess('Welcome to BESMANI!', 'You have successfully signed in.', 2000);
                     
                     // Check for stored redirect URL
-                    var redirectUrl = localStorage.getItem('loginRedirectUrl');
-                    var url = redirectUrl || '/';
+                    // var redirectUrl = localStorage.getItem('loginRedirectUrl');
+                    // var url = redirectUrl || '/';
                     
-                    // Clear the stored redirect URL
-                    if (redirectUrl) {
-                        localStorage.removeItem('loginRedirectUrl');
-                    }
+                    // // Clear the stored redirect URL
+                    // if (redirectUrl) {
+                    //     localStorage.removeItem('loginRedirectUrl');
+                    // }
                     
                     setTimeout(function() {
                         closeLoginModal();
-                        window.location.href = url;
+                        // current url
+                        var currentUrl = window.location.href;
+                        window.location.href = currentUrl;
                     }, 2000);
                     $('.WuserName').text(response.userName);
                     $('.welcome-user').show();

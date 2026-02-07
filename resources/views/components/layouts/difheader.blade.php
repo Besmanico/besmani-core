@@ -195,6 +195,62 @@
 
                     <input type="password" id="password" placeholder="Password" class="modal-input" required>
 
+                    <!-- Terms & Conditions Checkbox -->
+                    <div class="terms-checkbox-container" style="margin: 15px 0; display: flex; align-items: flex-start; gap: 12px;">
+                        <input type="checkbox" id="agree-terms-signup-dif" name="agree-terms-signup-dif" class="terms-checkbox-input" required
+                            style="margin-top: 2px; cursor: pointer; width: 20px; height: 20px; min-width: 20px; min-height: 20px; flex-shrink: 0; 
+                                   appearance: none; -webkit-appearance: none; -moz-appearance: none;
+                                   background-color: #ffffff; border: 2px solid #d1d5db; border-radius: 4px;
+                                   position: relative; outline: none; opacity: 1; visibility: visible;">
+                        <label for="agree-terms-signup-dif" style="color: #ffffff; font-size: 14px; line-height: 1.6; cursor: pointer; flex: 1; user-select: none;">
+                            I agree to the 
+                            <a href="{{ url('/terms') }}" target="_blank" style="color: #4ade80; text-decoration: underline; transition: opacity 0.2s;">Terms & Conditions</a>
+                            and 
+                            <a href="{{ url('/privacy') }}" target="_blank" style="color: #4ade80; text-decoration: underline; transition: opacity 0.2s;">Privacy Policy</a>
+                        </label>
+                    </div>
+                    
+                    <style>
+                        .terms-checkbox-input,
+                        #agree-terms-signup-dif {
+                            background-color: #ffffff !important;
+                            border: 2px solid #d1d5db !important;
+                            opacity: 1 !important;
+                            visibility: visible !important;
+                            display: inline-block !important;
+                        }
+                        
+                        .terms-checkbox-input:checked,
+                        #agree-terms-signup-dif:checked {
+                            background-color: #4ade80 !important;
+                            border-color: #4ade80 !important;
+                        }
+                        
+                        .terms-checkbox-input:checked::after,
+                        #agree-terms-signup-dif:checked::after {
+                            content: '✓';
+                            position: absolute;
+                            top: 50%;
+                            left: 50%;
+                            transform: translate(-50%, -50%);
+                            color: #ffffff;
+                            font-size: 14px;
+                            font-weight: bold;
+                            line-height: 1;
+                            display: block;
+                            z-index: 1;
+                        }
+                        
+                        .terms-checkbox-input:hover,
+                        #agree-terms-signup-dif:hover {
+                            border-color: #4ade80 !important;
+                            box-shadow: 0 0 0 2px rgba(74, 222, 128, 0.2);
+                        }
+                        
+                        .terms-checkbox-container a:hover {
+                            opacity: 0.8;
+                        }
+                    </style>
 
                     <div class="button-container">
                         <button type="submit" id="submit-btn" class="submit-button">
@@ -546,6 +602,7 @@
 
     // Form submission
     $('#signup-form').submit(function(e) {
+        
         e.preventDefault();
 
         var fname = $('#fname').val();
@@ -558,6 +615,12 @@
         // Basic validation
         if (!fname || !lname || !email || !password || !countryCode || !phone) {
             toastWarning('Required Fields', 'Please fill in all required fields.', 4000);
+            return;
+        }
+
+        // Check if terms checkbox is checked
+        if (!$('#agree-terms-signup-dif').is(':checked')) {
+            toastWarning('Terms & Conditions', 'Please agree to the Terms & Conditions and Privacy Policy to continue.', 4000);
             return;
         }
 
@@ -577,7 +640,7 @@
         // Show loading spinner
         $('.fa-spinner').show();
         $('#submit-btn').prop('disabled', true);
-
+       
         // Submit the form via AJAX  
         $.ajax({
                 url: '{{ route('signup') }}',
@@ -592,6 +655,7 @@
                 }
             })
             .done(function(response) {
+               
                 $('.fa-spinner').hide();
                 $('#submit-btn').prop('disabled', false);
 
@@ -782,10 +846,11 @@
      
     // sign in form submission
     $('#login-form').submit(function(e) {
+         
         e.preventDefault();
         var emailOrPhone = $('#emailOrPhoneLogin').val();
         var password = $('#passwordLogin').val();
-
+ 
         // Show loading spinner
         $('.fa-spinner').show();
         $('#submit-btn-login').prop('disabled', true);
@@ -799,20 +864,23 @@
                 }
             })
             .done(function(response) {
+               
                 if (response.success) {
                     // Beautiful Sonner-like toast notification
                     toastSuccess('Welcome to BESMANI!', 'You have successfully signed in.', 2000);
                     // Check for stored redirect URL
-                    var redirectUrl = localStorage.getItem('loginRedirectUrl');
-                    var url = redirectUrl || window.location.href;
+                    // var redirectUrl = localStorage.getItem('loginRedirectUrl');
+                    // var url = redirectUrl || window.location.href;
                     
-                    // Clear the stored redirect URL
-                    if (redirectUrl) {
-                        localStorage.removeItem('loginRedirectUrl');
-                    }
+                    // // Clear the stored redirect URL
+                    // if (redirectUrl) {
+                    //     localStorage.removeItem('loginRedirectUrl');
+                    // }
                     
                     setTimeout(function() {
-                        window.location.href = url;
+                        // current url
+                        var currentUrl = window.location.href;
+                        window.location.href = currentUrl;
                     }, 2000);
 
                     $('.WuserName').text(response.userName);

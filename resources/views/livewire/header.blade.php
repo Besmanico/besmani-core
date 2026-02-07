@@ -17,7 +17,7 @@
                         {{-- <li><a href="{{ config('app.url') }}orders">ORDERS</a></li> --}}
                         {{-- <li><a href="{{ config('app.url') }}design-style">DESIGN STYLE</a></li>
                         <li><a href="{{ config('app.url') }}portfolios">PORTFOLIO</a></li> --}}
-                        <li><a href="{{ config('app.url') }}careers">CAREERS</a></li>
+                        {{-- <li><a href="{{ config('app.url') }}careers">CAREERS</a></li> --}}
                         <li><a href="{{ config('app.url') }}aboutus">ABOUT US</a></li>
                         <li><a href="{{ config('app.url') }}contactus">CONTACT US</a></li>
 
@@ -111,9 +111,7 @@
         {{-- <div class="nav-item">
             <a href="{{ config('app.url') }}portfolios" class="nav-link">PORTFOLIO</a>
         </div> --}}
-        <div class="nav-item">
-            <a href="{{ config('app.url') }}careers" class="nav-link">CAREERS</a>
-        </div>
+       
         <div class="nav-item">
             <a href="{{ config('app.url') }}aboutus" class="nav-link">ABOUT US</a>
         </div>

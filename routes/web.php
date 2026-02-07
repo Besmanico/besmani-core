@@ -1,8 +1,8 @@
 <?php
 
-use App\Http\Controllers\Api\UserController;
 use App\Livewire\Home;
 use App\Livewire\Cart\CartPage;
+use App\Livewire\Terms\TermPage;
 use App\Livewire\About\AboutPage;
 use App\Livewire\Besmo\BesmoPage;
 use App\Livewire\Careers\Careers;
@@ -12,10 +12,13 @@ use App\Livewire\Services\Services;
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Auth;
 use App\Livewire\Contact\ContactPage;
+use App\Livewire\Privacy\PrivacyPage;
 use App\Livewire\Service\ServicePage;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\CartController;
 use App\Livewire\Panel\Invoice\InvoicePage;
+use App\Http\Controllers\Api\UserController;
+use App\Livewire\Agreement\AgreementPage;
 
 /*
 |--------------------------------------------------------------------------
@@ -27,12 +30,18 @@ use App\Livewire\Panel\Invoice\InvoicePage;
 | be assigned to the "web" middleware group. Make something great!
 |
 */
-
+Route::get('/raw', function () {
+    return response()->json(['ok' => true]);
+});
 Route::get('/', Home::class);
 Route::get('/services', Services::class);
 Route::get('/services/service/{slug}', ServicePage::class);
 Route::post('/services/AddRequest', [Controller::class, 'AddRequest']);
 Route::get('/careers', Careers::class);
+Route::get('/terms', TermPage::class);
+Route::get('/privacy', PrivacyPage::class);
+Route::get('/service-agreement', AgreementPage::class);
+
 Route::get('/aboutus', AboutPage::class);
 Route::get('/contactus', ContactPage::class);
 Route::get('/besmo', BesmoPage::class);

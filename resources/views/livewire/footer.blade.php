@@ -48,13 +48,15 @@
             <div class="col-lg-4 col-md-4 col-sm-4 sm-hidden ">
 
                 <ul class="list-unstyled">
+                    <li class="text-center"><a href="{{ config('app.url') }}terms">Terms & Conditions</a></li>
+                    <li class="text-center"><a href="{{ config('app.url') }}privacy">Privacy Policy</a></li>
                     <li class="text-center"><a href="{{ config('app.url') }}contactus">Contact Us</a></li>
                     <li class="text-center"><a href="{{ config('app.url') }}aboutus">About Us</a></li>
-
+ 
                     <li class="text-center"><a href="{{ config('app.url') }}services">Services</a></li>
                     <li class="text-center"><a href="{{ config('app.url') }}careers">Careers</a></li>
                 </ul>
-            </div>
+            </div> 
 
 
 

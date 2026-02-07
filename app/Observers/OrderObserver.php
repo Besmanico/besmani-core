@@ -17,14 +17,14 @@ class OrderObserver
         //  Notification::make()->title('New Order Received')->body('New order #' . $order->tracking_code . ' from ' . $order->user->name . '. Total: $' . $order->total_payment)->send();
    
 
-        Notification::make()
-        ->title('New Order Received')
-        ->body('New order #' . $order->tracking_code . ' from ' . $order->user->name . '. Total: $' . $order->total_payment)
-        ->success()
-        ->icon('heroicon-o-shopping-cart')
-        // ->url(\App\Filament\Resources\OrderResource::getUrl('edit', ['record' => $order->id])) 
+        // Notification::make()
+        // ->title('New Order Received')
+        // ->body('New order #' . $order->tracking_code . ' from ' . $order->user->name . '. Total: $' . $order->total_payment)
+        // ->success()
+        // ->icon('heroicon-o-shopping-cart')
+        // // ->url(\App\Filament\Resources\OrderResource::getUrl('edit', ['record' => $order->id])) 
         
-        ->sendToDatabase(auth()->user());
+        // ->sendToDatabase(auth()->user());
     
     }
 
