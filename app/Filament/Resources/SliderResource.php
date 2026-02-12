@@ -41,12 +41,16 @@ class SliderResource extends Resource
                         FileUpload::make('image')->downloadable()->directory('Slider')->optimize('webp')->helperText('185*150')->required(),
 
                         TextInput::make('link'),
+                        TextInput::make('hom_page_sort')->label('Home Page No.')->required(),
+                        TextInput::make('page_src_sort')->label('  Technology No.')->required(),
+                        Toggle::make('home_page')->label('home page'),
+                        Toggle::make('page_src')->label('Technology'),
 
                         Toggle::make('status')->label('publish'),
                         Hidden::make('user_id')->default(Auth::user()->id)->dehydrated(true),
 
                     ])->collapsed(false)->columns(2),
-            ]);
+            ]); 
     }
 
     public static function table(Table $table): Table
@@ -55,6 +59,12 @@ class SliderResource extends Resource
             ->columns([
                 ImageColumn::make('image')->label('Image')->circular(),
                 TextColumn::make('link')->label('Link'),
+                TextColumn::make('hom_page_sort')->label('No 1'),
+
+                ToggleColumn::make('home_page')->label('Home Page'),
+                TextColumn::make('page_src_sort')->label('No 2'),
+
+                ToggleColumn::make('page_src')->label('Technology'),
                 ToggleColumn::make('status')->label('Status'),
                 TextColumn::make('created_at')->sortable()->badge(),
 

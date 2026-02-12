@@ -1,84 +1,39 @@
 <div>
 
-    <section class="section-beauty get-area three " style="background: #fff; position: relative; overflow: hidden; ">
-
-        {{-- <section class="site-section section-beauty get-area three"
-        style="background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 50%, #dee2e6 100%); position: relative; overflow: hidden; padding: 40px 0;"> --}}
-
-        {{-- <div class="bg-section"
-            style="position: absolute; top: 0; left: 0; right: 0; bottom: 0; z-index: 1; background: url('{{ config('app.url') }}assets-file/img/adv/bg-blue.JPG') repeat; background-size: cover; opacity: 0.8;">
-        </div> --}}
+    <section class="section-beauty get-area three " style="background: #fff; position: relative; overflow: hidden;margin-top: 7px; ">
 
         <div class="container w-comming-f" style="position: relative; z-index: 2;">
 
-            <!-- Services Grid Section -->
-           
-
-          
-           
-
             {{-- owl-carousel --}}
-                 <div class="row ">
-                  
-                    <div class="beauty-slider owl-theme owl-carousel">
+            <div class="row ">
 
-                        {{-- @foreach ($sliders as $slider)
+                <div class="beauty-slider owl-theme owl-carousel">
+ 
+
+                    <?php
+                    $sliders = slidersTechnology()
+                    ?>
+
+                    <!-- item -->
+                    @foreach ($sliders as $slider)
                         <div class="offer-item">
-                            <a href="{{ $slider->link }}" target="_blank">
+
+                            <a href="{{ $slider->link }}">
                                 <img src="{{ config('app.url') }}storage/{{ $slider->image }}" class="img-res">
                             </a>
                         </div>
-                        @endforeach --}}
-                        <!-- item -->
-
-                        <div class="offer-item">
-                            <a href="https://beauty.besmani.com/signup" target="_blank">
-                                <img src="{{ config('app.url') }}assets-file/img/work/sing-up-k.png" class="img-res">
-                            </a>
-
-                        </div>
-                        <div class="offer-item">
-                            <a href="/aboutus">
-                                <img src="{{ config('app.url') }}assets-file/img/work/access.png" class="img-res">
-                            </a>
-
-                        </div>
-                        <!-- item -->
-                        <div class="offer-item">
-
-                            <a href="https://beauty.besmani.com/login" target="_blank">
-
-                                <img src="{{ config('app.url') }}assets-file/img/work/u-acc-k.png" class="img-res">
-                            </a>
-
-                        </div>
-                        <!-- item -->
-                        @foreach ($sliders as $slider)
-                            <div class="offer-item">
-
-                                <a href="{{ $slider->link }}">
-                                <img src="{{ config('app.url') }}storage/{{ $slider->image }}" class="img-res">
-                            </a>
-                            </div>
-                        @endforeach
+                    @endforeach
 
 
-
-                    </div>
                 </div>
-            
+            </div>
+
             {{-- owl-carousel END --}}
 
 
         </div>
 
-
-
-
     </section>
-
-
-
 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/OwlCarousel2/2.3.4/owl.carousel.min.js"></script>
 
@@ -138,7 +93,7 @@
         /* Beautiful Navigation Icons */
         .beauty-slider .owl-nav {
             position: absolute;
-            top: 50%;
+            top: 44%;
             transform: translateY(-50%);
             width: 100%;
             display: flex;
@@ -222,9 +177,7 @@
 
 
 
-        .section-beauty {
-            box-shadow: 0 -3px 16px 24px #fff;
-        }
+
 
         .hover-remove-effect:hover .service-card-filter-cover {
 
@@ -369,6 +322,7 @@
             right: 0;
             margin: 20px auto;
         }
+
         @media (min-width: 768px) {
             .hover-remove-effect .service-card-filter-cover {
                 background: none;
@@ -377,7 +331,7 @@
         }
 
         @media (max-width: 768px) {
-           
+
 
             .mt-travel {
                 margin-top: 40px !important;

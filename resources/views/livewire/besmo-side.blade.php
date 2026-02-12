@@ -15,7 +15,7 @@
 				</div>
 			</div>
 
-			<div class="col-lg-9">
+			{{-- <div class="col-lg-9">
 				<div class="solutions-content wow fadeInLeft delay-0-2s">
 
 					<h2>Besmo:
@@ -25,8 +25,10 @@
 
 					</p>
 				</div>
-			</div>
+			</div> --}}
 
 		</div>
+		       
+
 	</div>
 </section>

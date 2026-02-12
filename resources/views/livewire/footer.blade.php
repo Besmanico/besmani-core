@@ -1,3 +1,24 @@
+<style>
+    /* فوتر: گرادیان cyan تیره */
+    .site-footer {
+        background: #082f49 !important;
+        padding-top: 25px !important;
+    }
+    .site-footer .txt-footer { color: rgba(255, 255, 255, 0.88) !important; }
+    /* .site-footer .list-unstyled li a,
+    .site-footer .contact-links li a,
+    .site-footer .contact-links li { color: rgba(255, 255, 255, 0.88) !important; }
+    .site-footer .contact-links li i { color: #082f49; } */
+    .site-footer .list-unstyled li a:hover,
+    .site-footer .contact-links li a:hover { color: #fff !important; }
+    .site-footer .logo-header img { filter: brightness(1.05); }
+    .copyright {
+        background: linear-gradient(180deg, #082f49 0%, #051a2d 100%) !important;
+        /* border-top: 1px solid rgba(94, 234, 212, 0.12) !important; */
+        padding: 14px 0 !important;
+    }
+    .copyright p { color: rgba(255, 255, 255, 0.8) !important; }
+</style> 
 <footer id="colophon" class="site-footer">
     <div class="container">
         <div class="row ">
@@ -12,12 +33,12 @@
                 <ul class="list-unstyled contact-links">
                     <li><i class="fa fa-envelope" aria-hidden="true"></i><a
                             href="mailto:Besmanico@gmail.com">Besmanico@gmail.com</a></li>
-                    <li>
+                    {{-- <li>
                         <i class="fa fa-phone" aria-hidden="true"></i>
                         <a href="tel:+19494328383">
                             +1 949 432 8383
                         </a>
-                    </li>
+                    </li> --}}
                     <li><i class="fa fa-whatsapp" aria-hidden="true"></i><a href="https://wa/me/+19494328383"
                             target="_blank">+1 949 432 8383</a></li>
                     <li>
@@ -35,8 +56,10 @@
                 <a href="{{ config(key: 'app.url') }}" class=" logo-header sm-hidden"><img
                         src="{{ config('app.url') }}assets-file/img/logo-footer.png" alt="logo"></a>
 
-                <p class="txt-footer sm-hidden" style="margin-top: 12px; ">A professional group focused on
-                    <br> creative and results-driven solutions.
+                <p class="txt-footer sm-hidden" style="margin-top: 10px; ">
+                    {{-- A professional group focused on
+                    <br> creative and results-driven solutions. --}}
+                    Where ideas become real.
                 </p>
                 <p class="txt-footer sm-hidden" style="margin-top: 5px; "> 24 / 7 </p>
 
@@ -50,10 +73,10 @@
                 <ul class="list-unstyled">
                     <li class="text-center"><a href="{{ config('app.url') }}terms">Terms & Conditions</a></li>
                     <li class="text-center"><a href="{{ config('app.url') }}privacy">Privacy Policy</a></li>
-                    <li class="text-center"><a href="{{ config('app.url') }}contactus">Contact Us</a></li>
+                    {{-- <li class="text-center"><a href="{{ config('app.url') }}contactus">Contact Us</a></li>
                     <li class="text-center"><a href="{{ config('app.url') }}aboutus">About Us</a></li>
  
-                    <li class="text-center"><a href="{{ config('app.url') }}services">Services</a></li>
+                    <li class="text-center"><a href="{{ config('app.url') }}services">Services</a></li> --}}
                     <li class="text-center"><a href="{{ config('app.url') }}careers">Careers</a></li>
                 </ul>
             </div> 
@@ -69,7 +92,7 @@
                 <div class="col-xs-12">
                     <div class="text-center">
 
-                        <p>© 2025, All rights reserved </p>
+                        <p>© 2026, All rights reserved </p>
                     </div>
                 </div>
             </div>

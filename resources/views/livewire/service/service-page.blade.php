@@ -1,23 +1,120 @@
 <section class="site-section subpage-site-section section-contact-us">
 
+    <style>
+        .service-back-row {
+            margin-bottom: 12px;
+        }
+        .service-back-btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            padding: 6px 14px;
+            border-radius: 999px;
+            border: 1px solid rgba(148, 163, 184, 0.6);
+            background: #ffffff;
+            color: #374151;
+            font-size: 12px;
+            font-weight: 600;
+            text-transform: uppercase;
+            text-decoration: none;
+            letter-spacing: 0.06em;
+            box-shadow: 0 6px 16px rgba(15, 23, 42, 0.08);
+            transition: background 0.2s ease, box-shadow 0.2s ease, transform 0.15s ease, color 0.2s ease, border-color 0.2s ease;
+        }
+        .service-back-btn i {
+            font-size: 13px;
+        }
+        .service-back-btn:hover {
+            background: #f3f4f6;
+            color: #111827;
+            border-color: #9ca3af;
+            transform: translateY(-1px);
+            text-decoration: none;
+        }
+        .service-hero-row {
+            display: flex;
+            align-items: center;
+            gap: 32px;
+            margin-bottom: 40px;
+            flex-wrap: wrap;
+        }
+        .service-hero-image {
+            flex: 0 1 286px;
+            min-width: 260px;
+        }
+        .service-hero-image img {
+            max-width: 320px;
+            width: 100%;
+            height: auto;
+            border-radius: 16px;
+            box-shadow: 0 14px 35px rgba(15, 23, 42, 0.12);
+            display: block;
+            margin: 0 auto;
+        }
+        .service-hero-text {
+            flex: 1 1 360px;
+            min-width: 260px;
+        }
+        .service-hero-text h2 {
+            font-size: 26px;
+            font-weight: 700;
+            margin-bottom: 14px;
+            color: #111827;
+        }
+        .service-hero-text .service-body {
+            font-size: 14px !important;
+            line-height: 1.7;
+            color: #4b5563;
+            margin: 0;
+            line-height: 22px !important;
+        } 
+        .service-hero-text .service-body  b{
+           width: 100%;
+           display: block;
+           
+        } 
+        .service-hero-text .service-body strong {
+            display: block;
+            font-weight: 700;
+            color: #111827;
+            margin-top: 8px;
+        }
+        @media (max-width: 767px) {
+            .service-hero-row {
+                gap: 20px;
+            }
+            .service-hero-text h2 {
+                font-size: 22px;
+                text-align: left;
+            }
+        }
+    </style> 
+
     <div class="container">
-        <div class="row">
-            <div class="col-sm-5">
-                <img src="{{ config('app.url') }}storage/<?= $service['image'] ?>" alt="<?= $service['title'] ?>"
-                    class="w-100">
+        <div class="row service-back-row">
+            <div class="col-xs-12">
+                <a href="{{ url()->previous() }}" class="service-back-btn">
+                    <i class="fa fa-arrow-left"></i>
+                    <span>Back</span>
+                </a>
+            </div>
+        </div>
+        <div class="row service-hero-row">
+            <div class="col-sm-5 service-hero-image">
+                <img src="{{ config('app.url') }}storage/<?= $service['image'] ?>" alt="<?= $service['title'] ?>">
             </div>
 
-
-            <div class="col-sm-1"></div>
-            <div class="col-sm-5">
+            <div class="col-sm-6 service-hero-text">
                 <h2><?= $service['title'] ?></h2>
                 <p class="service-body">
                     <?= $service['body'] ?>
                 </p>
             </div>
         </div>
-
-
+        <div class="besmo-section-divider">
+            <div class="besmo-section-divider-line"></div>
+        </div>
+ 
         @php
         
             $rawPackageServices = optional($service)->packageServices;

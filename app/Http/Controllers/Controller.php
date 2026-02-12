@@ -102,7 +102,7 @@ class Controller extends BaseController
 
             $user = new MainUser();
             $user->fl_name = $request->fname;
-            $user->last_name = $request->lname;
+            // $user->last_name = $request->lname;
             $user->pc_id = $request->country_code;
             $user->mobile = $cleanPhone;
             $user->email = $request->email;

@@ -48,7 +48,11 @@
     <link href="{{ config('app.url') }}assets-file/aos/aos.css" rel="stylesheet">
     <link rel="stylesheet"
         href="{{ config('app.url') }}assets-file/css/sonnet-toast.css?v=<?= filemtime('assets-file/css/sonnet-toast.css') ?>">
-    <script src="{{ config('app.url') }}assets-file/js/jquery.min.js"></script>
+        <link rel="stylesheet" href="{{ config('app.url') }}assets-file/css/owl.carousel.min.css">
+        <link rel="stylesheet" href="{{ config('app.url') }}assets-file/css/owl.theme.default.min.css">
+    
+  
+        <script src="{{ config('app.url') }}assets-file/js/jquery.min.js"></script>
 
     @livewireStyles
 
@@ -59,36 +63,40 @@
     @php
         $mainUser = Auth::guard('mainUsers')->user();
         $CartCount = CartCount();
- 
+
     @endphp
 
     <header id="masthead" class="site-header site-header-white">
         <nav id="primary-navigation" class="site-navigation">
             <div class="container">
 
-                <div class="navbar-header" style="float: left;">
+                <div class="navbar-header" style="float: left;z-index: 2;
+  position: relative;">
 
-                    <a href="{{ config('app.url') }}" class="site-title logo-header"><img
-                            src="{{ config('app.url') }}assets-file/img/logo.png" alt="logo"></a>
+                    <a href="{{ config('app.url') }}" class="site-title logo-header cursor-pointer">
+                        <img src="{{ config('app.url') }}assets-file/img/logo.png" alt="logo">
+                    </a>
 
                 </div><!-- /.navbar-header -->
 
-                <div class="collapse navbar-collapse" id="agency-navbar-collapse">
+                <div class="collapse navbar-collapse navbar-collapse-center" id="agency-navbar-collapse"
+                    style="position: relative;">
 
-                    <ul class="nav navbar-nav navbar-right desktop-nav">
-
-                        <li class=""><a href="{{ config('app.url') }}services">SERVICES</a></li>
-                        {{-- <li class=""><a href="{{ config('app.url') }}orders">ORDERS</a></li> --}}
+                    <ul class="nav navbar-nav desktop-nav">
+                        <li><a href="https://beauty.besmani.com/" target="_blank">BEAUTY</a></li>
+                        <li><a href="{{ config('app.url') }}">MARKET</a></li>
+                        <li><a href="{{ config('app.url') }}services">SERVICES</a></li>
+                        <li><a href="{{ config('app.url') }}besmo">TECHNOLOGY</a></li>
+                         {{-- <li class=""><a href="{{ config('app.url') }}orders">ORDERS</a></li> --}}
                         {{-- <li class=""><a href="{{ config('app.url') }}design-style">DESIGN STYLE</a></li>
                         <li class=""><a href="{{ config('app.url') }}portfolios">PORTFOLIO</a></li> --}}
-                        <li class=""><a href="{{ config('app.url') }}careers">CAREERS</a></li>
-                        <li class=""><a href="{{ config('app.url') }}aboutus">ABOUT US</a></li>
+                         <li class=""><a href="{{ config('app.url') }}aboutus">ABOUT US</a></li>
                         <li class=""><a href="{{ config('app.url') }}contactus">CONTACT US</a></li>
 
                         @if ($mainUser)
                             <li class="welcome-user user-dropdown">
                                 <a href="#" id="welcome-message" class="dropdown-toggle">
-                                    <b class="WuserName">{{ $mainUser->fl_name }}</b>
+                                    <b class="WuserName" style="color: #237D29;">{{ $mainUser->fl_name }}</b>
                                     <i class="fa fa-chevron-down dropdown-arrow"></i>
                                 </a>
                                 <div class="user-dropdown-menu">
@@ -106,14 +114,14 @@
                                     <div class="dropdown-items">
                                         <a href="{{ config('app.url') }}panel" class="dropdown-item">
                                             <i class="fa fa-user"></i>
-                                            <span>Profile</span>
+                                            <span>Dashboard</span>
                                         </a>
-                                        <a href="#" class="dropdown-item">
+                                        {{-- <a href="#" class="dropdown-item">
                                             <i class="fa fa-cog"></i>
                                             <span>Settings</span>
-                                        </a>
+                                        </a> --}}
                                         <div class="dropdown-divider"></div>
-                                        <a class="dropdown-item logout-item" onclick="logout()">
+                                        <a class="dropdown-item logout-item cursor-pointer" onclick="logout()">
                                             <i class="fa fa-sign-out"></i>
                                             <span>Logout</span>
                                         </a>
@@ -121,16 +129,16 @@
                                 </div>
                             </li>
                         @else
-                            <li class=""><a onclick="openLoginModal()">SIGN IN</a></li>
+                            <li class="login-item-side"><a onclick="openLoginModal()">SIGN IN</a></li>
                         @endif
                         {{-- <li class=""><a href="{{ config('app.url') }}login" class="btn-login">   Login </a></li> --}}
 
-                        <li class="basket-item">
+                        <li class="basket-item" style="position: absolute; right: 0;">
                             <a href="{{ config('app.url') }}cart" class="basket-link">
                                 <i class="fa fa-shopping-cart"></i>
-                                
-                                    <span class="basket-badge">{{ CartCount() }}</span>
-                               
+
+                                <span class="basket-badge">{{ CartCount() }}</span>
+
                             </a>
                         </li>
                     </ul>
@@ -166,17 +174,19 @@
             <div class="modal-header">
                 <div class="modal-logo">
                     {{-- BES<span class="logo-highlight">M</span>ANI --}}
-                    <img src="{{ config('app.url') }}assets-file/img/logo-footer.png" alt="logo"
-                        style="width: 150px;">
+                    <a href="{{ config('app.url') }}">
+                        <img src="{{ config('app.url') }}assets-file/img/logo-footer.png" alt="logo"
+                            style="width: 150px;">
+                    </a>
                 </div>
-                <div class="modal-title">Sign Up</div>
+                <div class="modal-title"> Create an Account</div>
             </div>
 
             <!-- Form Container -->
             <div class="modal-form-container">
                 <form id="signup-form" class="signup-form">
-                    <input type="text" id="fname" placeholder="First Name " class="modal-input" required>
-                    <input type="text" id="lname" placeholder="Last Name " class="modal-input" required>
+                    <input type="text" id="fname" placeholder=" Name " class="modal-input" required>
+                    {{-- <input type="text" id="lname" placeholder="Last Name " class="modal-input" required> --}}
 
 
                     <div class="input-group">
@@ -196,20 +206,30 @@
                     <input type="password" id="password" placeholder="Password" class="modal-input" required>
 
                     <!-- Terms & Conditions Checkbox -->
-                    <div class="terms-checkbox-container" style="margin: 15px 0; display: flex; align-items: flex-start; gap: 12px;">
-                        <input type="checkbox" id="agree-terms-signup-dif" name="agree-terms-signup-dif" class="terms-checkbox-input" required
+                    <div class="terms-checkbox-container"
+                        style="margin: 15px 0; display: flex; align-items: flex-start; gap: 12px;">
+                        <input type="checkbox" id="agree-terms-signup-dif" name="agree-terms-signup-dif"
+                            class="terms-checkbox-input" required
                             style="margin-top: 2px; cursor: pointer; width: 20px; height: 20px; min-width: 20px; min-height: 20px; flex-shrink: 0; 
                                    appearance: none; -webkit-appearance: none; -moz-appearance: none;
                                    background-color: #ffffff; border: 2px solid #d1d5db; border-radius: 4px;
                                    position: relative; outline: none; opacity: 1; visibility: visible;">
-                        <label for="agree-terms-signup-dif" style="color: #ffffff; font-size: 14px; line-height: 1.6; cursor: pointer; flex: 1; user-select: none;">
+                        <label for="agree-terms-signup-dif"
+                            style="color: #ffffff; font-size: 14px; line-height: 1.6; cursor: pointer; flex: 1; user-select: none;">
                             I agree to the 
-                            <a href="{{ url('/terms') }}" target="_blank" style="color: #4ade80; text-decoration: underline; transition: opacity 0.2s;">Terms & Conditions</a>
-                            and 
-                            <a href="{{ url('/privacy') }}" target="_blank" style="color: #4ade80; text-decoration: underline; transition: opacity 0.2s;">Privacy Policy</a>
+                            <a href="{{ url('/terms') }}" target="_blank"
+                                style="color: #4ade80; text-decoration: underline; transition: opacity 0.2s;">  
+                                Terms   
+                            </a>
+                                 <b style="color: #fff;">&</b>
+
+
+                            <a href="{{ url('/privacy') }}" target="_blank"
+                                style="color: #4ade80; text-decoration: underline; transition: opacity 0.2s;">Privacy
+                                Policy</a>
                         </label>
                     </div>
-                    
+
                     <style>
                         .terms-checkbox-input,
                         #agree-terms-signup-dif {
@@ -219,13 +239,13 @@
                             visibility: visible !important;
                             display: inline-block !important;
                         }
-                        
+
                         .terms-checkbox-input:checked,
                         #agree-terms-signup-dif:checked {
                             background-color: #4ade80 !important;
                             border-color: #4ade80 !important;
                         }
-                        
+
                         .terms-checkbox-input:checked::after,
                         #agree-terms-signup-dif:checked::after {
                             content: '✓';
@@ -240,13 +260,13 @@
                             display: block;
                             z-index: 1;
                         }
-                        
+
                         .terms-checkbox-input:hover,
                         #agree-terms-signup-dif:hover {
                             border-color: #4ade80 !important;
                             box-shadow: 0 0 0 2px rgba(74, 222, 128, 0.2);
                         }
-                        
+
                         .terms-checkbox-container a:hover {
                             opacity: 0.8;
                         }
@@ -290,8 +310,10 @@
             <div class="modal-header">
                 <div class="modal-logo">
                     {{-- BES<span class="logo-highlight">M</span>ANI --}}
+                    <a href="{{ config('app.url') }}">
                     <img src="{{ config('app.url') }}assets-file/img/logo-footer.png" alt="logo"
                         style="width: 150px;">
+                    </a>
                 </div>
                 <div class="modal-title">Sign in</div>
             </div>
@@ -378,43 +400,43 @@
             <a href="{{ config('app.url') }}contactus" class="nav-link">CONTACT US</a>
         </div>
         @if ($mainUser)
-        <div class="mobile-user-panel">
-            <div class="mobile-user-header">
-                <div class="avatar">
-                    <i class="fa fa-user-circle"></i>
+            <div class="mobile-user-panel">
+                <div class="mobile-user-header">
+                    <div class="avatar">
+                        <i class="fa fa-user-circle"></i>
+                    </div>
+                    <div class="details">
+                        <span class="name">{{ $mainUser->fl_name }} {{ $mainUser->last_name }}</span>
+                        <span class="email">{{ $mainUser->email }}</span>
+                    </div>
                 </div>
-                <div class="details">
-                    <span class="name">{{ $mainUser->fl_name }} {{ $mainUser->last_name }}</span>
-                    <span class="email">{{ $mainUser->email }}</span>
+                <div class="mobile-user-links">
+                    <a href="{{ config('app.url') }}panel" class="mobile-link">
+                        <i class="fa fa-user"></i>
+                        <span>Dashboard</span>
+                    </a>
+                    {{-- <a href="#" class="mobile-link">
+                        <i class="fa fa-cog"></i>
+                        <span>Settings</span>
+                    </a> --}}
+                    <a href="#" class="mobile-link logout" onclick="logout()">
+                        <i class="fa fa-sign-out"></i>
+                        <span>Logout</span>
+                    </a>
                 </div>
             </div>
-            <div class="mobile-user-links">
-                <a href="{{ config('app.url') }}panel" class="mobile-link">
-                    <i class="fa fa-user"></i>
-                    <span>Profile</span>
-                </a>
-                <a href="#" class="mobile-link">
-                    <i class="fa fa-cog"></i>
-                    <span>Settings</span>
-                </a>
-                <a href="#" class="mobile-link logout" onclick="logout()">
-                    <i class="fa fa-sign-out"></i>
-                    <span>Logout</span>
-                </a>
+        @else
+            <div class="nav-item">
+                <a onclick="openLoginModal()" class="nav-link">SIGN IN</a>
             </div>
-        </div>
-    @else
-        <div class="nav-item">
-            <a onclick="openLoginModal()" class="nav-link">SIGN IN</a>
-        </div>
         @endif
 
         <div class="nav-item">
             <a href="{{ config('app.url') }}cart" class="basket-link">
                 <i class="fa fa-shopping-cart"></i>
-                
-                    <span class="basket-badge">{{ CartCount() }}</span>
-               
+
+                <span class="basket-badge">{{ CartCount() }}</span>
+
             </a>
         </div>
 
@@ -602,25 +624,26 @@
 
     // Form submission
     $('#signup-form').submit(function(e) {
-        
+
         e.preventDefault();
 
         var fname = $('#fname').val();
-        var lname = $('#lname').val();
+        // var lname = $('#lname').val();
         var email = $('#email').val();
         var countryCode = $('#country-code').val();
         var phone = $('#phone').val();
         var password = $('#password').val();
 
         // Basic validation
-        if (!fname || !lname || !email || !password || !countryCode || !phone) {
+        if (!fname  || !email || !password || !countryCode || !phone) {
             toastWarning('Required Fields', 'Please fill in all required fields.', 4000);
             return;
         }
 
         // Check if terms checkbox is checked
         if (!$('#agree-terms-signup-dif').is(':checked')) {
-            toastWarning('Terms & Conditions', 'Please agree to the Terms & Conditions and Privacy Policy to continue.', 4000);
+            toastWarning('Terms & Conditions',
+                'Please agree to the Terms & Conditions and Privacy Policy to continue.', 4000);
             return;
         }
 
@@ -640,14 +663,14 @@
         // Show loading spinner
         $('.fa-spinner').show();
         $('#submit-btn').prop('disabled', true);
-       
+
         // Submit the form via AJAX  
         $.ajax({
                 url: '{{ route('signup') }}',
                 type: 'POST',
                 data: {
                     fname: fname,
-                    lname: lname,
+                    // lname: lname,
                     email: email,
                     country_code: countryCode,
                     phone: phone,
@@ -655,7 +678,7 @@
                 }
             })
             .done(function(response) {
-               
+
                 $('.fa-spinner').hide();
                 $('#submit-btn').prop('disabled', false);
 
@@ -843,14 +866,14 @@
         $('#login-modal').fadeOut(300);
         $('body').css('overflow', 'auto');
     }
-     
+
     // sign in form submission
     $('#login-form').submit(function(e) {
-         
+
         e.preventDefault();
         var emailOrPhone = $('#emailOrPhoneLogin').val();
         var password = $('#passwordLogin').val();
- 
+
         // Show loading spinner
         $('.fa-spinner').show();
         $('#submit-btn-login').prop('disabled', true);
@@ -864,19 +887,19 @@
                 }
             })
             .done(function(response) {
-               
+
                 if (response.success) {
                     // Beautiful Sonner-like toast notification
                     toastSuccess('Welcome to BESMANI!', 'You have successfully signed in.', 2000);
                     // Check for stored redirect URL
                     // var redirectUrl = localStorage.getItem('loginRedirectUrl');
                     // var url = redirectUrl || window.location.href;
-                    
+
                     // // Clear the stored redirect URL
                     // if (redirectUrl) {
                     //     localStorage.removeItem('loginRedirectUrl');
                     // }
-                    
+
                     setTimeout(function() {
                         // current url
                         var currentUrl = window.location.href;

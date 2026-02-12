@@ -1,6 +1,7 @@
 <?php
 
 use App\Models\Cart;
+use App\Models\Slider;
 use App\Models\MainUser;
 use App\Models\Agreement;
 use App\Models\OrderItem;
@@ -131,4 +132,11 @@ function userServiceAgreement()
 {
     $serviceAgreement = Agreement::where('agreement_category_id', 3)->first();
     return $serviceAgreement;
+}
+
+function slidersTechnology()
+{
+    $sliders = Slider::where('status', 1)->orderBy('sort', 'asc')->get();
+    
+    return $sliders;
 }

@@ -16,9 +16,10 @@ use App\Livewire\Privacy\PrivacyPage;
 use App\Livewire\Service\ServicePage;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\CartController;
-use App\Livewire\Panel\Invoice\InvoicePage;
-use App\Http\Controllers\Api\UserController;
 use App\Livewire\Agreement\AgreementPage;
+use App\Livewire\Panel\Invoice\InvoicePage;
+use App\Livewire\Panel\Profile\ProfilePage;
+use App\Http\Controllers\Api\UserController;
 
 /*
 |--------------------------------------------------------------------------
@@ -64,6 +65,7 @@ Route::middleware(['auth:mainUsers'])->group(function () {
     Route::get('/panel', Dashboard::class);
     Route::get('/panel/invoice', InvoicePage::class);
     Route::get('/panel/invoice/details', [CartController::class, 'getInvoiceDetails'])->name('panel.invoice.details');
+    Route::get('/panel/profile', ProfilePage::class);
 });
 
 // end user panel

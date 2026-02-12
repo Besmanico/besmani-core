@@ -6,9 +6,43 @@
     <main class="panel-main">
 
 
-        @livewire('panel.header')
+        @livewire('panel.header') 
 
+       {{-- new item dashboard --}}
+       <div class="new-item-dashboard">
+           <a href="{{ config('app.url') }}" class="dash-quick-link dash-home">
+               <span class="icon-wrap home"><i class="fa fa-home"></i></span>
+               <span class="label">Home</span>
+           </a>
+           <a href="https://beauty.besmani.com/" target="_blank" class="dash-quick-link dash-beauty">
+               <span class="icon-wrap beauty"><i class="fa fa-magic"></i></span>
+               <span class="label">Beauty</span>
+           </a>
+           <a href="{{ config('app.url') }}" class="dash-quick-link dash-marketplace">
+               <span class="icon-wrap marketplace"><i class="fa fa-shopping-bag"></i></span>
+               <span class="label">Marketplace</span>
+           </a>
+           <a href="{{ config('app.url') }}services" class="dash-quick-link dash-services">
+               <span class="icon-wrap services"><i class="fa fa-cogs"></i></span>
+               <span class="label">Services</span>
+           </a> 
+            <a href="#" class="dash-quick-link dash-ads">
+                <span class="icon-wrap ads"><i class="fa fa-bullhorn"></i></span>
+                <span class="label">Advertising</span>
+            </a>
+            <a href="#" class="dash-quick-link dash-messages">
+                <span class="icon-wrap messages"><i class="fa fa-comments"></i></span>
+                <span class="label">Messages</span>
+            </a>
+            {{-- <a href="#" class="dash-quick-link dash-logout">
+                <span class="icon-wrap logout"><i class="fa fa-sign-out"></i></span>
+                <span class="label">Log Out</span>
+            </a> --}}
+       </div>  
 
+       {{-- new item dashboard end--}}
+
+       <hr style="border: 1px solid #ccc; margin: 10px 0;">
         <section class="stats-grid">
             <article class="stat-card">
                 <div class="stat-icon primary">

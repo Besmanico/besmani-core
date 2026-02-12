@@ -58,23 +58,45 @@
     @livewireStyles
 </head>
 
-<body>
+<body> 
 
     <div class="panel-dashboard">
         <aside class="panel-sidebar">
             <div class="sidebar-header">
                 <a href="{{ config('app.url') }}">
-                <div class="logo">
-                    <img style="width: 100px;" src="{{ config('app.url') }}assets-file/img/logo-footer.png" alt="logo">
-                </div>
-            </a>
-                <p class="welcome">Welcome back!</p>
+                    <div class="logo">
+                        <img style="width: 100px;" src="{{ config('app.url') }}assets-file/img/logo-footer.png" alt="logo">
+                    </div>
+                </a>
+                @auth('mainUsers')
+                    @php
+                        $panelUser = Auth::guard('mainUsers')->user();
+                        $avatarUrl = $panelUser && $panelUser->avatar
+                            ? (env('BEAUTY_URL', 'https://beauty.besmani.com') . '/public/assets/images/user/' . $panelUser->avatar)
+                            : 'https://ui-avatars.com/api/?name=' . urlencode(trim(($panelUser->fl_name ?? '') . ' ' . ($panelUser->last_name ?? '')) ?: 'User') . '&color=7F9CF5&background=EBF4FF&size=128';
+                        $displayName = trim(($panelUser->fl_name ?? '') . ' ' . ($panelUser->last_name ?? '')) ?: 'User';
+                    @endphp
+                    <a href="{{ config('app.url') }}panel/profile" class="sidebar-user-block">
+                        <div class="sidebar-user-avatar">
+                            <img src="{{ $avatarUrl }}" alt="{{ $displayName }}">
+                        </div>
+                        {{-- <p class="sidebar-welcome">Welcome back!</p> --}}
+                        <p class="sidebar-user-name">{{ $displayName }}</p>
+                        <p class="sidebar-user-date">{{ now()->format('l, F j, Y') }}</p>
+                    </a>
+                @else
+                    {{-- <p class="welcome">Welcome back!</p> --}}
+                @endauth
             </div>
 
             <nav class="sidebar-nav">
                 <a href="{{ config('app.url') }}panel" class="nav-link active">
                     <i class="fa fa-home"></i>
                     <span>Dashboard</span>
+                </a>
+                <a href="{{ config('app.url') }}panel/profile" class="nav-link">
+                    <i class="fa fa-user"></i>
+                    <span>My Profile</span>
                 </a>
                 <a href="{{ config('app.url') }}panel/invoice" class="nav-link">
                     <i class="fa fa-shopping-cart"></i>
@@ -88,10 +110,7 @@
                     <i class="fa fa-briefcase"></i>
                     <span>My Projects</span>
                 </a> --}}
-                <a href="#" class="nav-link">
-                    <i class="fa fa-briefcase"></i>
-                    <span>My Profile</span>
-                </a>
+              
                 {{-- <a href="#" class="nav-link">
                     <i class="fa fa-calendar"></i>
                     <span>Schedule</span>
@@ -104,6 +123,10 @@
                     <i class="fa fa-cog"></i>
                     <span>Settings</span>
                 </a>
+                <a href="#" class="nav-link" onclick="event.preventDefault(); panelLogout();">
+                    <i class="fa fa-sign-out"></i>
+                    <span>Logout</span>
+                </a> 
             </nav>
 
             <div class="sidebar-footer">
@@ -166,6 +189,21 @@
             }
         });
     });
+
+    function panelLogout() {
+        if (confirm('Are you sure you want to logout?')) {
+            var form = document.createElement('form');
+            form.method = 'POST';
+            form.action = '{{ route('logout') }}';
+            var csrf = document.createElement('input');
+            csrf.type = 'hidden';
+            csrf.name = '_token';
+            csrf.value = '{{ csrf_token() }}';
+            form.appendChild(csrf);
+            document.body.appendChild(form);
+            form.submit();
+        }
+    }
 </script>
 @livewireScripts
 

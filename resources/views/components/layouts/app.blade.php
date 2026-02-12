@@ -54,6 +54,196 @@
 
     <script src="{{ config('app.url') }}assets-file/js/jquery.min.js"></script>
 
+    <style>
+        /* Service section: 3 square items */
+        .service-section-item {
+            margin-top: 75px;
+        }
+
+        .service-section-grid {
+            display: flex;
+            justify-content: center;
+            align-items: stretch;
+            gap: 24px;
+            flex-wrap: wrap;
+            max-width: 720px;
+            margin: 0 auto;
+        }
+
+        .service-square {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            width: 210px;
+            aspect-ratio: 1;
+            background: rgba(255, 255, 255, 0.8);
+            border: 1px solid rgba(255, 255, 255, 0.25);
+            border-radius: 12px;
+            padding: 20px;
+            text-decoration: none;
+            color: #fe0001;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+        }
+
+        .service-square:hover {
+            background: rgba(255, 255, 255, 0.8);
+            border-color: rgba(255, 255, 255, 0.4);
+            transform: translateY(-4px);
+            box-shadow: 0 8px 28px rgba(0, 0, 0, 0.2);
+            color: #333;
+        }
+
+        .service-square-icon {
+            font-size: 32px;
+            margin-bottom: 12px;
+            opacity: 0.95;
+            transition: opacity 0.25s ease;
+            color: #000;
+        }
+
+        .service-square-icon img {
+            width: 40px;
+            object-fit: contain;
+            opacity: 0.95;
+        }
+
+        .service-square-title {
+            font-size: 16px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            margin-bottom: 4px;
+            transition: opacity 0.25s ease;
+            border-bottom: 1px solid;
+        }
+
+        .service-square-desc {
+            font-size: 11px;
+            opacity: 0.85;
+            text-align: center;
+            line-height: 1.3;
+            transition: opacity 0.25s ease;
+            color: #000;
+            font-weight: bold;
+
+        }
+
+        /* Beauty item hover text overlay */
+        .service-square-beauty {
+            position: relative;
+            overflow: hidden;
+        }
+
+        .service-square-hover-text {
+            position: absolute;
+            inset: 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 18px;
+            background: linear-gradient(145deg, rgba(254, 0, 1, 0.92) 0%, rgba(180, 0, 0, 0.95) 100%);
+            color: #fff;
+            font-size: 13px;
+            line-height: 1.55;
+            text-align: center;
+            letter-spacing: 0.02em;
+            opacity: 0;
+            visibility: hidden;
+            transform: scale(0.94);
+            transition: opacity 0.35s ease, visibility 0.35s ease, transform 0.35s ease;
+            border-radius: 12px;
+            box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.15);
+        }
+
+        .service-square-beauty:hover .service-square-hover-text {
+            opacity: 1;
+            visibility: visible;
+            transform: scale(1);
+        }
+
+        .service-square-beauty:hover .service-square-icon,
+        .service-square-beauty:hover .service-square-title,
+        .service-square-beauty:hover .service-square-desc {
+            opacity: 0;
+            transition: opacity 0.25s ease;
+        }
+
+        .login-item-side {
+            position: absolute !important;
+            right: 47px;
+            border: 1px solid;
+            border-radius: 5px;
+            padding: 5px;
+        }
+
+        /* Sign Up button hero */
+        .signup-btn-side {
+            margin-top: 28px;
+            margin-bottom: 12px;
+        }
+
+        .signup-btn-hero {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            padding: 14px 32px;
+            font-size: 15px;
+            font-weight: 700;
+            letter-spacing: 0.06em;
+            text-transform: uppercase;
+            color: #fff;
+            background: linear-gradient(135deg, #fe0001 0%, #c40001 50%, #a00000 100%);
+            border: none;
+            border-radius: 50px;
+            cursor: pointer;
+            box-shadow: 0 4px 20px rgba(254, 0, 1, 0.4), 0 2px 8px rgba(0, 0, 0, 0.15);
+            transition: transform 0.25s ease, box-shadow 0.25s ease, background 0.25s ease;
+            outline: none;
+        }
+
+        .signup-btn-hero:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 28px rgba(254, 0, 1, 0.5), 0 4px 12px rgba(0, 0, 0, 0.2);
+            color: #fff;
+            background: linear-gradient(135deg, #ff1a1a 0%, #fe0001 50%, #c40001 100%);
+        }
+
+        .signup-btn-hero:active {
+            transform: translateY(-1px);
+            box-shadow: 0 4px 16px rgba(254, 0, 1, 0.35);
+        }
+
+        .signup-btn-hero i {
+            font-size: 16px;
+            opacity: 0.95;
+        }
+
+        /* Header: center menu items */
+        .navbar-collapse-center {
+            justify-content: center;
+        }
+
+        .navbar-collapse-center .navbar-nav {
+            float: none;
+            margin: 0 auto;
+        }
+
+        @media (min-width: 768px) {
+            .navbar-collapse-center {
+                display: flex !important;
+            }
+
+            .navbar-collapse-center .desktop-nav {
+                display: flex;
+                flex-wrap: wrap;
+                justify-content: center;
+                align-items: center;
+            }
+        }
+    </style>
 
     @livewireStyles
 
@@ -66,19 +256,78 @@
     <div id="hero" class="hero overlay">
         <div class="hero-content aos" data-aos="fade-up">
             <div class="hero-text -mt-150">
-                <h1>Your story begins from here.</h1>
                 {{-- <a href="{{ config('app.url') }}" style="position:relative" class="site-title mt-sm-logo"><img
                         style="margin-top:15px;width:450px;" src="{{ config('app.url') }}assets-file/img/header.png"
                         alt="besmani"></a> --}}
+                <h1>Your story begins from here.</h1>
+                <h3>This is where good things happen</h3>
+                <div class="service-section-item text-center">
+                    <div class="service-section-grid">
+                        <a href="https://beauty.besmani.com/" target="_blank"
+                            class="service-square service-square-beauty">
+                            <span class="service-square-icon">
+                                {{-- <i class="fa fa-diamond"></i> --}}
+                                <img src="{{ config('app.url') }}assets-file/img/logo-be.png" alt="besmani">
 
-                        <div class="text-center service-section-center">
-                             
-                        </div>
+                            </span>
+                            <span class="service-square-title">Beauty</span>
+                            <span class="service-square-desc">
+                                A trusted place for beauty services, products, and professional training.
+                            </span>
+                            <span class="service-square-hover-text">A trusted place for beauty services, products, and
+                                professional training.</span>
+                        </a>
+                        <a href="{{ config('app.url') }}market" class="service-square service-square-beauty">
+                            <span class="service-square-icon">
+                                {{-- <i class="fa fa-shopping-bag"></i> --}}
+                                <img style="width: 45px;" src="{{ config('app.url') }}assets-file/img/logo-market.png" alt="besmani">
+
+                            </span>
+                            <span class="service-square-title">Market</span>
+                            <span class="service-square-desc">A marketplace that connects people, brands, and
+                                products.</span>
+                            <span class="service-square-hover-text">A marketplace that connects people, brands, and
+                                products.</span>
+
+                        </a>
+                        <a href="{{ config('app.url') }}services" class="service-square service-square-beauty">
+                            <span class="service-square-icon">
+                                {{-- <i class="fa fa-cogs"></i> --}}
+                                <img src="{{ config('app.url') }}assets-file/img/bes.png" alt="besmani">
+                            </span>
+                            <span class="service-square-title">Services</span>
+                            <span class="service-square-desc">Professional services designed to help businesses build,
+                                grow, and scale.</span>
+                            <span class="service-square-hover-text">Professional services designed to help businesses
+                                build, grow, and scale.</span>
+
+                        </a>
+                    </div>
+                </div>
+                {{-- service-section-item --}}
+
+                {{-- @php
+                $mainUser = Auth::guard('mainUsers')->user();
+             @endphp --}}
 
 
 
+                {{-- btn signup --}}
+                <h4>Tell us who you are, we'll take care of the rest.</h4>
+                {{-- @if (!$mainUser) --}}
 
-                <p style="margin-top:55px;">BESMANI EXPERIENCE OF THE FUTURE TECHNOLOGY AND DESIGN </p>
+                <div class="text-center signup-btn-side">
+                    <button type="button" class="signup-btn-hero" onclick="openSignupModal()" aria-label="Sign Up">
+                        <i class="fa fa-user-plus" aria-hidden="true"></i>
+                        <span>Sign Up</span>
+                    </button>
+                </div>
+                {{-- @else --}}
+
+                {{-- end-btn signup --}}
+
+
+                {{-- <p style="margin-top:55px;">BESMANI EXPERIENCE OF THE FUTURE TECHNOLOGY AND DESIGN </p> --}}
 
                 {{-- subscribe --}}
                 {{-- <section class="site-section section-newsletter Subscribe-section text-center ">
@@ -97,11 +346,11 @@
                 {{-- subscribeEnd --}}
 
 
-                <b class="txt-hero-measure">
+                {{-- <b class="txt-hero-measure">
 
                     We measure our success by the results we drive for our clients.
 
-                </b>
+                </b> --}}
 
 
             </div><!-- /.hero-text -->
@@ -135,14 +384,14 @@
                     <img src="{{ config('app.url') }}assets-file/img/logo-footer.png" alt="logo"
                         style="width: 150px;">
                 </div>
-                <div class="modal-title">Sign Up</div>
+                <div class="modal-title">   Create an Account</div>
             </div>
 
             <!-- Form Container -->
             <div class="modal-form-container">
                 <form id="signup-form" class="signup-form">
-                    <input type="text" id="fname" placeholder="First Name " class="modal-input" required>
-                    <input type="text" id="lname" placeholder="Last Name " class="modal-input" required>
+                    <input type="text" id="fname" placeholder="Name " class="modal-input" required>
+                    {{-- <input type="text" id="lname" placeholder="Last Name " class="modal-input" required> --}}
 
 
                     <div class="input-group">
@@ -162,26 +411,34 @@
                     <input type="password" id="password" placeholder="Password" class="modal-input" required>
 
                     <!-- Terms & Conditions Checkbox -->
-                    <div class="terms-checkbox-container" style="margin: 15px 0; display: flex; align-items: flex-start; gap: 12px;">
-                        <input type="checkbox" id="agree-terms-signup" name="agree-terms-signup" class="terms-checkbox-input" required
+                    <div class="terms-checkbox-container"
+                        style="margin: 15px 0; display: flex; align-items: flex-start; gap: 12px;">
+                        <input type="checkbox" id="agree-terms-signup" name="agree-terms-signup"
+                            class="terms-checkbox-input" required
                             style="margin-top: 2px; cursor: pointer; width: 20px; height: 20px; min-width: 20px; min-height: 20px; flex-shrink: 0; 
                                    appearance: none; -webkit-appearance: none; -moz-appearance: none;
                                    background-color: #ffffff; border: 2px solid #d1d5db; border-radius: 4px;
                                    position: relative; outline: none; opacity: 1; visibility: visible;">
-                        <label for="agree-terms-signup" style="color: #ffffff; font-size: 14px; line-height: 1.6; cursor: pointer; flex: 1; user-select: none;">
-                            I agree to the 
-                            <a href="{{ url('/terms') }}" target="_blank" style="color: #ed2929; text-decoration: underline; transition: opacity 0.2s;">Terms & Conditions</a>
-                           <br>
-                            and 
-                            <a href="{{ url('/privacy') }}" target="_blank" style="color: #ed2929; text-decoration: underline; transition: opacity 0.2s;">Privacy Policy</a>
+                        <label for="agree-terms-signup"
+                            style="color: #ffffff; font-size: 14px; line-height: 1.6; cursor: pointer; flex: 1; user-select: none;">
+                            I agree to the
+                            <a href="{{ url('/terms') }}" target="_blank"
+                                style="color: #4ade80; text-decoration: underline; transition: opacity 0.2s;">Terms
+                            </a> 
+                            <b style="color: #fff;">&</b>
+
+
+                            <a href="{{ url('/privacy') }}" target="_blank"
+                                style="color: #4ade80; text-decoration: underline; transition: opacity 0.2s;">Privacy
+                                Policy</a>
                         </label>
                     </div>
-                    
-                   
+
+
 
                     <div class="button-container">
                         <button type="submit" id="submit-btn" class="submit-button">
-                            Sign Up
+                            Continue
                             <i class="fa fa-spinner fa-spin" style="display: none; margin-left: 8px;"></i>
                         </button>
                     </div>
@@ -371,14 +628,14 @@
         e.preventDefault();
 
         var fname = $('#fname').val();
-        var lname = $('#lname').val();
+        // var lname = $('#lname').val();
         var email = $('#email').val();
         var countryCode = $('#country-code').val();
         var phone = $('#phone').val();
         var password = $('#password').val();
 
         // Basic validation
-        if (!fname || !lname || !email || !password || !countryCode || !phone) {
+        if (!fname ||  !email || !password || !countryCode || !phone) {
             toastWarning('Please fill in all required fields.', 4000);
             return;
         }
@@ -412,7 +669,7 @@
                 type: 'POST',
                 data: {
                     fname: fname,
-                    lname: lname,
+                    // lname: lname,
                     email: email,
                     country_code: countryCode,
                     phone: phone,
@@ -439,14 +696,14 @@
                         3000);
 
                     setTimeout(function() {
-                        closeSignupModal(); 
+                        closeSignupModal();
                         window.location.href = '/';
                     }, 3000);
 
                     $('.WuserName').text(response.userName);
                     $('.welcome-user').show();
 
-                 }
+                }
             })
             .fail(function(xhr) {
                 $('.fa-spinner').hide();
@@ -506,12 +763,12 @@
                     // alert(response.message || 'Code confirmed! Welcome to BESMANI!');
                     toastSuccess('Code Confirmed!', 'Welcome to BESMANI!', 3000);
                     setTimeout(function() {
-                        closeSignupModal(); 
-                        window.location.href = '/';
+                        closeSignupModal();
+                        window.location.href = '/panel';
                     }, 3000);
                     $('.WuserName').text(response.userName);
                     $('.welcome-user').show();
-                   
+
                 } else {
                     // alert(response.message || 'Invalid confirmation code.');
                     toastError('Invalid Code', response.message || 'Invalid confirmation code.', 4000);
@@ -635,29 +892,30 @@
                 }
             })
             .done(function(response) {
-              
+
                 if (response.success) {
                     // alert('Welcome to BESMANI!');
                     toastSuccess('Welcome to BESMANI!', 'You have successfully signed in.', 2000);
-                    
+
                     // Check for stored redirect URL
                     // var redirectUrl = localStorage.getItem('loginRedirectUrl');
                     // var url = redirectUrl || '/';
-                    
+
                     // // Clear the stored redirect URL
                     // if (redirectUrl) {
                     //     localStorage.removeItem('loginRedirectUrl');
                     // }
-                    
+
                     setTimeout(function() {
                         closeLoginModal();
                         // current url
                         var currentUrl = window.location.href;
-                        window.location.href = currentUrl;
+                        // window.location.href = currentUrl;
+                        window.location.href = '/panel';
                     }, 2000);
                     $('.WuserName').text(response.userName);
                     $('.welcome-user').show();
-                  
+
                 } else {
                     // alert(response.message || 'Invalid email or phone number or password!');
                     toastError('Login Failed', response.message ||

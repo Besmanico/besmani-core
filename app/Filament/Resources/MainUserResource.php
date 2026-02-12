@@ -30,6 +30,7 @@ use App\Filament\Resources\MainUserResource\RelationManagers\MenSalonServiceRela
 use App\Filament\Resources\MainUserResource\RelationManagers\MenAcademyCourseRelationManager;
 use App\Filament\Resources\MainUserResource\RelationManagers\WomenServiceSalonRelationManager;
 use App\Filament\Resources\MainUserResource\RelationManagers\WomenAcademyCourseRelationManager;
+use pxlrbt\FilamentExcel\Actions\Tables\ExportBulkAction;
 
 class MainUserResource extends Resource
 {
@@ -141,6 +142,8 @@ class MainUserResource extends Resource
                  Tables\Actions\ViewAction::make(),  
             ])
             ->bulkActions([
+                               ExportBulkAction::make('export-users')->label(' Excel'),  
+
                 Tables\Actions\BulkActionGroup::make([
                     // Tables\Actions\DeleteBulkAction::make(),
                 ]),

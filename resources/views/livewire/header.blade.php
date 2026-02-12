@@ -3,17 +3,24 @@
         <nav id="primary-navigation" class="site-navigation">
             <div class="container">
 
-                <div class="navbar-header">
+                <a href="{{ url('/') }}" class="site-title logo-header">
+                    <div class="navbar-header" style="z-index: 2;
+  position: relative;">
 
-                    <a href="{{ config('app.url') }}" class="site-title logo-header"><img
-                            src="{{ config('app.url') }}assets-file/img/logo.png" alt="logo"></a>
+                        <a href="{{ url('/') }}" class="site-title logo-header">
+                            <img src="{{ config('app.url') }}assets-file/img/logo.png" alt="logo">
+                        </a>
 
-                </div><!-- /.navbar-header -->
+                    </div><!-- /.navbar-header -->
+                </a>
+                <div class="collapse navbar-collapse navbar-collapse-center" id="agency-navbar-collapse"
+                    style="position: relative;">
 
-                <div class="collapse navbar-collapse" id="agency-navbar-collapse">
-
-                    <ul class="nav navbar-nav navbar-right desktop-nav">
+                    <ul class="nav navbar-nav desktop-nav">
+                        <li><a href="https://beauty.besmani.com/" target="_blank">BEAUTY</a></li>
+                        <li><a href="{{ config('app.url') }}">MARKET</a></li>
                         <li><a href="{{ config('app.url') }}services">SERVICES</a></li>
+                        <li><a href="{{ config('app.url') }}besmo">TECHNOLOGY</a></li>
                         {{-- <li><a href="{{ config('app.url') }}orders">ORDERS</a></li> --}}
                         {{-- <li><a href="{{ config('app.url') }}design-style">DESIGN STYLE</a></li>
                         <li><a href="{{ config('app.url') }}portfolios">PORTFOLIO</a></li> --}}
@@ -30,7 +37,7 @@
                         @if ($mainUser)
                             <li class="welcome-user user-dropdown">
                                 <a href="#" id="welcome-message" class="dropdown-toggle">
-                                    <b class="WuserName">{{ $mainUser->fl_name }}</b>
+                                    <b class="WuserName" style="color: #237D29;">{{ $mainUser->fl_name }}</b>
                                     <i class="fa fa-chevron-down dropdown-arrow"></i>
                                 </a>
                                 <div class="user-dropdown-menu">
@@ -48,12 +55,12 @@
                                     <div class="dropdown-items">
                                         <a href="{{ config('app.url') }}panel" class="dropdown-item">
                                             <i class="fa fa-user"></i>
-                                            <span>Profile</span>
+                                            <span>Dashboard</span>
                                         </a>
-                                        <a href="#" class="dropdown-item">
+                                        {{-- <a href="#" class="dropdown-item">
                                             <i class="fa fa-cog"></i>
                                             <span>Settings</span>
-                                        </a>
+                                        </a> --}}
                                         <div class="dropdown-divider"></div>
                                         <a href="#" class="dropdown-item logout-item" onclick="logout()">
                                             <i class="fa fa-sign-out"></i>
@@ -66,9 +73,9 @@
                             {{-- <li class="login-item">
                                 <a href="{{ route('login') }}" class="btn-login">Login</a>
                             </li> --}}
-                            <li onclick="openLoginModal()"><a>SIGN IN</a></li>
+                            <li class="login-item-side" onclick="openLoginModal()"><a>SIGN IN</a></li>
                         @endif
-                        <li class="basket-item">
+                        <li class="basket-item" style="position: absolute; right: 0;">
                             <a href="{{ config('app.url') }}cart" class="basket-link">
                                 <i class="fa fa-shopping-cart"></i>
 
@@ -111,7 +118,7 @@
         {{-- <div class="nav-item">
             <a href="{{ config('app.url') }}portfolios" class="nav-link">PORTFOLIO</a>
         </div> --}}
-       
+
         <div class="nav-item">
             <a href="{{ config('app.url') }}aboutus" class="nav-link">ABOUT US</a>
         </div>
@@ -144,12 +151,12 @@
                 <div class="mobile-user-links">
                     <a href="{{ config('app.url') }}panel" class="mobile-link">
                         <i class="fa fa-user"></i>
-                        <span>Profile</span>
+                        <span>Dashboard</span>
                     </a>
-                    <a href="#" class="mobile-link">
+                    {{-- <a href="#" class="mobile-link">
                         <i class="fa fa-cog"></i>
                         <span>Settings</span>
-                    </a>
+                    </a> --}}
                     <a href="#" class="mobile-link logout" onclick="logout()">
                         <i class="fa fa-sign-out"></i>
                         <span>Logout</span>
