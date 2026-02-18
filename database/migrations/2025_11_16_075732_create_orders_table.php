@@ -29,8 +29,14 @@ return new class extends Migration
             $table->string('signature_date');
             $table->boolean('is_admin')->default(0);
             $table->boolean('status')->default(0);
+            $table->enum('order_status', ['Pending', 'processing', 'Done', 'Cancelled'])->default('Pending');
+            $table->enum('payment_status', ['Pending', 'Paid', 'Unpaid', 'Partially Paid','Overpaid'])->default('Pending');
+            $table->integer('progress')->default(0);
+            $table->decimal('free_price', 10, 2)->nullable();
+            $table->dateTime('free_price_date')->nullable();
+ 
             $table->timestamps();
-        });
+        }); 
     }
 
     /**

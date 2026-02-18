@@ -78,7 +78,7 @@
                             </p>
                         </div>
                         <div class="about-img-wrap">
-                            <img src="{{ config('app.url') }}assets-file/img/about-1.jpg" alt="Besmani vision">
+                            <img src="{{ config('app.url') }}assets-file/img/102.png" alt="Besmani vision">
                         </div>
                     </div>
                 </div> 
@@ -94,10 +94,10 @@
                             </p>
                         </div>
                         <div class="about-img-wrap">
-                            <img src="{{ config('app.url') }}assets-file/img/about-2.jpg" alt="Besmani foundation">
+                            <img src="{{ config('app.url') }}assets-file/img/103.png" alt="Besmani foundation">
                         </div>
                     </div>
-                </div>
+                </div>  
 
                 {{-- 3 --}}
                 <div class="col-xs-12 about-section">
@@ -110,7 +110,7 @@
                             </p>
                         </div>
                         <div class="about-img-wrap">
-                            <img src="{{ config('app.url') }}assets-file/img/about-2.jpg" alt="Besmani focus">
+                            <img src="{{ config('app.url') }}assets-file/img/101.png" alt="Besmani focus">
                         </div>
                     </div>
                 </div>

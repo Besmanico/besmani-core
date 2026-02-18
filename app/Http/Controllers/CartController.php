@@ -351,11 +351,36 @@ class CartController extends Controller
         return response()->json(['success' => true, 'html' => $html]);
     }
 
+    public function getPaymentDetails(Request $request)
+    {
+        $orderId = $request->order_id;
+        $userId = Auth::guard('mainUsers')->user()->id;
+
+        $order = Order::where('id', $orderId)
+            ->where('user_id', $userId)
+            ->first();
+
+        if (!$order) {
+            return response()->json(['success' => false, 'message' => 'Order not found'], 404);
+        }
+
+        $installmentPays = ($order->cart_id !== null && $order->cart_id !== '')
+            ? InstallmentPay::where('cart_id', $order->cart_id)->orderBy('id')->get()
+            : collect();
+
+        $html = view('livewire.panel.payment.pay-detail-modal', [
+            'order' => $order,
+            'installmentPays' => $installmentPays,
+        ])->render();
+
+        return response()->json(['success' => true, 'html' => $html]);
+    }
+ 
     public function getOrderItems()
     {
         $orderItems = OrderItem::select('id', 'name', 'code', 'price')->where('visible', 1)->get();
         return response()->json(['success' => true, 'orderItems' => $orderItems]);
-    }
+    } 
 
     public function createCustomPackageItem(Request $request)
     {

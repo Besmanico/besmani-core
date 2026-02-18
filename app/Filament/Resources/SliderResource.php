@@ -47,10 +47,10 @@ class SliderResource extends Resource
                         Toggle::make('page_src')->label('Technology'),
 
                         Toggle::make('status')->label('publish'),
-                        Hidden::make('user_id')->default(Auth::user()->id)->dehydrated(true),
-
+                        Hidden::make('user_id')->default(fn () => auth()->id() ?? 0)->dehydrated(true),
+ 
                     ])->collapsed(false)->columns(2),
-            ]); 
+            ]);  
     }
 
     public static function table(Table $table): Table

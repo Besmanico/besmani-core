@@ -35,10 +35,14 @@ class ViewOrder extends ViewRecord
             'user',
         ]);
         
-        // Load installment pays specifically for this order's cart_id
-        $order->load(['installmentPays' => function ($query) use ($order) {
-            $query->where('cart_id', $order->cart_id);
-        }]);
+        // Load installment pays only when order has a valid cart_id (installment_pays.cart_id is NOT NULL)
+        if ($order->cart_id !== null && $order->cart_id !== '') {
+            $order->load(['installmentPays' => function ($query) use ($order) {
+                $query->where('cart_id', $order->cart_id);
+            }]);
+        } else {
+            $order->setRelation('installmentPays', collect());
+        } 
 
         // Prepare package services data
         $cartInfo = $order->cart;

@@ -1,6 +1,21 @@
 <div class="profile-page-form section-contact-us">
     <style>
         /* استایل اینپوت‌ها شبیه صفحه تماس با ما */
+        .profile-page-form input{
+            background-color: #deeaf7 !important;
+            font-weight: bold;
+            
+        }
+        .profile-page-form select{
+            background-color: #deeaf7 !important;
+            font-weight: bold;
+            
+        }
+        .profile-page-form textarea{
+            background-color: #deeaf7 !important;
+            font-weight: bold;
+            
+        }
         .profile-page-form input.form-control,
         .profile-page-form select.form-control,
         .profile-page-form textarea.form-control {
@@ -114,7 +129,7 @@
                         </div>
                         <div class=" col-sm-4 mt-2">
                             <div class="form-group">
-                                <label><i class="fa fa-envelope"></i> Email :</label>
+                                <label><i class="fa fa-envelope"></i> Email : <span class="text-danger">*</span></label>
                                 <input type="email" class="form-control" value="{{ $user->email ?? '' }}" readonly>
                             </div>
                         </div>
@@ -186,24 +201,27 @@
                                 @endif  
                             </select> 
                         </div>
+                       
                         <div class=" col-sm-3 mt-2">
-                            <label><i class="fa fa-home"></i> Apt/Unit/Suite :</label>
-                            <input type="text" class="form-control" wire:model.defer="apt_unit_suite">
-                        </div>
-                        <div class=" col-sm-2 mt-2">
                             <label><i class="fa fa-envelope-o"></i> Postal Code : <span
                                     class="text-danger">*</span></label>
                             <input type="text" class="form-control" wire:model.defer="postal_code">
+                        </div>
+                        
+                        <div class=" col-sm-6 mt-2">
+                            <label><i class="fa fa-map-marker"></i> Street Address : <span
+                                    class="text-danger">*</span></label>
+                            <textarea class="form-control" rows="1" cols="1" style="height: 50px;" readonly>{{ $user->street_address ?? ($user->address ?? '') }}</textarea>
+                        </div>
+                        <div class=" col-sm-3 mt-2">
+                            <label><i class="fa fa-home"></i> Apt/Unit/Suite :</label>
+                            <input type="text" class="form-control" wire:model.defer="apt_unit_suite">
                         </div>
                         <div class=" col-sm-3 mt-2">
                             <label><i class="fa fa-link"></i> Website / URL :</label>
                             <input type="url" class="form-control" wire:model.defer="website">
                         </div>
-                        <div class=" col-sm-7 mt-2">
-                            <label><i class="fa fa-map-marker"></i> Street Address : <span
-                                    class="text-danger">*</span></label>
-                            <textarea class="form-control" rows="1" cols="1" style="height: 50px;" readonly>{{ $user->street_address ?? ($user->address ?? '') }}</textarea>
-                        </div>
+                       
                     </div>
 
                     <hr class="my-4">
@@ -221,15 +239,15 @@
                                 readonly>
                         </div>
                     </div>
-                    <div class="text-center mt-4">
-                        <button type="submit" class="btn btn-green" wire:loading.attr="disabled">
+                    <div class="text-center">
+                        <button type="submit" class="btn-action-btn" wire:loading.attr="disabled">
                             <span wire:loading.remove wire:target="save">Save </span>
                             <span wire:loading wire:target="save">
                                 <i class="fa fa-spinner fa-spin"></i> Saving...
                             </span>
                         </button>
                     </div>
-                </form>
+                </form> 
             </div>
         </main>
         @if (isset($provinces) && isset($cities))

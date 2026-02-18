@@ -18,7 +18,7 @@
                <span class="icon-wrap beauty"><i class="fa fa-magic"></i></span>
                <span class="label">Beauty</span>
            </a>
-           <a href="{{ config('app.url') }}" class="dash-quick-link dash-marketplace">
+           <a href="https://beauty.besmani.com/category" target="_blank" class="dash-quick-link dash-marketplace">
                <span class="icon-wrap marketplace"><i class="fa fa-shopping-bag"></i></span>
                <span class="label">Marketplace</span>
            </a>

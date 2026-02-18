@@ -277,7 +277,7 @@
                             <span class="service-square-hover-text">A trusted place for beauty services, products, and
                                 professional training.</span>
                         </a>
-                        <a href="{{ config('app.url') }}market" class="service-square service-square-beauty">
+                        <a href="https://beauty.besmani.com/category" target="_blank" class="service-square service-square-beauty">
                             <span class="service-square-icon">
                                 {{-- <i class="fa fa-shopping-bag"></i> --}}
                                 <img style="width: 45px;" src="{{ config('app.url') }}assets-file/img/logo-market.png" alt="besmani">

@@ -54,6 +54,106 @@
 
     <script src="{{ config('app.url') }}assets-file/js/jquery.min.js"></script>
 
+    <style>
+        .panel-logout-modal {
+            position: fixed;
+            inset: 0;
+            z-index: 9999;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 1rem;
+            opacity: 0;
+            visibility: hidden;
+            transition: opacity 0.25s ease, visibility 0.25s ease;
+        }
+        .panel-logout-modal.is-open {
+            opacity: 1;
+            visibility: visible;
+        }
+        .panel-logout-modal-backdrop {
+            position: absolute;
+            inset: 0;
+            background: rgba(15, 23, 42, 0.6);
+            backdrop-filter: blur(4px);
+        }
+        .panel-logout-modal-dialog {
+            position: relative;
+            width: 100%;
+            max-width: 400px;
+            transform: scale(0.9);
+            transition: transform 0.25s ease;
+         }
+        .panel-logout-modal.is-open .panel-logout-modal-dialog {
+            transform: scale(1);
+        } 
+        .panel-logout-modal-content {
+            background: #06283f;
+            border-radius: 16px;
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+            padding: 2rem 1.75rem;
+            text-align: center;
+        }
+        .panel-logout-modal-icon {
+            width: 64px;
+            height: 64px;
+            margin: 0 auto 1.25rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: rgba(255, 255, 255, 0.15);
+            border-radius: 50%;
+            color: #fca5a5;
+            font-size: 1.75rem;
+        }
+        .panel-logout-modal-title {
+            font-family: 'Montserrat', sans-serif;
+            font-size: 1.65rem;
+            font-weight: 700;
+            color: #fff;
+            margin: 0 0 0.5rem;
+        }
+        .panel-logout-modal-text {
+            font-size: 1.1rem;
+            color: #94a3b8;
+            line-height: 1.5;
+            margin: 0 0 1.75rem;
+        }
+        .panel-logout-modal-actions {
+            display: flex;
+            gap: 0.75rem;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+        .panel-logout-btn {
+            font-family: 'Montserrat', sans-serif;
+            font-size: 1.05rem;
+            font-weight: 600;
+            padding: 0.75rem 1.5rem;
+            border-radius: 10px;
+            border: none;
+            cursor: pointer;
+            transition: background 0.2s, color 0.2s, transform 0.15s;
+        }
+        .panel-logout-btn:active {
+            transform: scale(0.98);
+        }
+        .panel-logout-btn-cancel {
+            background: rgba(238, 198, 20, 0.813);
+            color: #e2e8f0; 
+        }
+        .panel-logout-btn-cancel:hover {
+            background: rgba(255, 255, 255, 0.3);
+            color: #fff;
+        }
+        .panel-logout-btn-confirm {
+            background: linear-gradient(135deg, #dc2626 0%, #b91c1c 100%);
+            color: #fff;
+        }
+        .panel-logout-btn-confirm:hover {
+            background: linear-gradient(135deg, #b91c1c 0%, #991b1b 100%);
+        }
+    </style>
 
     @livewireStyles
 </head>
@@ -102,9 +202,9 @@
                     <i class="fa fa-shopping-cart"></i>
                     <span>Orders</span>
                 </a>
-                <a href="#" class="nav-link">
+                <a href="{{ config('app.url') }}panel/payment" class="nav-link">
                     <i class="fa fa-briefcase"></i>
-                    <span>Payments</span>
+                    <span>Payments</span> 
                 </a>
                 {{-- <a href="#" class="nav-link">
                     <i class="fa fa-briefcase"></i>
@@ -144,6 +244,24 @@
         </button>
 
         <div class="sidebar-overlay"></div>
+
+        {{-- Logout confirmation modal --}}
+        <div id="panelLogoutModal" class="panel-logout-modal" role="dialog" aria-modal="true" aria-labelledby="panelLogoutModalTitle" aria-hidden="true">
+            <div class="panel-logout-modal-backdrop"></div>
+            <div class="panel-logout-modal-dialog">
+                <div class="panel-logout-modal-content">
+                    <div class="panel-logout-modal-icon">
+                        <i class="fa fa-sign-out" aria-hidden="true"></i>
+                    </div>
+                    <h3 id="panelLogoutModalTitle" class="panel-logout-modal-title">Log out?</h3>
+                    <p class="panel-logout-modal-text">Are you sure you want to leave? You will need to sign in again.</p>
+                    <div class="panel-logout-modal-actions">
+                        <button type="button" class="panel-logout-btn panel-logout-btn-cancel" data-dismiss="modal">Cancel</button>
+                        <button type="button" class="panel-logout-btn panel-logout-btn-confirm" id="panelLogoutConfirmBtn">Log out</button>
+                    </div>
+                </div>
+            </div>
+        </div>
 
         {{ $slot }}
 
@@ -191,19 +309,49 @@
     });
 
     function panelLogout() {
-        if (confirm('Are you sure you want to logout?')) {
-            var form = document.createElement('form');
-            form.method = 'POST';
-            form.action = '{{ route('logout') }}';
-            var csrf = document.createElement('input');
-            csrf.type = 'hidden';
-            csrf.name = '_token';
-            csrf.value = '{{ csrf_token() }}';
-            form.appendChild(csrf);
-            document.body.appendChild(form);
-            form.submit();
-        }
+        var modal = document.getElementById('panelLogoutModal');
+        if (!modal) return;
+        modal.classList.add('is-open');
+        modal.setAttribute('aria-hidden', 'false');
+        document.body.style.overflow = 'hidden';
     }
+
+    function closeLogoutModal() {
+        var modal = document.getElementById('panelLogoutModal');
+        if (!modal) return;
+        modal.classList.remove('is-open');
+        modal.setAttribute('aria-hidden', 'true');
+        document.body.style.overflow = '';
+    }
+
+    function doLogout() {
+        var form = document.createElement('form');
+        form.method = 'POST';
+        form.action = '{{ route('logout') }}';
+        var csrf = document.createElement('input');
+        csrf.type = 'hidden';
+        csrf.name = '_token';
+        csrf.value = '{{ csrf_token() }}';
+        form.appendChild(csrf);
+        document.body.appendChild(form);
+        form.submit();
+    }
+
+    $(function () {
+        var $modal = $('#panelLogoutModal');
+        $modal.find('.panel-logout-modal-backdrop, [data-dismiss="modal"]').on('click', function () {
+            closeLogoutModal();
+        });
+        $('#panelLogoutConfirmBtn').on('click', function () {
+            closeLogoutModal();
+            doLogout();
+        });
+        $(document).on('keydown', function (e) {
+            if (e.key === 'Escape' && $modal.hasClass('is-open')) {
+                closeLogoutModal();
+            }
+        }); 
+    });
 </script>
 @livewireScripts
 

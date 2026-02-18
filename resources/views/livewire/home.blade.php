@@ -1,6 +1,6 @@
 <div>
    @livewire('beauty.beauty-section')
-
+ 
 
    
    {{-- @livewire('web-design') --}}

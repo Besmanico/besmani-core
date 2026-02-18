@@ -136,7 +136,7 @@ function userServiceAgreement()
 
 function slidersTechnology()
 {
-    $sliders = Slider::where('status', 1)->orderBy('sort', 'asc')->get();
+    $sliders = Slider::where('status', 1)->where('page_src', 1)->orderBy('page_src_sort', 'asc')->get();
     
-    return $sliders;
+    return $sliders; 
 }

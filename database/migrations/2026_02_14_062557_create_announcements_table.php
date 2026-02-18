@@ -11,13 +11,8 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('installment_pays', function (Blueprint $table) {
+        Schema::create('announcements', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('user_id');
-            $table->foreignId('cart_id');
-            $table->decimal('amount', 10, 2)->nullable();
-            $table->string('date')->nullable();
-            $table->boolean('status')->default(0);
             $table->timestamps();
         });
     }
@@ -27,6 +22,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('installment_pays');
+        Schema::dropIfExists('announcements');
     }
 };

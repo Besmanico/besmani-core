@@ -83,16 +83,18 @@
                     style="position: relative;">
 
                     <ul class="nav navbar-nav desktop-nav">
-                        <li><a href="https://beauty.besmani.com/" target="_blank">BEAUTY</a></li>
-                        <li><a href="{{ config('app.url') }}">MARKET</a></li>
-                        <li><a href="{{ config('app.url') }}services">SERVICES</a></li>
-                        <li><a href="{{ config('app.url') }}besmo">TECHNOLOGY</a></li>
+                        <li><a href="https://beauty.besmani.com/" target="_blank">Beauty</a></li>
+                        <li><a href="{{ config('app.url') }}">Market</a></li>
+                        <li><a href="{{ config('app.url') }}services">Services</a></li>
+                        <li><a href="{{ config('app.url') }}besmo">Technology</a></li>
                          {{-- <li class=""><a href="{{ config('app.url') }}orders">ORDERS</a></li> --}}
                         {{-- <li class=""><a href="{{ config('app.url') }}design-style">DESIGN STYLE</a></li>
                         <li class=""><a href="{{ config('app.url') }}portfolios">PORTFOLIO</a></li> --}}
-                         <li class=""><a href="{{ config('app.url') }}aboutus">ABOUT US</a></li>
-                        <li class=""><a href="{{ config('app.url') }}contactus">CONTACT US</a></li>
-
+                         {{-- <li class=""><a href="{{ config('app.url') }}aboutus">About us</a></li> --}}
+                        {{-- <li class=""><a href="{{ config('app.url') }}contactus">Contact us</a></li> --}}
+                        @if ($mainUser)
+                        <li><a href="{{ config('app.url') }}panel" style="color: #fe0001 !important;">Dashboard</a></li>
+                    @endif
                         @if ($mainUser)
                             <li class="welcome-user user-dropdown">
                                 <a href="#" id="welcome-message" class="dropdown-toggle">

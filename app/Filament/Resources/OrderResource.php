@@ -87,12 +87,22 @@ class OrderResource extends Resource
                             ->label('Cuote'),
                         Forms\Components\Toggle::make('invoice')
                             ->default(0)
-                            ->label('Invoice'),
-                        // Forms\Components\Toggle::make('is_admin'),
-                        // Forms\Components\Toggle::make('status'),
+                            ->label('Invoice'), 
+
+                        Forms\Components\Select::make('order_status')
+                            ->label('Order Status')
+                            ->options([
+                                'Pending' => 'Pending', 
+                                'Starting' => 'Starting',
+                                'processing' => 'Processing',
+                                'Done' => 'Done',
+                                'Cancelled' => 'Cancelled',
+                            ])
+                            ->default('Pending')
+                            ->required(),
 
                     ])->collapsible(false)->collapsed(),
-            ]);
+            ]); 
     }
 
     public static function table(Table $table): Table
@@ -114,12 +124,46 @@ class OrderResource extends Resource
                 Tables\Columns\TextColumn::make('discount')
                     ->money()
                     ->sortable(),
-                    Tables\Columns\ToggleColumn::make('status')->label('Start'), 
+                    Tables\Columns\TextColumn::make('free_price')
+                    ->label('Extra Pay')
+                    ->sortable(),
+                    Tables\Columns\ToggleColumn::make('status')->label('Start'),
+                    
+                Tables\Columns\SelectColumn::make('order_status')
+                    ->label('Order Status')
+                    ->options([
+                        'Pending' => 'Pending',
+                        'Starting' => 'Starting', 
+                        'Processing' => 'Processing',
+                        'Finalizing' => 'Finalizing',
+                        'Done' => 'Done',
+                        'Canceled' => 'Canceled',
+                    ]) 
+                     ->rules(['required']),
 
-                Tables\Columns\TextColumn::make('created_at')
-                    ->dateTime()
-                    ->sortable()
-                   ->badge(),
+                // Tables\Columns\TextColumn::make('order_status')
+                // ->label('Order Status'),
+                    Tables\Columns\TextColumn::make('progress')
+                    ->label('Progress %'),
+                    
+                     
+                    Tables\Columns\SelectColumn::make('payment_status')
+                    ->label('Payment Status')
+                    ->options([
+                        'Pending' => 'Pending',
+                        'Paid' => 'Paid',
+                        'Unpaid' => 'Unpaid',
+                        'Partially Paid' => 'Partially Paid',
+                        'Overpaid' => 'Overpaid',
+                    ]) 
+                    
+                    ->rules(['required']),
+
+                // Tables\Columns\TextColumn::make('created_at')
+                //     ->dateTime()
+                //     ->sortable()
+                //    ->badge()
+                //    ,
                 Tables\Columns\TextColumn::make('updated_at')
                     ->dateTime()
                     ->sortable()
@@ -127,11 +171,17 @@ class OrderResource extends Resource
             ])
             ->filters([
                 //
-            ])
+            ])   
             ->actions([
+                Tables\Actions\Action::make('installment')
+                    ->label('Installment')
+                    ->icon('heroicon-o-banknotes')
+                    ->modalHeading('Installments')
+                    ->modalContent(fn (Order $record) => view('filament.resources.order-resource.installment-modal', ['order' => $record]))
+                    ->modalSubmitAction(false)
+                    ->modalCancelActionLabel('Close'),
                 Tables\Actions\ViewAction::make(),
                 Tables\Actions\EditAction::make(),
-                
             ])
             ->bulkActions([
                 Tables\Actions\BulkActionGroup::make([

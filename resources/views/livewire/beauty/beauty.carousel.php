@@ -40,17 +40,17 @@
 	$('.offer-slider').owlCarousel({
 		loop: false,
 		margin: 15,
-		nav: true,
+		nav: false,
 		dots: false,
 		smartSpeed: 1000, 
 		autoplay: false,
 		autoplayTimeout: 4000,
 		autoplayHoverPause: true,
 		rtl: false,
-		navText: [
-			"<i class='bx bx-left-arrow-alt'></i>",
-			"<i class='bx bx-right-arrow-alt'></i>"
-		],
+		// navText: [
+		// 	"<i class='bx bx-left-arrow-alt'></i>",
+		// 	"<i class='bx bx-right-arrow-alt'></i>"
+		// ],
 		responsive:{
 			0:{
 				items: 1,

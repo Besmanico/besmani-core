@@ -13,26 +13,32 @@
 
                     </div><!-- /.navbar-header -->
                 </a>
+                @php
+                    $mainUser = Auth::guard('mainUsers')->user();
+                    $CartCount = CartCount();
+                @endphp
+
                 <div class="collapse navbar-collapse navbar-collapse-center" id="agency-navbar-collapse"
                     style="position: relative;">
 
                     <ul class="nav navbar-nav desktop-nav">
-                        <li><a href="https://beauty.besmani.com/" target="_blank">BEAUTY</a></li>
-                        <li><a href="{{ config('app.url') }}">MARKET</a></li>
-                        <li><a href="{{ config('app.url') }}services">SERVICES</a></li>
-                        <li><a href="{{ config('app.url') }}besmo">TECHNOLOGY</a></li>
+                        <li><a href="https://beauty.besmani.com/" target="_blank">Beauty</a></li>
+                        <li><a href="https://beauty.besmani.com/category" target="_blank">Market</a></li>
+                        <li><a href="{{ config('app.url') }}services">Services</a></li>
+                        <li><a href="{{ config('app.url') }}besmo">Technology</a></li>
                         {{-- <li><a href="{{ config('app.url') }}orders">ORDERS</a></li> --}}
                         {{-- <li><a href="{{ config('app.url') }}design-style">DESIGN STYLE</a></li>
                         <li><a href="{{ config('app.url') }}portfolios">PORTFOLIO</a></li> --}}
                         {{-- <li><a href="{{ config('app.url') }}careers">CAREERS</a></li> --}}
-                        <li><a href="{{ config('app.url') }}aboutus">ABOUT US</a></li>
-                        <li><a href="{{ config('app.url') }}contactus">CONTACT US</a></li>
+                        {{-- <li><a href="{{ config('app.url') }}aboutus">About us</a></li>
+                        <li><a href="{{ config('app.url') }}contactus">Contact us</a></li> --}}
+
+                        @if ($mainUser)
+                            <li><a href="{{ config('app.url') }}panel" style="color: #fe0001 !important;">Dashboard</a></li>
+                        @endif
 
 
-                        @php
-                            $mainUser = Auth::guard('mainUsers')->user();
-                            $CartCount = CartCount();
-                        @endphp
+
 
                         @if ($mainUser)
                             <li class="welcome-user user-dropdown">

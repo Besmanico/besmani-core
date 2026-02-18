@@ -853,12 +853,14 @@ body {
 .navbar-nav {
     float: none;
     display: inline-block;
+    font-weight: bold;
+
 }
 
 .navbar-nav > li > a,
 .slicknav_nav > li > a {
     padding: 0;
-    font-size: 16px;
+    font-size: 17px;
     position: relative;
     color: #26272d !important;
     line-height: 26px;
@@ -867,6 +869,7 @@ body {
 .site-header-white .navbar-nav > li > a,
 .site-header-white .site-title {
     color: #fff;
+
 }
 
 .navbar-nav > li > a i {
@@ -875,6 +878,7 @@ body {
 
 .navbar-nav > li + li {
     margin-left: 30px;
+
 }
 
 .nav .open > a,

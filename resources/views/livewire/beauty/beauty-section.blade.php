@@ -31,7 +31,7 @@
                         @endforeach --}}
                         <!-- item -->
 
-                        <div class="offer-item">
+                        {{-- <div class="offer-item">
                             <a href="https://beauty.besmani.com/signup" target="_blank">
                                 <img src="{{ config('app.url') }}assets-file/img/work/sing-up-k.png" class="img-res">
                             </a>
@@ -51,7 +51,7 @@
                                 <img src="{{ config('app.url') }}assets-file/img/work/u-acc-k.png" class="img-res">
                             </a>
 
-                        </div>
+                        </div> --}}
                         <!-- item -->
                         @foreach ($sliders as $slider)
                             <div class="offer-item">
@@ -87,17 +87,17 @@
         $('.beauty-slider').owlCarousel({
             loop: false,
             margin: 25,
-            nav: true,
+            nav: false,
             dots: false,
             smartSpeed: 1000,
             autoplay: false,
             // autoplayTimeout: 4000,
             // autoplayHoverPause: true,
             rtl: false,
-            navText: [
-                "<i class='fa fa-angle-left'></i>",
-                "<i class='fa fa-angle-right'></i>"
-            ],
+            // navText: [
+            //     "<i class='fa fa-angle-left'></i>",
+            //     "<i class='fa fa-angle-right'></i>"
+            // ],
             responsive: {
                 0: {
                     items: 3,

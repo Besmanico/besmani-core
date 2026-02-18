@@ -303,21 +303,27 @@
                 </div>
 
                 <div
-                    class="table-operate-btn text-left text-md-left submit-button-wrapper felx justify-content-between">
-                    <button class="btn-green btn-order-submit-pay go-pay">Payments
-
+                    class="table-operate-btn text-left text-md-left submit-button-wrapper felx justify-content-between"
+                    data-order-status="{{ $order->status ?? 0 }}">
+                    {{-- @if (($order->status ?? 0) == 1)
+                        <p class="order-processing-msg text-muted mb-2 small">
+                            This order is currently in processing and cannot be modified or deleted.</p>
+                    @endif --}}
+                    <button type="button"
+                        class="btn-green btn-order-submit-pay go-pay {{ ($order->status ?? 0) == 1 ? 'order-processing disabled' : '' }}"
+                        data-order-processing="{{ ($order->status ?? 0) == 1 ? '1' : '0' }}">Payments
                         <i class="fa fa-spinner fa-spin" style="display: none; margin-left: 8px;"></i>
                     </button>
-                    <button class="btn-green btn-order-submit-yellow go-pdf-download">Download pdf
-
+                    <button type="button" class="btn-green btn-order-submit-yellow go-pdf-download">Download pdf
                         <i class="fa fa-spinner fa-spin" style="display: none; margin-left: 8px;"></i>
                     </button>
-                    <button class="btn-green delete-button delete-cart-item"
-                        onclick="deleteCartItem({{ $packageService->id }},{{ $packageService->cart_id }})">Delete
-
+                    <button type="button"
+                        class="btn-green delete-button delete-cart-item {{ ($order->status ?? 0) == 1 ? 'order-processing disabled' : '' }}"
+                        data-order-processing="{{ ($order->status ?? 0) == 1 ? '1' : '0' }}"
+                        onclick="{{ ($order->status ?? 0) != 1 ? 'deleteCartItem(' . $packageService->id . ',' . $packageService->cart_id . ')' : '' }}">Delete
                         <i class="fa fa-spinner fa-spin" style="display: none; margin-left: 8px;"></i>
                     </button>
-                </div>
+                </div>  
 
 
 

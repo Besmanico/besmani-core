@@ -8,7 +8,12 @@ use Illuminate\Database\Eloquent\Model;
 class Order extends Model
 {
     use HasFactory;
+
     protected $guarded = [];
+
+    protected $casts = [
+        'free_price_date' => 'datetime',
+    ]; 
 
     public function cart()
     {
