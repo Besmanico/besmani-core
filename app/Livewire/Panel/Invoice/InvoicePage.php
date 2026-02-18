@@ -21,9 +21,15 @@ class InvoicePage extends Component
     {
 
 
+        // Include all orders (full cart + single payments); do not filter by cart status
         $orders = Order::where('user_id', Auth::guard('mainUsers')->user()->id)
-            ->with(['cart.cartServices.packageServiceItems.orderItem', 'cart.cartServices.serviceInfo'])
-            ->get();
+            ->with([
+                'cart.cartServices.packageServiceItems.orderItem',
+                'cart.cartServices.serviceInfo',
+                'cartService.serviceInfo',
+            ]) 
+            ->orderBy('created_at', 'desc')
+            ->get(); 
 
 
         $metaData = ['title' => 'Invoice'];

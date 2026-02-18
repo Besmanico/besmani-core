@@ -128,6 +128,11 @@ class OrderResource extends Resource
                     ->label('Extra Pay')
                     ->sortable(),
                     Tables\Columns\ToggleColumn::make('status')->label('Start'),
+                    Tables\Columns\TextColumn::make('cancel')
+                        ->label('Cancel')
+                        ->formatStateUsing(fn ($state) => $state ? 'Cancel' : '—')
+                        ->color(fn ($state) => $state ? 'danger' : 'gray')
+                        ->badge(), 
                     
                 Tables\Columns\SelectColumn::make('order_status')
                     ->label('Order Status')

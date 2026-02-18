@@ -8,7 +8,7 @@
     }
 @endphp
 
-<div class="invoice-detail-content">
+<div class="invoice-detail-content"> 
     @foreach ($packageServices as $key => $packageService)
         <div class="main-cart-container w-100">
             <div class="quote-card">
@@ -309,20 +309,29 @@
                         <p class="order-processing-msg text-muted mb-2 small">
                             This order is currently in processing and cannot be modified or deleted.</p>
                     @endif --}}
-                    <button type="button"
+                    {{-- <button type="button"
                         class="btn-green btn-order-submit-pay go-pay {{ ($order->status ?? 0) == 1 ? 'order-processing disabled' : '' }}"
                         data-order-processing="{{ ($order->status ?? 0) == 1 ? '1' : '0' }}">Payments
                         <i class="fa fa-spinner fa-spin" style="display: none; margin-left: 8px;"></i>
-                    </button>
+                    </button> --}}
                     <button type="button" class="btn-green btn-order-submit-yellow go-pdf-download">Download pdf
                         <i class="fa fa-spinner fa-spin" style="display: none; margin-left: 8px;"></i>
                     </button>
+
+                    {{-- if $order->status==0 then cancel button work --}}
+                    @if ($order->status == 0)
                     <button type="button"
-                        class="btn-green delete-button delete-cart-item {{ ($order->status ?? 0) == 1 ? 'order-processing disabled' : '' }}"
-                        data-order-processing="{{ ($order->status ?? 0) == 1 ? '1' : '0' }}"
-                        onclick="{{ ($order->status ?? 0) != 1 ? 'deleteCartItem(' . $packageService->id . ',' . $packageService->cart_id . ')' : '' }}">Delete
+                        class="btn-green delete-button goCancelBtn delete-cart-item {{ ($order->status ?? 0) == 1 ? 'order-processing disabled' : '' }}"
+                        data-order-id="{{ $order->id }}"
+                        data-order-processing="{{ ($order->status ?? 0) == 1 ? '1' : '0' }}">Cancel
                         <i class="fa fa-spinner fa-spin" style="display: none; margin-left: 8px;"></i>
                     </button>
+                    @else 
+                     
+                    <button type="button" class="btn-green delete-button delete-cart-item go-show-modal-cancel-descript">Cancel
+                        <i class="fa fa-spinner fa-spin" style="display: none; margin-left: 8px;"></i>
+                    </button>
+                    @endif
                 </div>  
 
 

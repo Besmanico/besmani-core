@@ -15,6 +15,7 @@ use App\Models\CustomeDeleteItem;
 use App\Models\CustomePackageItem;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Schema;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Notifications\DatabaseNotification;
 use Filament\Notifications\DatabaseNotification as FilamentDatabaseNotification;
@@ -31,7 +32,7 @@ class CartController extends Controller
     {
         return Auth::guard('mainUsers')->user()->id;
     }
-
+ 
     public function saveNewProductCart($service_id, $package_service_id, $cart_id)
     {
         // randome code
@@ -44,7 +45,8 @@ class CartController extends Controller
             $newProductCart->service_id = $service_id;
             $newProductCart->package_service_id = $package_service_id;
             $newProductCart->code = $random_code;
-            $newProductCart->save();
+            $newProductCart->order_id = 0; // no order yet at addToCart (column may be NOT NULL)
+            $newProductCart->save();  
             return $newProductCart;
         } else {
             return false;
@@ -55,8 +57,6 @@ class CartController extends Controller
         // $service_id = $request->service_id;
         $service_id = $request->service_id;
         $package_service_id = $request->package_service_id;
-
-
 
         $check = Cart::where('user_id', $this->user_id())
             ->where('status', 0)->first();
@@ -141,13 +141,16 @@ class CartController extends Controller
         }
     }
 
-    public function newOrder($cart_id, $total_payment, $TaxFee, $discount, $pay_method, $ContactName, $BillingAddress, $ShipingAddress, $signature_client, $signature_date)
+    public function newOrder($cart_id, $total_payment, $TaxFee, $discount, $pay_method, $ContactName, $BillingAddress, $ShipingAddress, $signature_client, $signature_date, $cart_service_id = null)
     {
 
         $tracking_code = rand_Code(6);
         $order = new Order();
         $order->user_id = $this->user_id();
         $order->cart_id = $cart_id;
+        if ($cart_service_id !== null && Schema::hasColumn('orders', 'cart_service_id')) {
+            $order->cart_service_id = $cart_service_id;
+        }
         $order->tracking_code = $tracking_code;
         $order->total_payment = $total_payment;
         $order->tax_fee = $TaxFee;
@@ -159,6 +162,9 @@ class CartController extends Controller
         $order->shipping_address = $ShipingAddress;
         $order->signature_client = $signature_client;
         $order->signature_date = $signature_date;
+
+        // set order_id to cart_services 
+
         $order->save();
         return $order;
     }
@@ -218,8 +224,11 @@ class CartController extends Controller
         $tracking_code = $resOrder->tracking_code;
         // after change status cart to 1
         $cart->status = 1;
-        $cart->save();
-       
+        $cart->save(); 
+
+        // Mark all cart_services for this cart as paid and link to this order
+        CartService::where('cart_id', $cart_id)->update(['pay' => 1, 'order_id' => $resOrder->id]);
+
         // Send Filament notification to all admin users
         // Note: OrderObserver is already registered in AppServiceProvider, so it will automatically fire when order is created
         // No need to call it manually here to avoid duplicate notifications
@@ -227,8 +236,90 @@ class CartController extends Controller
         // $this->sendNewOrderNotification($resOrder, $tracking_code); 
 
         return response()->json(['success' => true, 'amount' => $amount, 'date' => $date,'tracking_code'=>$tracking_code]);
-    }
+    } 
 
+    /**
+     * Single payment: pay for one package (one cart_service). Sets cart_services.pay = 1 for that row.
+     */
+    public function goPaySingle(Request $request)
+    {
+        try {
+            $cart_service_id = $request->cart_service_id ? (int) $request->cart_service_id : null;
+            // Order total from data-single-amount (single payment amount for this package)
+            $Order_total = (float) ($request->single_amount ?? $request->subtotal ?? 0);
+            $TaxFee = (float) ($request->TaxFee ?? 0);
+            $discount = (float) ($request->discount ?? 0);
+            $cart_id = (int) $request->cart_id;
+            $amount = $request->amount ?? [];
+            $date = $request->date ?? [];
+            $payment_method = (string) ($request->payment_method ?? '');
+
+            $ContactName = (string) ($request->ContactName ?? '');
+            $BillingAddress = (string) ($request->BillingAddress ?? '');
+            $ShipingAddress = (string) ($request->ShipingAddress ?? '');
+            $signature_client = (string) ($request->signature_client ?? '');
+            $signature_date = (string) ($request->signature_date ?? '');
+
+            if (empty($cart_service_id)) {
+                return response()->json(['success' => false, 'message' => 'cart_service_id is required'], 400);
+            }
+            if (!is_array($amount) || !is_array($date)) {
+                return response()->json(['success' => false, 'message' => 'Amount and date must be arrays'], 400);
+            }
+            if (count($amount) !== count($date)) {
+                return response()->json(['success' => false, 'message' => 'Amount and date arrays must have the same length'], 400);
+            }
+
+            $cart = Cart::where('id', $cart_id)->where('user_id', $this->user_id())->first();
+            if (!$cart) {
+                return response()->json(['success' => false, 'message' => 'Cart not found'], 404);
+            }
+
+            $cartService = CartService::where('id', $cart_service_id)->where('cart_id', $cart_id)->first();
+            if (!$cartService) {
+                return response()->json(['success' => false, 'message' => 'Cart service not found'], 404);
+            }
+
+            DB::beginTransaction();
+            try {
+                foreach ($amount as $key => $value) {
+                    if (empty($value) || empty($date[$key] ?? null)) {
+                        continue;
+                    }
+                    $installmentPay = new InstallmentPay();
+                    $installmentPay->user_id = $this->user_id();
+                    $installmentPay->cart_id = $cart_id;
+                    $installmentPay->amount = $value;
+                    $installmentPay->date = $date[$key];
+                    $installmentPay->save();
+                }
+
+                $resOrder = $this->newOrder($cart_id, $Order_total, $TaxFee, $discount, $payment_method, $ContactName, $BillingAddress, $ShipingAddress, $signature_client, $signature_date, $cart_service_id);
+                $tracking_code = $resOrder->tracking_code;
+
+                $cartService->pay = 1;
+                $cartService->order_id = $resOrder->id;
+                $cartService->save();
+
+                // When all packages in this cart are paid, close the cart (status = 1) so it appears consistently
+                $allPaid = CartService::where('cart_id', $cart_id)->where('pay', 0)->count() === 0;
+                if ($allPaid) {
+                    $cart->status = 1;
+                    $cart->save();
+                }
+
+                DB::commit();
+                return response()->json(['success' => true, 'amount' => $amount, 'date' => $date, 'tracking_code' => $tracking_code]);
+            } catch (\Throwable $e) {
+                DB::rollBack();
+                Log::error('goPaySingle transaction error: ' . $e->getMessage(), ['trace' => $e->getTraceAsString()]);
+                return response()->json(['success' => false, 'message' => 'Payment failed. Please try again.'], 500);
+            }
+        } catch (\Throwable $e) {
+            Log::error('goPaySingle error: ' . $e->getMessage(), ['trace' => $e->getTraceAsString()]);
+            return response()->json(['success' => false, 'message' => $e->getMessage() ?: 'Payment failed. Please try again.'], 500);
+        }
+    }
 
     public function createCustomDeleteItem(Request $request)
     {
@@ -250,6 +341,31 @@ class CartController extends Controller
 
 
 
+    /**
+     * Set order cancel = 1 (user cancels order from invoice modal).
+     */
+    public function cancelOrder(Request $request)
+    {
+        $orderId = (int) ($request->order_id ?? 0);
+        if (!$orderId) {
+            return response()->json(['success' => false, 'message' => 'Order ID required'], 400);
+        }
+
+        $order = Order::where('id', $orderId)
+            ->where('user_id', $this->user_id())
+            ->first(); 
+
+        if (!$order) {
+            return response()->json(['success' => false, 'message' => 'Order not found'], 404);
+        }
+
+        $order->cancel = 1;
+        $order->order_status = 'Canceled'; 
+        $order->save();
+
+        return response()->json(['success' => true]);
+    } 
+
     public function getInvoiceDetails(Request $request)
     {
         $orderId = $request->order_id;
@@ -257,10 +373,7 @@ class CartController extends Controller
 
         $order = Order::where('id', $orderId)
             ->where('user_id', $userId)
-            ->with([
-                'cart.cartServices.packageServiceItems',
-                'cart.cartServices.serviceInfo'
-            ])
+            ->with(['cart'])
             ->first();
 
         if (!$order) {
@@ -271,12 +384,23 @@ class CartController extends Controller
         $mainUser = Auth::guard('mainUsers')->user();
         $userInfo = UserInfoPublic();
 
-        // Prepare data similar to cart page
+        // Load only cart_services that belong to this order
         $cartInfo = $order->cart;
-        $packageServices = $cartInfo ? $cartInfo->cartServices : collect();
+        if ($order->cart_service_id) {
+            // Single-payment order: exactly one cart_service (by id)
+            $packageServices = CartService::where('id', $order->cart_service_id)
+                ->with(['serviceInfo', 'packageServiceItems.orderItem', 'customePackageItems.orderItem'])
+                ->get();
+        } else {
+            // Full-cart order: all cart_services linked to this order (by order_id)
+            $packageServices = CartService::where('order_id', $order->id)
+                ->with(['serviceInfo', 'packageServiceItems.orderItem', 'customePackageItems.orderItem'])
+                ->orderBy('id')
+                ->get();
+        }   
 
         // Load orderItem for each packageServiceItem (similar to helper.php)
-        if ($cartInfo && $packageServices) {
+        if ($packageServices->isNotEmpty()) {
             foreach ($packageServices as $cartService) {
                 // Make sure packageServiceItems are loaded
                 if (!$cartService->relationLoaded('packageServiceItems')) {
@@ -300,7 +424,7 @@ class CartController extends Controller
         $grandTotalDiscount = 0;
         $grandGrandTotal = 0;
 
-        if ($cartInfo && $packageServices) {
+        if ($packageServices->isNotEmpty()) {
             foreach ($packageServices as $packageService) {
                 if ($packageService->packageServiceItems) {
                     foreach ($packageService->packageServiceItems as $packageServiceItem) {

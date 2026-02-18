@@ -20,6 +20,11 @@ class Order extends Model
         return $this->belongsTo(Cart::class, 'cart_id');
     }
 
+    public function cartService()
+    {
+        return $this->belongsTo(CartService::class, 'cart_service_id');
+    } 
+
     public function user()
     {
         return $this->belongsTo(MainUser::class, 'user_id');

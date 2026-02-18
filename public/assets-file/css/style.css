@@ -856,7 +856,43 @@ body {
     font-weight: bold;
 
 }
-
+.service-back-row {
+    margin-bottom: 12px;
+}
+.service-back-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 6px 14px;
+    border-radius: 999px;
+    border: 1px solid rgba(148, 163, 184, 0.6);
+    background: #ffffff;
+    color: #374151;
+    font-size: 12px;
+    font-weight: 600;
+    text-transform: uppercase;
+    text-decoration: none;
+    letter-spacing: 0.06em;
+    box-shadow: 0 6px 16px rgba(15, 23, 42, 0.08);
+    transition: background 0.2s ease, box-shadow 0.2s ease, transform 0.15s ease, color 0.2s ease, border-color 0.2s ease;
+}
+.service-back-btn i {
+    font-size: 13px;
+}
+.service-back-btn:hover {
+    background: #f3f4f6;
+    color: #111827;
+    border-color: #9ca3af;
+    transform: translateY(-1px);
+    text-decoration: none;
+}
+.service-hero-row {
+    display: flex;
+    align-items: center;
+    gap: 32px;
+    margin-bottom: 40px;
+    flex-wrap: wrap;
+}
 .navbar-nav > li > a,
 .slicknav_nav > li > a {
     padding: 0;

@@ -5,14 +5,15 @@
             <h1>{{ $this->title }}</h1>
             
         </div>
-        {{-- <div class="user-summary">
-            <div class="avatar">
-                <i class="fa fa-user"></i>
-            </div>
-            <div>
-                <span class="user-name">{{ Auth::guard('mainUsers')->user()->fl_name ?? 'Guest' }}</span>
-                <span class="user-role">Member</span>
-            </div>
-        </div> --}}
+        <div class="cart-summary">
+            {{-- count cart items --}}
+            @php
+                $cartItems = CartCount();
+            @endphp
+            <a href="{{ config('app.url') }}cart" class="cart-summary-btn">
+                <i class="fa fa-shopping-cart"></i>
+                <span>Cart ({{ $cartItems }})</span>
+            </a>
+        </div>
     </header>
 </div>

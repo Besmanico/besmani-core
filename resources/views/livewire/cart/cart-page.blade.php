@@ -15,6 +15,10 @@
 
         if ($cartInfo && $packageServices) {
             foreach ($packageServices as $packageService) {
+                // Skip paid packages: Orders Total only includes unpaid items
+                if (!empty($packageService->pay)) {
+                    continue;
+                }
                 if ($packageService->packageServiceItems) {
                     foreach ($packageService->packageServiceItems as $packageServiceItem) {
                         // Skip items that have customeDeleteItem (deleted items)
@@ -95,6 +99,16 @@
 
     <section class="site-section subpage-site-section ">
 
+        <div class="container">
+        <div class="row service-back-row">
+            <div class="col-xs-12">
+                <a href="{{ config('app.url') }}services" class="service-back-btn">
+                    <i class="fa fa-arrow-left"></i>
+                    <span>Back</span>
+                </a>
+            </div>
+        </div>
+        </div>
 
         @if ($cartInfo)
 
@@ -138,6 +152,9 @@
 
                     <div class="w-100 order-from-side">
                         @foreach ($packageServices as $key => $packageService)
+                            @if (!empty($packageService->pay))
+                                @continue
+                            @endif
                             <div class="main-cart-container w-100">
 
 
@@ -648,11 +665,23 @@
                                     {{-- operate btn --}}
                                     <div
                                         class="table-operate-btn text-left text-md-left submit-button-wrapper felx justify-content-between">
-                                        <button class="btn-green btn-order-submit-pay go-pay">Pay
-
-                                            <i class="fa fa-spinner fa-spin"
-                                                style="display: none; margin-left: 8px;"></i>
-                                        </button>
+                                        @if ($packageService->pay ?? 0)
+                                            <button type="button" class="btn-green btn-order-submit-pay" disabled>
+                                                <i class="fa fa-check"></i> Paid
+                                            </button>
+                                        @else
+                                            <button type="button"
+                                                class="btn-green btn-order-submit-pay go-pay go-pay-single"
+                                                data-cart-service-id="{{ $packageService->id }}"
+                                                data-cart-id="{{ $packageService->cart_id }}"
+                                                data-subtotal="{{ $subtotal }}" data-tax="{{ $totalTax }}"
+                                                data-discount="{{ $totalDiscount }}"
+                                                data-single-amount="{{ $grandTotal }}"
+                                                data-total="{{ $grandTotal }}">Pay
+                                                <i class="fa fa-spinner fa-spin"
+                                                    style="display: none; margin-left: 8px;"></i>
+                                            </button>
+                                        @endif
                                         <button class="btn-green btn-order-submit-yellow go-pdf-download">Download pdf
 
                                             <i class="fa fa-spinner fa-spin"
@@ -704,19 +733,22 @@
         <div id="description-modal" class="description-modal-overlay" style="display: none;">
             <div class="description-modal-container">
                 <button class="description-modal-close" onclick="closeDescriptionModal()">×</button>
-                <div class="description-modal-header">
-                    <div class="description-modal-title" id="description-modal-title">Pay
-
-
-                        {{-- <strong class="text-green"
-                            style="color: #47da47;">${{ number_format($grandTotal ?? ($grandGrandTotal ?? 0), 2) }}
-                        </strong> --}}
-
-                    </div>
+                <div class="description-modal-header pay-modal-header">
+                    <div class="description-modal-title pay-modal-title d-flex align-items-center justify-content-between flex-wrap gap-2"
+                        id="description-modal-title">
+                        {{-- pay first total amount --}}
+                        <span class="pay-modal-title-text">Pay : ${{ number_format($grandGrandTotal ?? 0, 2) }}</span>
+                        <span class="payment-balance-header">
+                            <b>Balance:</b> <b id="payment-balance-header"
+                                class="payment-balance-amount">${{ number_format($grandGrandTotal ?? 0, 2) }}</b>
+                        </span>
+                    </div> 
                 </div>
                 <div class="description-modal-body">
                     <div class=" modal-form-pay">
                         <form id="payment-form" class="payment-form">
+                            <input type="hidden" id="payment-cart-service-id" name="cart_service_id"
+                                value="">
                             <div class="row-item-amount-date ">
                                 <div class="form-group">
                                     <label for="payment-amount">Amount</label>
@@ -834,10 +866,11 @@
                                     style="color: #333; font-size: 14px; line-height: 1.6; cursor: pointer; flex: 1; user-select: none;">
                                     I agree to the
                                     <a href="{{ url('/service-agreement') }}" target="_blank"
-                                        style="color: #ed2929; text-decoration: underline; transition: opacity 0.2s;">Service Agreement</a>
+                                        style="color: #ed2929; text-decoration: underline; transition: opacity 0.2s;">Service
+                                        Agreement</a>
                                 </label>
                             </div>
-                            
+
                             <style>
                                 .service-agreement-checkbox,
                                 #agree-service-agreement {
@@ -847,19 +880,19 @@
                                     visibility: visible !important;
                                     display: inline-block !important;
                                 }
-                                
+
                                 .service-agreement-checkbox.error-field,
                                 #agree-service-agreement.error-field {
                                     border: 2px solid #dc3545 !important;
                                     background-color: #fff5f5 !important;
                                 }
-                                
+
                                 .service-agreement-checkbox:checked,
                                 #agree-service-agreement:checked {
                                     background-color: #10b981 !important;
                                     border-color: #10b981 !important;
                                 }
-                                
+
                                 .service-agreement-checkbox:checked::after,
                                 #agree-service-agreement:checked::after {
                                     content: '✓';
@@ -874,13 +907,13 @@
                                     display: block;
                                     z-index: 1;
                                 }
-                                
+
                                 .service-agreement-checkbox:hover,
                                 #agree-service-agreement:hover {
                                     border-color: #10b981 !important;
                                     box-shadow: 0 0 0 2px rgba(16, 185, 129, 0.2);
                                 }
-                                
+
                                 .terms-checkbox-container a:hover {
                                     opacity: 0.8;
                                 }
@@ -947,6 +980,53 @@
         <!-- Order Confirmation Modal end -->
 
         <style>
+            /* Pay modal header - larger font, better style */
+            #description-modal .pay-modal-header {
+                padding: 28px 40px 26px;
+            }
+
+            #description-modal .pay-modal-title {
+                font-size: 1.75rem;
+                font-weight: 700;
+                color: #fff;
+                letter-spacing: 0.02em;
+                text-align: left;
+                width: 100%;
+            }
+
+            #description-modal .pay-modal-title-text {
+                font-size: 1.75rem;
+            }
+
+            #description-modal .payment-balance-header {
+                font-size: 16px;
+                font-weight: 600;
+                color: #fff;
+                margin: 0 auto;
+            }
+
+            #description-modal .payment-balance-header .payment-balance-amount {
+                color: #ff6b6b;
+                font-size: 16px;
+                font-weight: 700;
+            }
+
+            @media (max-width: 768px) {
+
+                #description-modal .pay-modal-title,
+                #description-modal .pay-modal-title-text {
+                    font-size: 1.4rem;
+                }
+
+                #description-modal .payment-balance-header {
+                    font-size: 1.1rem;
+                }
+
+                #description-modal .payment-balance-header .payment-balance-amount {
+                    font-size: 1.15rem;
+                }
+            }
+
             .payment-form .row-item-amount-date {
                 display: flex;
                 gap: 10px;
@@ -1153,7 +1233,14 @@
         var subtotal = '{{ $grandGrandTotal ?? 0 }}';
         var discount = '{{ $grandTotalDiscount ?? 0 }}';
         var totalAmount = '{{ $grandGrandTotal ?? 0 }}';
-        $('body').on('click', '.go-pay, .btn-checkout-pay', function() {
+        $('body').on('click', '.go-pay, .btn-checkout-pay', function(e) {
+
+
+            if ($(this).hasClass('go-pay-single')) {
+                e.preventDefault();
+                e.stopPropagation();
+                return;
+            }
             var $button = $(this);
             var $spinner = $button.find('.fa-spinner');
 
@@ -1193,6 +1280,77 @@
 
         });
 
+        // Single pay: open payment modal for one package only
+        $('body').on('click', '.go-pay-single', function(e) {
+            e.preventDefault();
+            e.stopPropagation();
+            var $btn = $(this);
+            var cartServiceId = $btn.data('cart-service-id');
+            var cartId = $btn.data('cart-id');
+            var subtotal = parseFloat($btn.data('subtotal')) || 0;
+            var tax = parseFloat($btn.data('tax')) || 0;
+            var discount = parseFloat($btn.data('discount')) || 0;
+            var total = parseFloat($btn.data('total')) || 0;
+            var singleAmount = parseFloat($btn.data('single-amount')) || total;
+            var $card = $btn.closest('.main-cart-container');
+            var contactName = ($card.find('.ContactNameEdit-' + cartServiceId).val() || '').trim();
+            var billingAddress = ($card.find('.BillingAddressEdit-' + cartServiceId).val() || '').trim();
+            var shippingAddress = ($card.find('.ShipingAddressEdit-' + cartServiceId).val() || '').trim();
+            var $sigRow = $card.find('.signature-row').not('.signature-row-second').first();
+            var signature = ($sigRow.find('.signature-besmani-formal').val() || '').trim();
+            var signatureDate = ($sigRow.find('.date-signature').val() || '').trim();
+            var isValid = true;
+            var err = [];
+            if (!contactName) {
+                err.push('Contact Name is required');
+                $card.find('.ContactNameEdit-' + cartServiceId).css('border', '2px solid #dc3545');
+            } else {
+                $card.find('.ContactNameEdit-' + cartServiceId).css('border', '');
+            }
+            if (!billingAddress) {
+                err.push('Billing Address is required');
+                $card.find('.BillingAddressEdit-' + cartServiceId).css('border', '2px solid #dc3545');
+            } else {
+                $card.find('.BillingAddressEdit-' + cartServiceId).css('border', '');
+            }
+            if (!shippingAddress) {
+                err.push('Shipping Address is required');
+                $card.find('.ShipingAddressEdit-' + cartServiceId).css('border', '2px solid #dc3545');
+            } else {
+                $card.find('.ShipingAddressEdit-' + cartServiceId).css('border', '');
+            }
+            if (!signature) {
+                err.push('Client Signature is required');
+                $sigRow.find('.signature-besmani-formal').css('border', '2px solid #dc3545');
+            } else {
+                $sigRow.find('.signature-besmani-formal').css('border', '');
+            }
+            if (!signatureDate) {
+                err.push('Date Signature is required');
+                $sigRow.find('.date-signature').css('border', '2px solid #dc3545');
+            } else {
+                $sigRow.find('.date-signature').css('border', '');
+            }
+            if (err.length) {
+                alert('Please fill in all required fields:\n' + err.join('\n'));
+                return;
+            }
+            window.singlePayContext = {
+                cart_service_id: cartServiceId,
+                cart_id: cartId,
+                subtotal: subtotal,
+                tax: tax,
+                discount: discount,
+                total: total,
+                single_amount: singleAmount
+            };
+            $('#payment-cart-service-id').val(cartServiceId);
+            totalAmount = total;
+            openDescriptionModal();
+            setTimeout(function() {
+                calculateBalance();
+            }, 100);
+        });
 
         // go-pdf-download
         // PDF Download functionality
@@ -1384,7 +1542,7 @@
                 // Scroll to first error field
                 var $firstError = $(
                     '.ContactNameEdit, .BillingAddressEdit, .ShipingAddressEdit, .signature-besmani-formal, .date-signature'
-                    ).filter(function() {
+                ).filter(function() {
                     return $(this).css('border-color') === 'rgb(220, 53, 69)' || $(this).css(
                         'border-color') === '#dc3545';
                 }).first();
@@ -1399,7 +1557,10 @@
                 return false;
             }
 
-            // If all validations pass, open the modal
+            // If all validations pass, open the modal (full cart)
+            window.singlePayContext = null;
+            $('#payment-cart-service-id').val('');
+            totalAmount = parseFloat('{{ $grandGrandTotal ?? 0 }}') || 0;
             openDescriptionModal();
             // Initialize balance and button state
             setTimeout(function() {
@@ -1413,9 +1574,19 @@
             e.preventDefault();
             e.stopPropagation();
 
-            var ContactName = $('.ContactNameEdit-{{ $packageService->id ?? 0 }}').val() || '';
-            var BillingAddress = $('.BillingAddressEdit-{{ $packageService->id ?? 0 }}').val() || '';
-            var ShipingAddress = $('.ShipingAddressEdit-{{ $packageService->id ?? 0 }}').val() || '';
+            var cartServiceId = $('#payment-cart-service-id').val();
+            var isSinglePay = cartServiceId && window.singlePayContext;
+
+            var ContactName, BillingAddress, ShipingAddress;
+            if (isSinglePay) {
+                ContactName = $('.ContactNameEdit-' + cartServiceId).val() || '';
+                BillingAddress = $('.BillingAddressEdit-' + cartServiceId).val() || '';
+                ShipingAddress = $('.ShipingAddressEdit-' + cartServiceId).val() || '';
+            } else {
+                ContactName = $('.ContactNameEdit-{{ $packageService->id ?? 0 }}').val() || '';
+                BillingAddress = $('.BillingAddressEdit-{{ $packageService->id ?? 0 }}').val() || '';
+                ShipingAddress = $('.ShipingAddressEdit-{{ $packageService->id ?? 0 }}').val() || '';
+            }
 
             // Get signature values - check all signature fields (client signatures only, not Besmani)
             var signature_client = '';
@@ -1460,26 +1631,43 @@
                 isValid = false;
             }
 
-            // Validate signature_client - check all client signature fields
+            // Validate signature_client - for single pay only that card, else all cards
             var signatureValid = true;
             var signatureErrorMessage = '';
             var $firstInvalidSignature = null;
 
-            $('.signature-row').not('.signature-row-second').each(function() {
-                var $signatureSelect = $(this).find('.signature-besmani-formal');
-                var sigValue = $signatureSelect.val();
-
-                if (!sigValue || sigValue === '' || sigValue === null) {
-                    signatureValid = false;
-                    $signatureSelect.css('border', '2px solid #dc3545').addClass('error-field');
-                    if (!$firstInvalidSignature) {
+            if (isSinglePay) {
+                var $cardSig = $('.ContactNameEdit-' + cartServiceId).closest('.main-cart-container');
+                var $sigRowToCheck = $cardSig.find('.signature-row').not('.signature-row-second').first();
+                if ($sigRowToCheck.length > 0) {
+                    var $signatureSelect = $sigRowToCheck.find('.signature-besmani-formal');
+                    var sigValue = $signatureSelect.val();
+                    if (!sigValue || sigValue === '' || sigValue === null) {
+                        signatureValid = false;
+                        $signatureSelect.css('border', '2px solid #dc3545').addClass('error-field');
                         $firstInvalidSignature = $signatureSelect;
-                        signatureErrorMessage = 'Please select a Client Signature for all service cards.';
+                        signatureErrorMessage = 'Please select a Client Signature for this service.';
+                    } else {
+                        $signatureSelect.css('border', '').removeClass('error-field');
                     }
-                } else {
-                    $signatureSelect.css('border', '').removeClass('error-field');
                 }
-            });
+            } else {
+                $('.signature-row').not('.signature-row-second').each(function() {
+                    var $signatureSelect = $(this).find('.signature-besmani-formal');
+                    var sigValue = $signatureSelect.val();
+                    if (!sigValue || sigValue === '' || sigValue === null) {
+                        signatureValid = false;
+                        $signatureSelect.css('border', '2px solid #dc3545').addClass('error-field');
+                        if (!$firstInvalidSignature) {
+                            $firstInvalidSignature = $signatureSelect;
+                            signatureErrorMessage =
+                                'Please select a Client Signature for all service cards.';
+                        }
+                    } else {
+                        $signatureSelect.css('border', '').removeClass('error-field');
+                    }
+                });
+            }
 
             if (!signatureValid) {
                 isValid = false;
@@ -1495,26 +1683,42 @@
                 return false;
             }
 
-            // Validate signature_date - check all client date signature fields
+            // Validate signature_date - for single pay only that card, else all cards
             var dateValid = true;
             var dateErrorMessage = '';
             var $firstInvalidDate = null;
 
-            $('.signature-row').not('.signature-row-second').each(function() {
-                var $dateInput = $(this).find('.date-signature');
-                var dateValue = $dateInput.val().trim();
-
-                if (!dateValue || dateValue === '') {
-                    dateValid = false;
-                    $dateInput.css('border', '2px solid #dc3545').addClass('error-field');
-                    if (!$firstInvalidDate) {
+            if (isSinglePay) {
+                var $cardDate = $('.ContactNameEdit-' + cartServiceId).closest('.main-cart-container');
+                var $dateRowToCheck = $cardDate.find('.signature-row').not('.signature-row-second').first();
+                if ($dateRowToCheck.length > 0) {
+                    var $dateInput = $dateRowToCheck.find('.date-signature');
+                    var dateValue = $dateInput.val().trim();
+                    if (!dateValue || dateValue === '') {
+                        dateValid = false;
+                        $dateInput.css('border', '2px solid #dc3545').addClass('error-field');
                         $firstInvalidDate = $dateInput;
-                        dateErrorMessage = 'Please enter a Date Signature for all service cards.';
+                        dateErrorMessage = 'Please enter a Date Signature for this service.';
+                    } else {
+                        $dateInput.css('border', '').removeClass('error-field');
                     }
-                } else {
-                    $dateInput.css('border', '').removeClass('error-field');
                 }
-            });
+            } else {
+                $('.signature-row').not('.signature-row-second').each(function() {
+                    var $dateInput = $(this).find('.date-signature');
+                    var dateValue = $dateInput.val().trim();
+                    if (!dateValue || dateValue === '') {
+                        dateValid = false;
+                        $dateInput.css('border', '2px solid #dc3545').addClass('error-field');
+                        if (!$firstInvalidDate) {
+                            $firstInvalidDate = $dateInput;
+                            dateErrorMessage = 'Please enter a Date Signature for all service cards.';
+                        }
+                    } else {
+                        $dateInput.css('border', '').removeClass('error-field');
+                    }
+                });
+            }
 
             if (!dateValid) {
                 isValid = false;
@@ -1530,11 +1734,20 @@
                 return false;
             }
 
-            // Update signature_client and signature_date values from first valid row
-            var $firstClientSignatureRow = $('.signature-row').not('.signature-row-second').first();
-            if ($firstClientSignatureRow.length > 0) {
-                signature_client = $firstClientSignatureRow.find('.signature-besmani-formal').val() || '';
-                signature_date = $firstClientSignatureRow.find('.date-signature').val().trim() || '';
+            // Update signature_client and signature_date values from first valid row (or from single-pay card)
+            if (isSinglePay) {
+                var $card = $('.ContactNameEdit-' + cartServiceId).closest('.main-cart-container');
+                var $sigRow = $card.find('.signature-row').not('.signature-row-second').first();
+                if ($sigRow.length > 0) {
+                    signature_client = $sigRow.find('.signature-besmani-formal').val() || '';
+                    signature_date = $sigRow.find('.date-signature').val().trim() || '';
+                }
+            } else {
+                var $firstClientSignatureRow = $('.signature-row').not('.signature-row-second').first();
+                if ($firstClientSignatureRow.length > 0) {
+                    signature_client = $firstClientSignatureRow.find('.signature-besmani-formal').val() || '';
+                    signature_date = $firstClientSignatureRow.find('.date-signature').val().trim() || '';
+                }
             }
 
             // Validate payment method radio button
@@ -1595,6 +1808,52 @@
             $spinner.show();
             $button.prop('disabled', true);
             $('.goCheckoutPay').prop('disabled', true);
+
+
+
+            if (isSinglePay && window.singlePayContext) {
+                $.ajax({
+                    url: '{{ route('goPaySingle') }}',
+                    type: 'POST',
+                    data: {
+                        cart_service_id: window.singlePayContext.cart_service_id,
+                        cart_id: window.singlePayContext.cart_id,
+                        single_amount: window.singlePayContext.single_amount,
+                        subtotal: window.singlePayContext.subtotal,
+                        TaxFee: window.singlePayContext.tax,
+                        discount: window.singlePayContext.discount,
+                        amount: amount,
+                        date: date,
+                        ContactName: ContactName,
+                        BillingAddress: BillingAddress,
+                        ShipingAddress: ShipingAddress,
+                        payment_method: paymentMethod,
+                        signature_client: signature_client,
+                        signature_date: signature_date,
+                        _token: '{{ csrf_token() }}'
+                    },
+                    success: function(response) {
+                        $('.fa-spinner').hide();
+                        $('.goCheckoutPay').prop('disabled', false);
+                        if (response.success) {
+                            var confirmationNumber = response.tracking_code || '######';
+                            openOrderConfirmationModal(confirmationNumber);
+                            window.singlePayContext = null;
+                            $('#payment-cart-service-id').val('');
+                            setTimeout(function() {
+                                location.reload();
+                            }, 1500);
+                        }
+                    },
+                    error: function(response) {
+                        $('.fa-spinner').hide();
+                        $('.goCheckoutPay').prop('disabled', false);
+                        alert('An error occurred. Please try again.');
+                    }
+                });
+                return;
+            }
+
             $.ajax({
                 url: '{{ route('goPayAll') }}',
                 type: 'POST',
@@ -1696,19 +1955,24 @@
                 totalEntered += amountVal;
             });
 
+            // Use single-pay total when in single-pay mode
+            var currentTotal = (window.singlePayContext && window.singlePayContext.total !== undefined) ?
+                window.singlePayContext.total : parseFloat(totalAmount) || 0;
             // Calculate balance
-            var balance = totalAmount - totalEntered;
+            var balance = currentTotal - totalEntered;
 
-            // Update balance display
+            // Update balance display (header + footer)
+            var balanceText = balance < 0 ? '-$' + Math.abs(balance).toFixed(2) : '$' + balance.toFixed(2);
+            var balanceColor = balance < 0 ? 'green' : '#ea1617';
             var $balanceSpan = $('#payment-balance');
             if ($balanceSpan.length > 0) {
-                if (balance < 0) {
-                    $balanceSpan.text('-$' + Math.abs(balance).toFixed(2));
-                    $balanceSpan.css('color', 'green'); // Red for negative
-                } else {
-                    $balanceSpan.text('$' + balance.toFixed(2));
-                    $balanceSpan.css('color', 'red'); // Green for positive or zero
-                }
+                $balanceSpan.text(balanceText);
+                $balanceSpan.css('color', balanceColor);
+            }
+            var $balanceHeader = $('#payment-balance-header');
+            if ($balanceHeader.length > 0) {
+                $balanceHeader.text(balanceText);
+                $balanceHeader.css('color', balanceColor);
             }
 
             // Enable/disable submit button based on balance

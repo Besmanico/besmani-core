@@ -26,14 +26,18 @@
                             <tbody>
                                 @foreach ($orders as $order)
                                     @php
-                                        $serviceNames =
-                                            $order->cart && $order->cart->cartServices
-                                                ? $order->cart->cartServices
-                                                    ->map(fn($cs) => $cs->serviceInfo->title ?? '')
-                                                    ->filter()
-                                                    ->unique()
-                                                    ->implode(', ')
-                                                : '—';
+                                        if ($order->cart_service_id && $order->cartService && $order->cartService->serviceInfo) {
+                                            $serviceNames = $order->cartService->serviceInfo->title ?? '—';
+                                        } elseif ($order->cart && $order->cart->cartServices) {
+                                            $serviceNames = $order->cart->cartServices
+                                                ->map(fn($cs) => $cs->serviceInfo->title ?? '')
+                                                ->filter()
+                                                ->unique()
+                                                ->implode(', '); 
+                                            $serviceNames = $serviceNames ?: '—';
+                                        } else {
+                                            $serviceNames = '—';
+                                        }
                                     @endphp
                                     <tr class="invoice-row" data-order-id="{{ $order->id }}"
                                         data-tracking-code="{{ $order->tracking_code }}" style="cursor: pointer;">
@@ -44,11 +48,11 @@
                                                 style="color: rgba(204, 162, 0, 0.97) !important;
   font-weight: bold;">{{ $order->created_at->format('m/d/Y') }}</span>
                                         </td>
-
+ 
                                         <td>
                                             <span class="invoice-service font-bold">{{ $serviceNames ?: '—' }}</span>
                                         </td>
-                                        <td>
+                                        <td> 
                                             {{-- if order_status== Pending --}}
                                             <span
                                                 class="invoice-service font-bold color-red">
@@ -67,7 +71,7 @@
                                                   <span class="invoice-service font-bold color-blue">Finalizing</span>
                                                   @elseif($order_status == 'Done')
                                                   <span class="invoice-service font-bold color-green">Done</span>
-                                                  @elseif($order_status == 'Cancelled')
+                                                  @elseif($order_status == 'Canceled')
                                                   <span class="invoice-service font-bold color-red">Cancelled</span>
                                                   @endif
 
@@ -147,6 +151,39 @@
                 </div>
             </div>
         </div>
+
+        <!-- Cancel not allowed message modal -->
+        <div id="cancel-descript-modal" class="order-msg-modal" role="dialog" aria-modal="true" style="display: none;">
+            <div class="order-msg-modal-backdrop"></div>
+            <div class="order-msg-modal-dialog">
+                <div class="order-msg-modal-content">
+                    <div class="order-msg-modal-icon">
+                        <i class="fa fa-info-circle" aria-hidden="true"></i>
+                    </div>
+                    <h3 class="order-msg-modal-title">This order can no longer be canceled online.</h3>
+                    <p class="order-msg-modal-text">Please contact us at <strong>949-432-8383</strong>.</p>
+                    <button type="button" class="order-msg-modal-btn" onclick="closeCancelDescriptModal()">OK</button>
+                </div>
+            </div>
+        </div>  
+
+        <!-- Confirm cancel order modal -->
+        <div id="confirm-cancel-order-modal" class="order-msg-modal confirm-cancel-modal" role="dialog" aria-modal="true" style="display: none;">
+            <div class="order-msg-modal-backdrop"></div>
+            <div class="order-msg-modal-dialog">
+                <div class="order-msg-modal-content confirm-cancel-content">
+                    <div class="confirm-cancel-icon">
+                        <i class="fa fa-exclamation-triangle" aria-hidden="true"></i>
+                    </div>
+                    <h3 class="confirm-cancel-title">Are you sure you want to cancel this order?</h3>
+                    <p class="confirm-cancel-subtitle">This action cannot be undone.</p>
+                    <div class="confirm-cancel-actions">
+                        <button type="button" class="confirm-cancel-btn confirm-cancel-btn-no" id="confirm-cancel-order-no">No, keep order</button>
+                        <button type="button" class="confirm-cancel-btn confirm-cancel-btn-yes" id="confirm-cancel-order-yes">Yes, cancel order</button>
+                    </div>
+                </div>
+            </div>
+        </div>  
 
         <style>
             /* Modal Styles */
@@ -380,14 +417,14 @@
             }
 
             .order-msg-modal-title {
-                font-size: 1.35rem;
+                font-size: 17px;
                 font-weight: 700;
                 color: #0f172a;
                 margin: 0 0 0.5rem;
             }
 
             .order-msg-modal-text {
-                font-size: 0.9375rem;
+                font-size: 15px;
                 color: #64748b;
                 line-height: 1.5;
                 margin: 0 0 15px;
@@ -411,6 +448,99 @@
 
             .order-msg-modal-btn:active {
                 transform: scale(0.98);
+            }
+            .order-msg-modal-btn.btn-danger {
+                background: linear-gradient(135deg, #dc3545 0%, #c82333 100%);
+            }
+            .order-msg-modal-btn.btn-danger:hover {
+                background: linear-gradient(135deg, #c82333 0%, #bd2130 100%);
+            }
+
+            /* Confirm cancel order modal – improved style */
+            .confirm-cancel-modal .order-msg-modal-dialog {
+                max-width: 420px;
+                animation: confirmCancelSlideIn 0.3s ease-out;
+            }
+            @keyframes confirmCancelSlideIn {
+                from {
+                    opacity: 0;
+                    transform: scale(0.92) translateY(-12px);
+                }
+                to {
+                    opacity: 1;
+                    transform: scale(1) translateY(0);
+                }
+            }
+            .confirm-cancel-modal .confirm-cancel-content {
+                padding: 2rem 2rem 1.75rem;
+                border-radius: 16px;
+                box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25), 0 0 0 1px rgba(0, 0, 0, 0.05);
+            }
+            .confirm-cancel-icon {
+                width: 64px;
+                height: 64px;
+                margin: 0 auto 1.5rem;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                background: linear-gradient(145deg, #fef3c7 0%, #fde68a 100%);
+                border-radius: 50%;
+                color: #b45309;
+                font-size: 1.75rem;
+                box-shadow: 0 4px 14px rgba(245, 158, 11, 0.35);
+            }
+            .confirm-cancel-title {
+                font-size: 17px;
+                font-weight: 700;
+                color: #0f172a;
+                margin: 0 0 0.5rem;
+                line-height: 1.4;
+                letter-spacing: -0.01em;
+            }
+            .confirm-cancel-subtitle {
+                font-size: 15px;
+                color: #64748b;
+                margin: 0 0 1.75rem;
+                line-height: 1.5;
+            }
+            .confirm-cancel-actions {
+                display: flex;
+                flex-wrap: wrap;
+                justify-content: center;
+                gap: 12px;
+            }
+            .confirm-cancel-btn {
+                min-width: 140px;
+                padding: 12px 24px;
+                border: none;
+                border-radius: 10px;
+                font-size: 13px;
+                font-weight: 600;
+                cursor: pointer;
+                transition: all 0.2s ease;
+            }
+            .confirm-cancel-btn-no {
+                background: linear-gradient(135deg, #1e293b 0%, #334155 100%);
+                color: #fff;
+                box-shadow: 0 2px 8px rgba(30, 41, 59, 0.25);
+            }
+            .confirm-cancel-btn-no:hover {
+                background: linear-gradient(135deg, #334155 0%, #475569 100%);
+                transform: translateY(-1px);
+                box-shadow: 0 4px 12px rgba(30, 41, 59, 0.3);
+            }
+            .confirm-cancel-btn-yes {
+                background: linear-gradient(135deg, #dc2626 0%, #b91c1c 100%);
+                color: #fff;
+                box-shadow: 0 2px 8px rgba(220, 38, 38, 0.3);
+            }
+            .confirm-cancel-btn-yes:hover {
+                background: linear-gradient(135deg, #b91c1c 0%, #991b1b 100%);
+                transform: translateY(-1px);
+                box-shadow: 0 4px 14px rgba(220, 38, 38, 0.4);
+            }
+            .confirm-cancel-btn:active {
+                transform: translateY(0) scale(0.98);
             }
         </style>
 
@@ -585,6 +715,90 @@
                 if (e.key === 'Escape' && $('#order-processing-msg-modal').hasClass('is-open')) {
                     closeOrderProcessingModal();
                 }
+            });
+
+            // Cancel not allowed: show modal when clicking .go-show-modal-cancel-descript
+            function closeCancelDescriptModal() {
+                $('#cancel-descript-modal').removeClass('is-open').css('display', 'none');
+                $('body').css('overflow', '');
+            }
+            function openCancelDescriptModal() {
+                $('#cancel-descript-modal').addClass('is-open').css('display', 'flex');
+                $('body').css('overflow', 'hidden');
+            }
+            $(document).on('click', '#invoice-detail-modal .go-show-modal-cancel-descript', function(e) {
+                e.preventDefault();
+                e.stopPropagation();
+                openCancelDescriptModal();
+            });
+            $(document).on('click', '#cancel-descript-modal .order-msg-modal-backdrop', closeCancelDescriptModal);
+            $(document).on('keydown', function(e) {
+                if (e.key === 'Escape' && $('#cancel-descript-modal').hasClass('is-open')) {
+                    closeCancelDescriptModal();
+                }
+            });
+ 
+            // Cancel order: show confirm modal, then set orders.cancel = 1
+            var pendingCancelOrderId = null;
+            var pendingCancelBtn = null;
+
+            function closeConfirmCancelOrderModal() {
+                $('#confirm-cancel-order-modal').removeClass('is-open').css('display', 'none');
+                $('body').css('overflow', '');
+                pendingCancelOrderId = null;
+                pendingCancelBtn = null;
+            }
+
+            $(document).on('click', '#invoice-detail-modal .goCancelBtn', function(e) {
+                e.preventDefault();
+                e.stopPropagation();
+                var $btn = $(this);
+                if ($btn.hasClass('order-processing') || $btn.hasClass('disabled')) return;
+                var orderId = $btn.data('order-id');
+                if (!orderId) return;
+                pendingCancelOrderId = orderId;
+                pendingCancelBtn = $btn;
+                $('#confirm-cancel-order-modal').addClass('is-open').css('display', 'flex');
+                $('body').css('overflow', 'hidden');
+            });
+
+            $(document).on('click', '#confirm-cancel-order-no', closeConfirmCancelOrderModal);
+            $(document).on('click', '#confirm-cancel-order-modal .order-msg-modal-backdrop', closeConfirmCancelOrderModal);
+            $(document).on('keydown', function(e) {
+                if (e.key === 'Escape' && $('#confirm-cancel-order-modal').hasClass('is-open')) {
+                    closeConfirmCancelOrderModal();
+                }
+            });
+
+            $(document).on('click', '#confirm-cancel-order-yes', function() {
+                if (!pendingCancelOrderId || !pendingCancelBtn) return;
+                var orderId = pendingCancelOrderId;
+                var $btn = pendingCancelBtn;
+                closeConfirmCancelOrderModal();
+                var $spinner = $btn.find('.fa-spinner');
+                $spinner.show();
+                $btn.prop('disabled', true);
+                $.ajax({
+                    url: '{{ route('panel.order.cancel') }}',
+                    type: 'POST',
+                    data: {
+                        order_id: orderId,
+                        _token: '{{ csrf_token() }}'
+                    },
+                    success: function(response) {
+                        $spinner.hide();
+                        $btn.prop('disabled', false);
+                        if (response.success) {
+                            closeInvoiceModal();
+                            window.location.reload();
+                        }
+                    },
+                    error: function() {
+                        $spinner.hide();
+                        $btn.prop('disabled', false);
+                        alert('Failed to cancel order. Please try again.');
+                    }
+                });
             });
 
             // Delete item functionality

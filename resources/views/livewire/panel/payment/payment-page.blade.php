@@ -6,12 +6,12 @@
                 <div>
                     {{-- show title based on current page --}}
                     <h1>Payments</h1>
-                    
+
                 </div>
-                  
+
             </header>
         </div>
-        
+
 
         <section class="invoice-section">
             <div class="panel-card">
@@ -68,7 +68,8 @@
                                             @elseif($order_status == 'Unpaid')
                                                 <span class="invoice-service font-bold color-red">Unpaid</span>
                                             @elseif($order_status == 'Partially Paid')
-                                                <span class="invoice-service font-bold color-orange">Partially Paid</span>
+                                                <span class="invoice-service font-bold color-orange">Partially
+                                                    Paid</span>
                                             @elseif($order_status == 'Overpaid')
                                                 <span class="invoice-service font-bold color-blue">Overpaid</span>
                                             @endif
@@ -94,14 +95,14 @@
                                     </td>
 
                                     <td>
-                                       -
+                                        <b class="invoice-amount extra-pay-amount {{ ($order->free_price ?? 0) < 0 ? 'color-red' : 'color-green' }}">${{ number_format($order->free_price ?? 0, 2) }}</b>
                                     </td>
                                     <td>
                                         <span class="invoice-id">{{ $order->tracking_code }}</span>
                                     </td>
 
 
-                                </tr>
+                                </tr> 
                             @endforeach
                         </tbody>
                     </table>

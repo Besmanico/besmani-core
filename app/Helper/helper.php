@@ -73,10 +73,14 @@ function CartInfo()
         $cartInfo = Cart::where('user_id', Auth::guard('mainUsers')->user()->id)
             ->where('status', 0)
             ->with([
-                'cartServices.serviceInfo',
-                'cartServices.packageServiceItems.customeDeleteItem',
-                'cartServices.packageServiceItems.orderItem',
-                'cartServices.customePackageItems.orderItem'
+                'cartServices' => function ($q) {
+                    $q->where('pay', 0)->with([
+                        'serviceInfo',
+                        'packageServiceItems.customeDeleteItem',
+                        'packageServiceItems.orderItem',
+                        'customePackageItems.orderItem'
+                    ]);
+                } 
             ])
             ->first();
 
@@ -105,9 +109,12 @@ function CartCount()
 
         $cartCount = Cart::where('user_id', Auth::guard('mainUsers')->user()->id)
             ->where('status', 0)
-            ->with('cartServices')->first();
+            ->withCount(['cartServices as unpaid_count' => function ($q) {
+                $q->where('pay', 0);
+            }])
+            ->first();
         if ($cartCount) {
-            return count($cartCount->cartServices);
+            return $cartCount->unpaid_count ?? 0;
         } else {
             return 0;
         }

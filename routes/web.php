@@ -66,9 +66,10 @@ Route::middleware(['auth:mainUsers'])->group(function () {
     Route::get('/panel', Dashboard::class);
     Route::get('/panel/invoice', InvoicePage::class);
     Route::get('/panel/invoice/details', [CartController::class, 'getInvoiceDetails'])->name('panel.invoice.details');
-    Route::get('/panel/payment', PaymentPage::class);
+    Route::post('/panel/order/cancel', [CartController::class, 'cancelOrder'])->name('panel.order.cancel');
+    Route::get('/panel/payment', PaymentPage::class);  
     Route::get('/panel/payment/details', [CartController::class, 'getPaymentDetails'])->name('panel.payment.details');
-    Route::get('/panel/profile', ProfilePage::class);
+    Route::get('/panel/profile', ProfilePage::class); 
 });
 
 // end user panel
@@ -84,6 +85,7 @@ Route::get('/getOrderItems', [CartController::class, 'getOrderItems'])->name('ge
 Route::post('/createCustomPackageItem', [CartController::class, 'createCustomPackageItem'])->name('createCustomPackageItem');
 Route::post('/deleteCustomPackageItem', [CartController::class, 'deleteCustomPackageItem'])->name('deleteCustomPackageItem');
 Route::post('/goPayAll', [CartController::class, 'goPayAll'])->name('goPayAll');
+Route::post('/goPaySingle', [CartController::class, 'goPaySingle'])->name('goPaySingle');
 
 // check referense api
-Route::get('/check-referense/{id}', [UserController::class, 'checkReferenseApi'])->name('check-referense');
+Route::get('/check-referense/{id}', [UserController::class, 'checkReferenseApi'])->name('check-referense'); 
