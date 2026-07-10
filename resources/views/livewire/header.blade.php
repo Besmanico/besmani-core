@@ -8,7 +8,7 @@
   position: relative;">
 
                         <a href="{{ url('/') }}" class="site-title logo-header">
-                            <img src="{{ config('app.url') }}assets-file/img/logo.png" alt="logo">
+                            <img src="{{ config('app.url') }}assets-file/img/besmani-logo-head.png" alt="logo">
                         </a>
 
                     </div><!-- /.navbar-header -->
@@ -111,7 +111,9 @@
     <div class="mobile-nav-overlay"></div>
     <div class="custom-mobile-nav">
         <div class="mobile-nav-close">&times;</div>
-
+        <div class="nav-item">
+            <a href="{{ config('app.url') }}besmo" class="nav-link">TECHNOLOGY</a>
+        </div>
         <div class="nav-item">
             <a href="{{ config('app.url') }}services" class="nav-link">SERVICES</a>
         </div>
@@ -131,6 +133,10 @@
         <div class="nav-item">
             <a href="{{ config('app.url') }}contactus" class="nav-link">CONTACT US</a>
         </div>
+        
+        <div class="nav-item">
+            <a onclick="openLoginModal()" class="nav-link">SIGN IN</a>
+        </div>
         <div class="nav-item">
             <a href="{{ config('app.url') }}cart" class="nav-link basket-link">
                 <i class="fa fa-shopping-cart"></i>
@@ -139,10 +145,6 @@
 
             </a>
         </div>
-        <div class="nav-item">
-            <a onclick="openLoginModal()" class="nav-link">SIGN IN</a>
-        </div>
-
         @if ($mainUser)
             <div class="mobile-user-panel">
                 <div class="mobile-user-header">

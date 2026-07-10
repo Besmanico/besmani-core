@@ -17,6 +17,7 @@ return new class extends Migration
             $table->foreignId('cart_id');
             $table->decimal('amount', 10, 2)->nullable();
             $table->string('date')->nullable();
+            $table->integer('order_id')->default(0);
             $table->boolean('status')->default(0);
             $table->timestamps();
         });

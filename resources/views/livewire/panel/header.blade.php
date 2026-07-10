@@ -1,9 +1,19 @@
 <div>
     <header class="panel-header">
-        <div>
-            {{-- show title based on current page --}}
+        <div class="panel-header-left">
             <h1>{{ $this->title }}</h1>
-            
+            {{-- @if(request()->path() === 'panel')
+                <div class="panel-tabs panel-tabs-in-header" id="activeItemsTabs">
+                    <button type="button" class="panel-tab active" data-tab="business" aria-selected="true">
+                        <i class="fa fa-briefcase"></i>
+                        <span>Business</span>
+                    </button>
+                    <button type="button" class="panel-tab" data-tab="personal" aria-selected="false">
+                        <i class="fa fa-user"></i>
+                        <span>Personal</span>
+                    </button>
+                </div>
+            @endif --}}
         </div>
         <div class="cart-summary">
             {{-- count cart items --}}
@@ -15,5 +25,5 @@
                 <span>Cart ({{ $cartItems }})</span>
             </a>
         </div>
-    </header>
+    </header>  
 </div>

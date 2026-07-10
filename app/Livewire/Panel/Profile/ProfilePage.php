@@ -22,10 +22,13 @@ class ProfilePage extends Component
     public $id_city;
     public $apt_unit_suite;
     public $postal_code;
+    public $address;
     public $website;
-
+    public $mobile_moaref;
+    public $moaref_user = null;
     public function mount()
     {
+
         if (!Auth::guard('mainUsers')->check()) {
             $this->redirect('/', navigate: true);
             return;
@@ -39,13 +42,38 @@ class ProfilePage extends Component
         $this->country_id = $user->country_id ?? null;
         $this->id_province = $user->id_province ?? null;
         $this->id_city = $user->id_city ?? null;
-        $this->apt_unit_suite = $user->apt_unit_suite ?? ($user->apt ?? '');
+        $this->apt_unit_suite = $user->neighbourhood ?? ($user->apt ?? '');
         $this->postal_code = $user->postal_code ?? ($user->zip ?? '');
-        $this->website = $user->website ?? ($user->url ?? '');
+        $this->website = $user->social_netword ?? ($user->url ?? '');
+
+        $this->address = $user->address ?? '';
+        $this->mobile_moaref = $user->mobile_moaref ?? '';
+
     }
 
+    // new
+    public function updatedMobileMoaref($value)
+    {
+        // وقتی دقیقا 10 رقم شد جستجو کن
+        if (strlen($value) == 10) {
+            $this->searchMoaref($value);
+        } else {
+            $this->mobile_moaref = null; // اگر کمتر از 10 رقم بود چیزی نشان نده
+        }
+    }
+
+    public function searchMoaref($mobile)
+    {
+        $this->moaref_user = MainUser::where('mobile', $mobile)->first();
+    }
+
+    // new end
     public function save()
     {
+
+ 
+       
+       
         $this->validate([
             'fl_name' => 'required|string|max:255',
             'last_name' => 'required|string|max:255',
@@ -97,16 +125,28 @@ class ProfilePage extends Component
         } elseif (Schema::hasColumn($table, 'date_of_birth')) {
             $data['date_of_birth'] = $this->birthday ?: null;
         }
-        if (Schema::hasColumn($table, 'apt_unit_suite')) {
-            $data['apt_unit_suite'] = (string) ($this->apt_unit_suite ?? '');
-        } elseif (Schema::hasColumn($table, 'apt')) {
-            $data['apt'] = (string) ($this->apt_unit_suite ?? '');
+       
+        
+        if (Schema::hasColumn($table, 'neighbourhood')) {
+            $data['neighbourhood'] = (string) ($this->apt_unit_suite ?? '');
         }
-        if (Schema::hasColumn($table, 'website')) {
-            $data['website'] = (string) ($this->website ?? '');
-        } elseif (Schema::hasColumn($table, 'url')) {
-            $data['url'] = (string) ($this->website ?? '');
+
+        if (Schema::hasColumn($table, 'social_netword')) {
+            $data['social_netword'] = (string) ($this->website ?? '');
         }
+
+
+        
+
+        if (Schema::hasColumn($table, 'address')) {
+            $data['address'] = (string) ($this->address ?? '');
+        }
+
+        if (Schema::hasColumn($table, 'mobile_moaref')) {
+            $data['mobile_moaref'] = (string) ($this->mobile_moaref ?? '');
+        } 
+
+        
 
         try {
             MainUser::where('id', $user->id)->update($data);

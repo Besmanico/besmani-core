@@ -87,33 +87,38 @@ class Controller extends BaseController
         // }
 
 
-        // Clean phone number (remove formatting)
-        $cleanPhone = preg_replace('/[^0-9]/', '', $request->phone);
+        try {
+            $cleanPhone = preg_replace('/[^0-9]/', '', $request->phone ?? '');
 
-        // check email and phone is unique has already exist
-        $user = MainUser::where('email', $request->email)->orWhere('mobile', $cleanPhone)->first();
+            if (empty($request->email) || empty($cleanPhone) || empty($request->password) || empty($request->fname)) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Name, email, phone and password are required.',
+                ], 422);
+            }
 
-        if (!$user) {
-            // try {
-            $code_confirm = '6630';
-            $code = rand_Code(5);
-            $str_code = rand_string(6);
-            $child = 'besmani';
+            $user = MainUser::where('email', $request->email)->orWhere('mobile', $cleanPhone)->first();
 
-            $user = new MainUser();
-            $user->fl_name = $request->fname;
-            // $user->last_name = $request->lname;
-            $user->pc_id = $request->country_code;
-            $user->mobile = $cleanPhone;
-            $user->email = $request->email;
-            $user->confirm_code = $code_confirm;
-            $user->code = $code;
-            $user->password = Hash::make($request->password);
-            $user->str_code = $str_code;
-            $user->child = $child;
-            $user->save();
+            if (!$user) {
+                
+                $code_confirm = '6630';
+                $code = rand_Code(5);
+                $str_code = rand_string(6);
+                $child = 'besmani';
 
-            return 0;
+                $user = new MainUser();
+                $user->fl_name = $request->fname;
+                $user->pc_id = $request->country_code ?? null;
+                $user->mobile = $cleanPhone;
+                $user->email = $request->email;
+                $user->confirm_code = $code_confirm;
+                $user->code = $code;
+                $user->password = Hash::make($request->password);
+                $user->str_code = $str_code;
+                $user->child = $child;
+                $user->save(); 
+
+                return response()->json(0);
             // return response()->json([
             //     'success' => true,
             //     'message' => 'Account created successfully! Welcome to BESMANI!'
@@ -126,24 +131,27 @@ class Controller extends BaseController
             //         'message' => 'An error occurred while creating your account. Please try again.'
             //     ], 500);
             // }
-        } else {
-
-            // again check confirm code for user
-            if ($user->confirm == 0) {
-                return 0;
-            } else {
-                // User is already confirmed, log them in
-                Auth::guard('mainUsers')->login($user);
-                return response()->json([
-                    'success' => true,
-                    'message' => 1,
-                    'userName' => $user->fl_name,
-                ]);
             }
-            // return response()->json([
-            //     'error' => false,
-            //     'message' => 'Email or phone already exists!'
-            // ]);
+
+            if ($user->confirm == 0) {
+                return response()->json(0);
+            }
+
+            Auth::guard('mainUsers')->login($user);
+            return response()->json([
+                'success' => true,
+                'message' => 1,
+                'userName' => $user->fl_name,
+            ]);
+        } catch (\Throwable $e) {
+            Log::error('Signup error: ' . $e->getMessage(), [
+                'trace' => $e->getTraceAsString(),
+                'request' => $request->except(['password']),
+            ]);
+            return response()->json([
+                'success' => false,
+                'message' => 'An error occurred while creating your account. Please try again.',
+            ], 500);
         }
     }
 

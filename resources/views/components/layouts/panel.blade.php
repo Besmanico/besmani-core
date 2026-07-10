@@ -190,19 +190,19 @@
             </div>
 
             <nav class="sidebar-nav">
-                <a href="{{ config('app.url') }}panel" class="nav-link active">
+                <a href="{{ config('app.url') }}panel" class="nav-link {{ request()->path() === 'panel' ? 'active' : '' }}">
                     <i class="fa fa-home"></i>
                     <span>Dashboard</span>
                 </a>
-                <a href="{{ config('app.url') }}panel/profile" class="nav-link">
+                <a href="{{ config('app.url') }}panel/profile" class="nav-link {{ request()->is('panel/profile*') ? 'active' : '' }}">
                     <i class="fa fa-user"></i>
-                    <span>My Profile</span>
+                    <span>My Profile</span> 
                 </a>
-                <a href="{{ config('app.url') }}panel/invoice" class="nav-link">
+                <a href="{{ config('app.url') }}panel/invoice" class="nav-link {{ request()->is('panel/invoice*') ? 'active' : '' }}">
                     <i class="fa fa-shopping-cart"></i>
                     <span>Orders</span>
                 </a>
-                <a href="{{ config('app.url') }}panel/payment" class="nav-link">
+                <a href="{{ config('app.url') }}panel/payment" class="nav-link {{ request()->is('panel/payment*') ? 'active' : '' }}">
                     <i class="fa fa-briefcase"></i>
                     <span>Payments</span> 
                 </a>
@@ -219,10 +219,16 @@
                     <i class="fa fa-envelope"></i>
                     <span>Messages</span>
                 </a>
+                
+                {{-- <a href="{{ config('app.url') }}panel/business" class="nav-link">
+                    <i class="fa fa-briefcase"></i>
+                    <span>Business</span>
+                </a> --}}
                 <a href="#" class="nav-link">
                     <i class="fa fa-cog"></i>
                     <span>Settings</span>
                 </a>
+              
                 <a href="#" class="nav-link" onclick="event.preventDefault(); panelLogout();">
                     <i class="fa fa-sign-out"></i>
                     <span>Logout</span>

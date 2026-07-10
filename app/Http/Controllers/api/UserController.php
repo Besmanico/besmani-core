@@ -202,7 +202,7 @@ class UserController extends Controller
                     $res[$key]['service_img'] = null;
                     $res[$key]['idClinic'] = null;
                 }
-            } else { 
+            } else {
                 $res[$key]['service_name'] = null;
                 $res[$key]['service_img'] = null;
                 $res[$key]['idClinic'] = null;
@@ -212,5 +212,13 @@ class UserController extends Controller
             'success' => true,
             'services' => $res,
         ], 200);
+    }
+
+
+    public function totalProvider()
+    {
+
+        $count=MainUser::count();
+        return $count;
     }
 }

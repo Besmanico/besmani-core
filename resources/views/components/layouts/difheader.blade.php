@@ -74,7 +74,7 @@
   position: relative;">
 
                     <a href="{{ config('app.url') }}" class="site-title logo-header cursor-pointer">
-                        <img src="{{ config('app.url') }}assets-file/img/logo.png" alt="logo">
+                        <img src="{{ config('app.url') }}assets-file/img/besmani-logo-head.png" alt="logo">
                     </a>
 
                 </div><!-- /.navbar-header -->
@@ -177,7 +177,7 @@
                 <div class="modal-logo">
                     {{-- BES<span class="logo-highlight">M</span>ANI --}}
                     <a href="{{ config('app.url') }}">
-                        <img src="{{ config('app.url') }}assets-file/img/logo-footer.png" alt="logo"
+                        <img src="{{ config('app.url') }}assets-file/img/besmani-logo-foot.png" alt="logo"
                             style="width: 150px;">
                     </a>
                 </div>
@@ -379,7 +379,9 @@
     <div class="mobile-nav-overlay"></div>
     <div class="custom-mobile-nav">
         <div class="mobile-nav-close">&times;</div>
-
+        <div class="nav-item">
+            <a href="{{ config('app.url') }}besmo" class="nav-link">TECHNOLOGY</a>
+        </div>
         <div class="nav-item">
             <a href="{{ config('app.url') }}services" class="nav-link">SERVICES</a>
         </div>

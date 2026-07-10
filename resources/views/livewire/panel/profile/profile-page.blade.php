@@ -211,8 +211,9 @@
                         <div class=" col-sm-6 mt-2">
                             <label><i class="fa fa-map-marker"></i> Street Address : <span
                                     class="text-danger">*</span></label>
-                            <textarea class="form-control" rows="1" cols="1" style="height: 50px;" readonly>{{ $user->street_address ?? ($user->address ?? '') }}</textarea>
-                        </div>
+                            <textarea class="form-control" rows="1" cols="1" wire:model.defer="address" style="height: 50px;" >{{ $user->street_address ?? ($user->address ?? '') }}</textarea>
+                        </div> 
+                        
                         <div class=" col-sm-3 mt-2">
                             <label><i class="fa fa-home"></i> Apt/Unit/Suite :</label>
                             <input type="text" class="form-control" wire:model.defer="apt_unit_suite">
@@ -230,14 +231,31 @@
                         <div class=" col-md-6">
                             <label><i class="fa fa-phone-square"></i> Phone Number : <span
                                     class="text-danger">*</span> <small>(Without Country Code)</small></label>
-                            <input type="text" class="form-control" value="{{ $user->mobile_moaref ?? '' }}"
-                                readonly>
+                            {{-- <input type="text" class="form-control" wire:model.defer="mobile_moaref"
+                             value="{{ $user->mobile_moaref ?? '' }}"     --}}
+                             <input type="text" class="form-control"  wire:model="mobile_moaref"
+                             maxlength="10"
+                             inputmode="numeric"
+                             value="{{ $user->mobile_moaref ?? '' }}" >
                         </div>
                         <div class=" col-md-6">
                             <label><i class="fa fa-user-plus"></i> Name :</label>
                             <input type="text" class="form-control" value="{{ $user->fl_moaref ?? '' }}"
                                 readonly>
                         </div>
+
+
+                        {{-- new --}}
+                        {{-- نمایش اطلاعات کاربر پیدا شده --}}
+@if($moaref_user)
+<div class="alert alert-info mt-2">
+    کاربر معرف: {{ $moaref_user->name }} ({{ $moaref_user->mobile }})
+</div>
+@endif
+                        {{-- new end--}}
+
+
+
                     </div>
                     <div class="text-center">
                         <button type="submit" class="btn-action-btn" wire:loading.attr="disabled">

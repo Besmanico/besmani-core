@@ -54,6 +54,10 @@
                 <span class="payment-detail-summary-label">Total</span>
                 <span class="payment-detail-summary-value">${{ number_format($installmentPays->sum('amount'), 2) }}</span>
             </div>
+            <div class="payment-detail-summary-row">
+                <span class="payment-detail-summary-label">Extra pay :</span>
+                <span class="payment-detail-summary-value {{ ($order->free_price ?? 0) < 0 ? 'color-red' : 'color-green' }}">${{ number_format($order->free_price ?? 0, 2) }}</span>
+            </div>
         </div>
     @endif 
 
@@ -63,5 +67,5 @@
             <span>Save PDF</span>
             <i class="fa fa-spinner fa-spin payment-pdf-spinner" style="display: none;"></i>
         </button>
-    </div>
+    </div> 
 </div>

@@ -229,6 +229,9 @@ class CartController extends Controller
         // Mark all cart_services for this cart as paid and link to this order
         CartService::where('cart_id', $cart_id)->update(['pay' => 1, 'order_id' => $resOrder->id]);
 
+        // Link installments created above to this order
+        InstallmentPay::where('cart_id', $cart_id)->where('user_id', $this->user_id())->where('order_id', 0)->update(['order_id' => $resOrder->id]);
+
         // Send Filament notification to all admin users
         // Note: OrderObserver is already registered in AppServiceProvider, so it will automatically fire when order is created
         // No need to call it manually here to avoid duplicate notifications
@@ -282,6 +285,9 @@ class CartController extends Controller
 
             DB::beginTransaction();
             try {
+                $resOrder = $this->newOrder($cart_id, $Order_total, $TaxFee, $discount, $payment_method, $ContactName, $BillingAddress, $ShipingAddress, $signature_client, $signature_date, $cart_service_id);
+                $tracking_code = $resOrder->tracking_code;
+
                 foreach ($amount as $key => $value) {
                     if (empty($value) || empty($date[$key] ?? null)) {
                         continue;
@@ -289,13 +295,11 @@ class CartController extends Controller
                     $installmentPay = new InstallmentPay();
                     $installmentPay->user_id = $this->user_id();
                     $installmentPay->cart_id = $cart_id;
+                    $installmentPay->order_id = $resOrder->id;
                     $installmentPay->amount = $value;
                     $installmentPay->date = $date[$key];
                     $installmentPay->save();
                 }
-
-                $resOrder = $this->newOrder($cart_id, $Order_total, $TaxFee, $discount, $payment_method, $ContactName, $BillingAddress, $ShipingAddress, $signature_client, $signature_date, $cart_service_id);
-                $tracking_code = $resOrder->tracking_code;
 
                 $cartService->pay = 1;
                 $cartService->order_id = $resOrder->id;
@@ -306,7 +310,7 @@ class CartController extends Controller
                 if ($allPaid) {
                     $cart->status = 1;
                     $cart->save();
-                }
+                } 
 
                 DB::commit();
                 return response()->json(['success' => true, 'amount' => $amount, 'date' => $date, 'tracking_code' => $tracking_code]);
@@ -488,10 +492,12 @@ class CartController extends Controller
             return response()->json(['success' => false, 'message' => 'Order not found'], 404);
         }
 
-        $installmentPays = ($order->cart_id !== null && $order->cart_id !== '')
-            ? InstallmentPay::where('cart_id', $order->cart_id)->orderBy('id')->get()
-            : collect();
-
+        // Get installments by order_id; fallback to cart_id for backward compatibility
+        $installmentPays = InstallmentPay::where('order_id', $order->id)->orderBy('id')->get();
+        if ($installmentPays->isEmpty() && $order->cart_id) {
+            $installmentPays = InstallmentPay::where('cart_id', $order->cart_id)->where('user_id', $userId)->orderBy('id')->get();
+        }
+ 
         $html = view('livewire.panel.payment.pay-detail-modal', [
             'order' => $order,
             'installmentPays' => $installmentPays,

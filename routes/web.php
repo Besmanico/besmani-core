@@ -21,6 +21,7 @@ use App\Livewire\Panel\Invoice\InvoicePage;
 use App\Livewire\Panel\Payment\PaymentPage;
 use App\Livewire\Panel\Profile\ProfilePage;
 use App\Http\Controllers\Api\UserController;
+use App\Livewire\Panel\Business\BusinessPage;
 
 /* 
 |--------------------------------------------------------------------------
@@ -70,6 +71,7 @@ Route::middleware(['auth:mainUsers'])->group(function () {
     Route::get('/panel/payment', PaymentPage::class);  
     Route::get('/panel/payment/details', [CartController::class, 'getPaymentDetails'])->name('panel.payment.details');
     Route::get('/panel/profile', ProfilePage::class); 
+    Route::get('/panel/business', BusinessPage::class); 
 });
 
 // end user panel

@@ -25,7 +25,7 @@
 
             <div class="text-center lg-hidden mb-sm">
                 <a href="{{ config(key: 'app.url') }}" class=" logo-header "><img
-                        src="{{ config('app.url') }}assets-file/img/logo-footer.png" alt="logo"></a>
+                        src="{{ config('app.url') }}assets-file/img/besmani-logo-foot.png" alt="logo"></a>
             </div>
 
             <div class="col-lg-4 col-md-4 col-sm-4  ">
@@ -54,7 +54,7 @@
 
             <div class="col-lg-4 col-md-4 col-sm-4 text-center ">
                 <a href="{{ config(key: 'app.url') }}" class=" logo-header sm-hidden"><img
-                        src="{{ config('app.url') }}assets-file/img/logo-footer.png" alt="logo"></a>
+                        src="{{ config('app.url') }}assets-file/img/besmani-logo-foot.png" alt="logo"></a>
 
                 <p class="txt-footer sm-hidden" style="margin-top: 10px; ">
                     {{-- A professional group focused on

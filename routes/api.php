@@ -28,6 +28,9 @@ Route::get('get-users', [UserController::class, 'getUsers']);
 Route::get('get-user/{id}', [UserController::class, 'getUser']);
 Route::get('get-Clinic-services/{id}', [UserController::class, 'getClinicServices']); 
 
+// n8n
+Route::get('totalProvider', [UserController::class, 'totalProvider']); 
+
 
 // panel api
 

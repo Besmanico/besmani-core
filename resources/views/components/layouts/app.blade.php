@@ -241,7 +241,15 @@
                 flex-wrap: wrap;
                 justify-content: center;
                 align-items: center;
+                padding-right: 118px;
             }
+        }
+
+        @media (min-width: 320px) {
+            .hero-text h3 {
+                line-height: 35px;
+            }
+
         }
     </style>
 
@@ -259,8 +267,18 @@
                 {{-- <a href="{{ config('app.url') }}" style="position:relative" class="site-title mt-sm-logo"><img
                         style="margin-top:15px;width:450px;" src="{{ config('app.url') }}assets-file/img/header.png"
                         alt="besmani"></a> --}}
-                <h1>Your story begins from here.</h1>
-                <h3>This is where good things happen</h3>
+                <h1 style="font-size: 26px !important;font-weight: bold;">
+                    Your story begins here.
+
+
+                </h1>
+                <h3 style="font-size: 17px !important;  font-weight: bold;">
+                    AI Technology Consulting • Software Design • Website Design • Marketing Services
+
+                </h3>
+                <div style=" margin-top: 10px;">
+                    Helping businesses build, grow, and scale through technology, software, and marketing solutions.
+                </div>
                 <div class="service-section-item text-center">
                     <div class="service-section-grid">
                         <a href="https://beauty.besmani.com/" target="_blank"
@@ -277,10 +295,13 @@
                             <span class="service-square-hover-text">A trusted place for beauty services, products, and
                                 professional training.</span>
                         </a>
-                        <a href="https://beauty.besmani.com/category" target="_blank" class="service-square service-square-beauty">
+                        <a href="https://beauty.besmani.com/category" target="_blank"
+                            class="service-square service-square-beauty">
                             <span class="service-square-icon">
                                 {{-- <i class="fa fa-shopping-bag"></i> --}}
-                                <img style="width: 45px;" src="{{ config('app.url') }}assets-file/img/logo-market.png" alt="besmani">
+                                <img style="width: 45px;" src="{{ config('app.url') }}assets-file/img/logo-market.png"
+                                    alt="besmani">
+                                {{-- <img style="width: 45px;" src="{{ config('app.url') }}assets-file/img/besmani-logo-head.png" alt="besmani"> --}}
 
                             </span>
                             <span class="service-square-title">Market</span>
@@ -293,7 +314,7 @@
                         <a href="{{ config('app.url') }}services" class="service-square service-square-beauty">
                             <span class="service-square-icon">
                                 {{-- <i class="fa fa-cogs"></i> --}}
-                                <img src="{{ config('app.url') }}assets-file/img/bes.png" alt="besmani">
+                                <img src="{{ config('app.url') }}assets-file/img/bes2.png" alt="besmani">
                             </span>
                             <span class="service-square-title">Services</span>
                             <span class="service-square-desc">Professional services designed to help businesses build,
@@ -381,10 +402,10 @@
             <div class="modal-header">
                 <div class="modal-logo">
                     {{-- BES<span class="logo-highlight">M</span>ANI --}}
-                    <img src="{{ config('app.url') }}assets-file/img/logo-footer.png" alt="logo"
+                    <img src="{{ config('app.url') }}assets-file/img/besmani-logo-foot.png" alt="logo"
                         style="width: 150px;">
                 </div>
-                <div class="modal-title">   Create an Account</div>
+                <div class="modal-title"> Create an Account</div>
             </div>
 
             <!-- Form Container -->
@@ -424,7 +445,7 @@
                             I agree to the
                             <a href="{{ url('/terms') }}" target="_blank"
                                 style="color: #4ade80; text-decoration: underline; transition: opacity 0.2s;">Terms
-                            </a> 
+                            </a>
                             <b style="color: #fff;">&</b>
 
 
@@ -474,7 +495,7 @@
             <div class="modal-header">
                 <div class="modal-logo">
                     {{-- BES<span class="logo-highlight">M</span>ANI --}}
-                    <img src="{{ config('app.url') }}assets-file/img/logo-footer.png" alt="logo"
+                    <img src="{{ config('app.url') }}assets-file/img/besmani-logo-foot.png" alt="logo"
                         style="width: 150px;">
                 </div>
                 <div class="modal-title">Sign in</div>
@@ -531,6 +552,22 @@
 
     <!-- Toast Container -->
     <div class="sonner-toast-container" id="sonner-container"></div>
+
+    <link href="https://cdn.jsdelivr.net/npm/@n8n/chat/dist/style.css" rel="stylesheet" />
+
+
+    {{-- n8n --}}
+    <script type="module">
+        import {
+            createChat
+        } from 'https://cdn.jsdelivr.net/npm/@n8n/chat/dist/chat.bundle.es.js';
+
+        createChat({
+            webhookUrl: 'https://besmaniadmin.app.n8n.cloud/webhook/2c14ab50-043f-4ff2-8092-d06e8b2e2516/chat'
+        });
+    </script>
+        {{-- n8n end --}}
+
 
 </body>
 
@@ -635,7 +672,7 @@
         var password = $('#password').val();
 
         // Basic validation
-        if (!fname ||  !email || !password || !countryCode || !phone) {
+        if (!fname || !email || !password || !countryCode || !phone) {
             toastWarning('Please fill in all required fields.', 4000);
             return;
         }
@@ -684,7 +721,7 @@
                     // Hide signup form and show confirmation code section
                     $('#signup-form').addClass('hide');
                     $('.side-confirm-code').addClass('show').show();
-                    window.location.href = '/';
+                    //  window.location.href = '/';
 
                     // Store phone number for confirmation
                     // window.signupPhone = phone;
@@ -736,6 +773,7 @@
     });
     $('#confirm-btn').click(function() {
         var confirmCode = $('#confirm-code').val();
+        var phone = $('#phone').val();
 
         // Basic validation
         if (!confirmCode) {
@@ -752,7 +790,7 @@
                 type: 'POST',
                 data: {
                     confirmCode: confirmCode,
-                    phone: window.signupPhone,
+                    phone: phone,
                 }
             })
             .done(function(response) {

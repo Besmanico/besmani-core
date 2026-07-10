@@ -17,12 +17,13 @@ class Dashboard extends Component
 
     public function render()
     {
-        // // Double check authentication before rendering
-        // if (!Auth::guard('mainUsers')->check()) {
-        //     abort(403, 'Unauthorized access');
-        // }
+        $user = Auth::guard('mainUsers')->user();
+        $isPersonalUser = $user && (int)($user->service_pr ?? 1) === 0;
 
         $metaData = ['title' => 'Dashboard'];
-        return view('livewire.panel.dashboard',['title' => $metaData['title']])->layout('components/layouts.panel', $metaData);
-    }
+        return view('livewire.panel.dashboard', [
+            'title' => $metaData['title'],
+            'isPersonalUser' => $isPersonalUser,
+        ])->layout('components/layouts.panel', $metaData);
+    } 
 }
