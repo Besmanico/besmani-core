@@ -45,15 +45,19 @@ class ClinicResource extends Resource
                             ->required()
                             ->maxLength(255)
                             ->label('Title'),
-                        FileUpload::make('img')
-                            ->label('Image')
-                            ->directory('clinics')
-                            ->imageEditor()
-                            ->downloadable()
-                            ->optimize('webp')
-                            ->helperText('Recommended size: 70*70 pixels')
-                            ->image()
-                            ->columnSpanFull(),
+                     
+                            FileUpload::make('img')
+    ->label('Image')
+    ->disk('public')
+    ->directory('clinics')
+    ->visibility('public')
+    ->imageEditor()
+    ->downloadable()
+    ->optimize('webp')
+    ->helperText('Recommended size: 70*70 pixels')
+    ->image()
+    ->columnSpanFull(),
+
 
                         // Forms\Components\TextInput::make('slug')
                         //     ->required()

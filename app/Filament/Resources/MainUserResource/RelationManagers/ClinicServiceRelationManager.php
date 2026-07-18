@@ -44,6 +44,8 @@ class ClinicServiceRelationManager extends RelationManager
                 Tables\Columns\TextColumn::make('price')->label('Starting at ($)'),
                 Tables\Columns\TextColumn::make('capacity')->label('Seats'),
                 Tables\Columns\TextColumn::make('time_work')->label('Duration (hr)'), 
+                Tables\Columns\ToggleColumn::make('active')->label('Status'),
+
                  Tables\Columns\TextColumn::make('create_at')->label('Created At')->badge()->color('info'), 
                    
             ])

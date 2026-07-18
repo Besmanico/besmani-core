@@ -154,7 +154,7 @@ class UserController extends Controller
     {
 
 
-        $appointments = ClinicReserve::where('user_id', $request->id)->with('clinic')->orderBy('id', 'desc')->get();
+        $appointments = ClinicReserve::where('main_user_id', $request->id)->with('clinic')->orderBy('id', 'desc')->get();
 
         // colleague info
 
@@ -188,7 +188,7 @@ class UserController extends Controller
     public function getClinicServices(Request $request, $id)
     {
 
-        $res = ClinicService::where('user_id', $id)->get();
+        $res = ClinicService::where('user_id', $id)->where('active', 1)->get();
         // if service_id is not null
         foreach ($res as $key => $val) {
             if ($val['service_id']) {
@@ -218,7 +218,32 @@ class UserController extends Controller
     public function totalProvider()
     {
 
-        $count=MainUser::count();
+        $count = MainUser::count();
         return $count;
     }
+
+
+     public function allServicesClinic(Request $request, $id)
+{
+    $infoproducts = Clinic::where('status', 1)
+        ->orderBy('id', 'desc')
+        ->get();
+
+    foreach ($infoproducts as $item) {
+        $res = ClinicService::where('service_id', $item->id)
+            ->where('user_id', $id)
+            ->first();
+
+        $item->price = $res->price ?? null;
+        $item->maxprice = $res->maxprice ?? null;
+        $item->time_work = $res->time_work ?? null;
+        $item->capacity = $res->capacity ?? null;
+    }
+
+    return response()->json([
+        'success' => true,
+        'services' => $infoproducts,
+    ], 200);
+}
+
 }
