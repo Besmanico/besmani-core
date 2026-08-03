@@ -1,10 +1,11 @@
 <?php
 
+use App\Http\Controllers\Api\PublicController;
 use App\Http\Controllers\Api\UserController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Route;
- 
+
 /*
 |--------------------------------------------------------------------------
 | API Routes
@@ -26,15 +27,30 @@ Route::post('signup', [UserController::class, 'signup']);
 Route::post('login', [UserController::class, 'login']);
 Route::get('get-users', [UserController::class, 'getUsers']);
 Route::get('get-user/{id}', [UserController::class, 'getUser']);
-Route::get('get-Clinic-services/{id}', [UserController::class, 'getClinicServices']); 
-Route::get('all-services-clinic/{user_id}', [UserController::class, 'allServicesClinic']);   
+
+// vascular cosmetics 
+Route::get('all-services-clinic/{user_id}', [UserController::class, 'allServicesClinic']);
+Route::post('vascular-cosmetic-update-service', [UserController::class, 'vascularCosmeticUpdateService']);
+Route::get('get-Clinic-services/{id}', [UserController::class, 'getClinicServices']);
+Route::get('get-vascular-care-clinic-services/{id}', [UserController::class, 'getVascularCareClinicServices']);
+Route::get('get-vascular-beauty-clinic-services/{id}', [UserController::class, 'getVascularBeautyClinicServices']);
+Route::get('get-vascular-hormone-clinic-services/{id}', [UserController::class, 'getVascularHormoneClinicServices']);
 
 // n8n
-Route::get('totalProvider', [UserController::class, 'totalProvider']); 
+Route::get('totalProvider', [UserController::class, 'totalProvider']);
 
 
 // panel api
 
 Route::get('get-appointments/{id}', [UserController::class, 'getAppointments']);
-Route::get('get-user-info/{id}', [UserController::class, 'getUserInfo']);  
+// Route::get('get-user-info/{id}', [UserController::class, 'getUserInfo']);
+Route::get('get-contries', [PublicController::class, 'getCountries']);
+Route::get('get-provinces/{id}', [PublicController::class, 'getProvinces']);
+Route::get('get-cities/{id}', [PublicController::class, 'getCities']);
+// Route::get('update-user-info/{id}', [PublicController::class, 'updateUserInfo']);  
 
+Route::middleware('auth:sanctum')->post('update-user-info', [PublicController::class, 'updateUserInfo']);
+Route::middleware('auth:sanctum')->post('check-referral', [PublicController::class, 'checkReferral']);
+Route::middleware('auth:sanctum')->post('upload-avatar', [PublicController::class, 'uploadAvatar']);
+Route::middleware('auth:sanctum')->get('get-user-info/{id}', [PublicController::class, 'getUserInfo']);
+ 

@@ -204,7 +204,11 @@
                 </a>
                 <a href="{{ config('app.url') }}panel/payment" class="nav-link {{ request()->is('panel/payment*') ? 'active' : '' }}">
                     <i class="fa fa-briefcase"></i>
-                    <span>Payments</span> 
+                    <span>Payments</span>  
+                </a>
+                <a href="{{ route('panel.referral') }}" class="nav-link {{ request()->is('panel/referral*') ? 'active' : '' }}">
+                    <i class="fa fa-exchange"></i>
+                    <span>Referrals</span> 
                 </a>
                 {{-- <a href="#" class="nav-link">
                     <i class="fa fa-briefcase"></i>

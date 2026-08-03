@@ -21,5 +21,7 @@ class Clinic extends Model
     {
         return $this->belongsTo(ClinicCategory::class,'category_id');
     } 
-
+public function clinicServices() {
+    return $this->hasMany(ClinicService::class, 'service_id');
+}
 }

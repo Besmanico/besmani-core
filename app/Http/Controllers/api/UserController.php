@@ -154,7 +154,7 @@ class UserController extends Controller
     {
 
 
-        $appointments = ClinicReserve::where('main_user_id', $request->id)->with('clinic')->orderBy('id', 'desc')->get();
+        $appointments = ClinicReserve::where('user_id', $request->id)->with('clinic')->orderBy('id', 'desc')->get();
 
         // colleague info
 
@@ -183,7 +183,7 @@ class UserController extends Controller
             'success' => true,
             'user' => $user,
         ], 200);
-    }
+    } 
 
     public function getClinicServices(Request $request, $id)
     {
@@ -214,6 +214,95 @@ class UserController extends Controller
         ], 200);
     }
 
+    public function getVascularCareClinicServices(Request $request, $id)
+    {
+
+        $res = ClinicService::where('user_id', $id)->where('type_category', 'vascular_care')->where('active', 1)->orderByDesc('sort')->get();
+        // if service_id is not null
+        foreach ($res as $key => $val) {
+            if ($val['service_id']) {
+                $info = Clinic::where('id', $val['service_id'])->first();
+                if ($info) {
+                    $res[$key]['service_name'] = $info->title;
+                    $res[$key]['service_img'] = $info->img;
+                    $res[$key]['idClinic'] = $info->id;
+                } else {
+                    $res[$key]['service_name'] = null;
+                    $res[$key]['service_img'] = null;
+                    $res[$key]['idClinic'] = null;
+                }
+            } else {
+                $res[$key]['service_name'] = null;
+                $res[$key]['service_img'] = null;
+                $res[$key]['idClinic'] = null;
+            }
+        }
+        return response()->json([
+            'success' => true,
+            'services' => $res,
+        ], 200);
+    }
+
+    public function getVascularBeautyClinicServices(Request $request, $id)
+    {
+
+        $res = ClinicService::where('user_id', $id)->where('type_category', 'vascular_beauty')->where('active', 1)->get();
+        // if service_id is not null
+        foreach ($res as $key => $val) {
+            if ($val['service_id']) {
+                $info = Clinic::where('id', $val['service_id'])->first();
+                if ($info) {
+                    $res[$key]['service_name'] = $info->title;
+                    $res[$key]['service_img'] = $info->img;
+                    $res[$key]['idClinic'] = $info->id;
+                } else {
+                    $res[$key]['service_name'] = null;
+                    $res[$key]['service_img'] = null;
+                    $res[$key]['idClinic'] = null;
+                }
+            } else {
+                $res[$key]['service_name'] = null;
+                $res[$key]['service_img'] = null;
+                $res[$key]['idClinic'] = null;
+            }
+        }
+        return response()->json([
+            'success' => true,
+            'services' => $res,
+        ], 200);
+    }
+
+ public function getVascularHormoneClinicServices(Request $request, $id)
+    {
+
+        $res = ClinicService::where('user_id', $id)->where('type_category', 'hormone-wellness')->where('active', 1)->get();
+        // if service_id is not null
+        foreach ($res as $key => $val) {
+            if ($val['service_id']) {
+                $info = Clinic::where('id', $val['service_id'])->first();
+                if ($info) {
+                    $res[$key]['service_name'] = $info->title;
+                    $res[$key]['service_img'] = $info->img;
+                    $res[$key]['idClinic'] = $info->id;
+                } else {
+                    $res[$key]['service_name'] = null;
+                    $res[$key]['service_img'] = null;
+                    $res[$key]['idClinic'] = null;
+                }
+            } else {
+                $res[$key]['service_name'] = null;
+                $res[$key]['service_img'] = null;
+                $res[$key]['idClinic'] = null;
+            }
+        }
+        return response()->json([
+            'success' => true,
+            'services' => $res,
+        ], 200);
+    }
+
+    
+
 
     public function totalProvider()
     {
@@ -223,27 +312,64 @@ class UserController extends Controller
     }
 
 
-     public function allServicesClinic(Request $request, $id)
-{
-    $infoproducts = Clinic::where('status', 1)
-        ->orderBy('id', 'desc')
-        ->get();
+    public function allServicesClinic(Request $request, $id)
+    {
+         $infoproducts = Clinic::where('status', 1)
+            ->with(['clinicServices' => function ($query) use ($id) {
+                $query->where('user_id', $id);
+            }])
+            ->orderBy('id', 'desc')
+            ->get();
 
-    foreach ($infoproducts as $item) {
-        $res = ClinicService::where('service_id', $item->id)
-            ->where('user_id', $id)
-            ->first();
+         $infoproducts->map(function ($item) {
+             $res = $item->clinicServices->first();
 
-        $item->price = $res->price ?? null;
-        $item->maxprice = $res->maxprice ?? null;
-        $item->time_work = $res->time_work ?? null;
-        $item->capacity = $res->capacity ?? null;
+            $item->clinic_id = $item->id;
+            $item->clinic_service_id = $res->id ?? null;
+            $item->price = $res->price ?? null;
+            $item->maxprice = $res->maxprice ?? null;
+            $item->time_work = $res->time_work ?? null;
+            $item->capacity = $res->capacity ?? null;
+            $item->type_category = $res->type_category ?? null;
+            $item->sort = $res->sort ?? null;
+
+             unset($item->clinicServices);
+
+            return $item;
+        });
+
+        // ۳. مرتب‌سازی: آن‌هایی که clinic_service_id دارند بالا قرار می‌گیرند
+        $sortedProducts = $infoproducts->sortByDesc(function ($item) {
+            return $item->clinic_service_id !== null;
+        })->values(); // متد values برای ریست کردن ایندکس‌های آرایه است
+
+        return response()->json([
+            'success' => true,
+            'services' => $sortedProducts,
+        ], 200);
     }
 
-    return response()->json([
-        'success' => true,
-        'services' => $infoproducts,
-    ], 200);
-}
 
+
+    public function vascularCosmeticUpdateService(Request $request)
+    {
+
+        $service_id = $request->service_id;
+        $price = $request->price;
+        $sort = $request->sort;
+        $capacity = $request->capacity;
+        $time_work = $request->time_work;
+        $type_category = $request->category;
+
+        $clinicService = ClinicService::findOrFail($service_id);
+        $clinicService->price = $price;
+        $clinicService->capacity = $capacity;
+        $clinicService->time_work = $time_work;
+        $clinicService->sort = $sort;
+        $clinicService->type_category = $type_category;
+        $clinicService->save();
+        return response()->json([
+            'success' => true,
+        ], 200);
+    }
 }

@@ -26,7 +26,7 @@
                     aria-selected="{{ $isPersonalUser ? 'true' : 'false' }}">
                     <i class="fa fa-user"></i>
                     <span>Personal</span>
-                </button>
+                </button>  
             </div>
         </div>
         {{-- end tab --}}
@@ -52,6 +52,10 @@
             <a href="#" class="dash-quick-link dash-ads">
                 <span class="icon-wrap ads"><i class="fa fa-bullhorn"></i></span>
                 <span class="label">Advertising</span>
+            </a>
+            <a href="{{ route('panel.referral') }}" class="dash-quick-link dash-referrals">
+                <span class="icon-wrap referrals"><i class="fa fa-exchange"></i></span>
+                <span class="label">Referrals</span>
             </a>
             <a href="#" class="dash-quick-link dash-messages">
                 <span class="icon-wrap messages"><i class="fa fa-comments"></i></span>

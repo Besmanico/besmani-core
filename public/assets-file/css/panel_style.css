@@ -17,7 +17,7 @@
     box-shadow: none;
     outline: none;
 }
-.panel-sidebar {
+.panel-sidebar {   
     background: #111827;
     color: #f9fafb;
     padding: 32px 24px;
@@ -28,7 +28,7 @@
     transition: transform 0.35s ease-in-out;
     will-change: transform;
 }
-
+ 
 .panel-sidebar::before {
     content: "";
     position: absolute;
@@ -254,16 +254,16 @@ body.no-scroll {
 
 /* Quick links row on dashboard */
 .new-item-dashboard {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 14px;
+    display: grid;
+    grid-template-columns: repeat(7, minmax(0, 1fr));
+    gap: 10px;
     margin-top: 8px;
 }
 .dash-quick-link {
     display: flex;
     align-items: center;
     gap: 10px;
-    padding: 14px 22px;
+    padding: 12px;
     border-radius: 16px;
     /* پس‌زمینه پایه خنثی؛ برای هر آیتم جداگانه رنگ می‌دهیم */
     background: #f9fafb;
@@ -275,7 +275,7 @@ body.no-scroll {
     font-weight: 600;
     letter-spacing: 0.03em;
     text-transform: uppercase;
-    min-width: 200px;
+    min-width: 0;
     justify-content: flex-start;
     transition:
         transform 0.2s ease,
@@ -318,6 +318,11 @@ body.no-scroll {
     background: transparent;
     border: 1px solid #0ea5e9;
     color: #0ea5e9;
+}
+.dash-quick-link .icon-wrap.referrals {
+    background: transparent;
+    border: 1px solid #059669;
+    color: #059669;
 }
 .dash-quick-link .icon-wrap.messages {
     background: transparent;
@@ -379,6 +384,14 @@ body.no-scroll {
 }
 .dash-quick-link.dash-ads:hover {
     background: #cffafe;
+}
+
+.dash-quick-link.dash-referrals {
+    background: #ecfdf5;
+    border-color: #059669;
+}
+.dash-quick-link.dash-referrals:hover {
+    background: #d1fae5;
 }
 
 .dash-quick-link.dash-messages {
@@ -1284,6 +1297,10 @@ body.no-scroll {
 /* invoice detail modal end */
 
 @media (max-width: 1100px) {
+    .new-item-dashboard {
+        grid-template-columns: repeat(4, minmax(0, 1fr));
+    }
+
     .panel-dashboard {
         grid-template-columns: 1fr;
     }
@@ -1323,6 +1340,10 @@ body.no-scroll {
 }
 
 @media (max-width: 768px) {
+    .new-item-dashboard {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
     .stats-grid {
         grid-template-columns: repeat(2, 1fr);
     }
@@ -1348,6 +1369,10 @@ body.no-scroll {
 }
 
 @media (max-width: 600px) {
+    .new-item-dashboard {
+        grid-template-columns: 1fr;
+    }
+
     .panel-dashboard {
         min-height: auto;
     }

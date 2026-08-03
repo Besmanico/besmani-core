@@ -15,4 +15,5 @@ class ClinicService extends Model
     {
         return $this->belongsTo(Clinic::class, 'service_id');
     } 
+    
 }

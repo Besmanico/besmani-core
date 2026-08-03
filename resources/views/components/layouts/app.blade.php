@@ -245,6 +245,177 @@
             }
         }
 
+        /* Besmani primary header */
+        .besmani-header {
+            padding-top: 28px;
+        }
+
+        .besmani-header__inner {
+            display: flex;
+            align-items: center;
+            min-height: 76px;
+            padding: 10px 22px;
+            border: 1px solid rgba(255, 255, 255, 0.42);
+            border-radius: 18px;
+            background: rgba(255, 255, 255, 0.88);
+            box-shadow: 0 16px 40px rgba(7, 16, 33, 0.16);
+            backdrop-filter: blur(16px);
+        }
+
+        .besmani-header__brand {
+            display: flex;
+            align-items: center;
+            flex: 0 0 auto;
+            margin-right: 34px;
+        }
+
+        .besmani-header .logo-header img {
+            width: 118px;
+            margin: 0;
+        }
+
+        .besmani-header__menu {
+            flex: 1;
+        }
+
+        .besmani-header__menu .desktop-nav {
+            display: flex;
+            float: none;
+            align-items: center;
+            justify-content: flex-end;
+            gap: 8px;
+            width: 100%;
+            margin: 0;
+            padding: 0;
+        }
+
+        .besmani-header__menu .desktop-nav>li+li {
+            margin-left: 0;
+        }
+
+        .besmani-header__menu .desktop-nav>li>a {
+            display: block;
+            padding: 10px 9px;
+            color: #182033 !important;
+            font-size: 13px;
+            font-weight: 700;
+            letter-spacing: 0.025em;
+            text-transform: uppercase;
+            transition: color .2s ease, transform .2s ease;
+        }
+
+        .besmani-header__menu .desktop-nav>li>a::after {
+            content: '';
+            display: block;
+            width: 0;
+            height: 2px;
+            margin-top: 4px;
+            border-radius: 99px;
+            background: #fe0002;
+            transition: width .2s ease;
+        }
+
+        .besmani-header__menu .desktop-nav>li>a:hover {
+            color: #fe0002 !important;
+            transform: translateY(-1px);
+        }
+
+        .besmani-header__menu .desktop-nav>li>a:hover::after {
+            width: 100%;
+        }
+
+        .besmani-header .besmani-header__dashboard {
+            color: #fe0002 !important;
+        }
+
+        .besmani-header .login-item-side {
+            position: static !important;
+            margin-left: 6px;
+            border: 0;
+            padding: 0;
+        }
+
+        .besmani-header .login-item-side button {
+            padding: 10px 16px;
+            border: 0;
+            border-radius: 9px;
+            color: #fff;
+            background: #182033;
+            font-size: 12px;
+            font-weight: 700;
+            letter-spacing: .07em;
+            text-transform: uppercase;
+            transition: background .2s ease, box-shadow .2s ease, transform .2s ease;
+        }
+
+        .besmani-header .login-item-side button:hover {
+            background: #fe0002;
+            box-shadow: 0 8px 18px rgba(254, 0, 2, .25);
+            transform: translateY(-2px);
+        }
+
+        .besmani-header .desktop-nav .basket-item {
+            margin-left: 10px;
+        }
+
+        .besmani-header .desktop-nav .basket-link {
+            width: 38px;
+            height: 38px;
+            justify-content: center;
+            border-radius: 50%;
+            background: #f3f5f8;
+        }
+
+        .besmani-header .desktop-nav .basket-link:hover {
+            background: #feeaea;
+            transform: translateY(-2px);
+        }
+
+        .besmani-header .desktop-nav .basket-badge {
+            top: -4px;
+            right: -3px;
+            background: #fe0002;
+        }
+
+        .besmani-header .desktop-nav .user-dropdown {
+            margin-top: 0;
+        }
+
+        .besmani-header .desktop-nav .dropdown-toggle,
+        .besmani-header #welcome-message {
+            border: 1px solid rgba(24, 32, 51, .14);
+            border-radius: 9px;
+        }
+
+        .besmani-header .WuserName {
+            color: #237d29;
+        }
+
+        @media (max-width: 991px) {
+            .besmani-header {
+                padding: 16px 0 0;
+            }
+
+            .besmani-header__inner {
+                min-height: 60px;
+                margin: 0 15px;
+                padding: 8px 15px;
+            }
+
+            .besmani-header .logo-header img {
+                width: 100px;
+            }
+
+            .besmani-header .slicknav_menu {
+                top: 26px;
+                right: 22px;
+            }
+
+            .besmani-header .slicknav_btn {
+                margin: 0;
+            }
+        }
+
         @media (min-width: 320px) {
             .hero-text h3 {
                 line-height: 35px;
@@ -265,8 +436,8 @@
         <div class="hero-content aos" data-aos="fade-up">
             <div class="hero-text -mt-150">
                 {{-- <a href="{{ config('app.url') }}" style="position:relative" class="site-title mt-sm-logo"><img
-                        style="margin-top:15px;width:450px;" src="{{ config('app.url') }}assets-file/img/header.png"
-                        alt="besmani"></a> --}}
+                    style="margin-top:15px;width:450px;" src="{{ config('app.url') }}assets-file/img/header.png"
+                    alt="besmani"></a> --}}
                 <h1 style="font-size: 26px !important;font-weight: bold;">
                     Your story begins here.
 
@@ -301,7 +472,8 @@
                                 {{-- <i class="fa fa-shopping-bag"></i> --}}
                                 <img style="width: 45px;" src="{{ config('app.url') }}assets-file/img/logo-market.png"
                                     alt="besmani">
-                                {{-- <img style="width: 45px;" src="{{ config('app.url') }}assets-file/img/besmani-logo-head.png" alt="besmani"> --}}
+                                {{-- <img style="width: 45px;" src="{{ config('app.url') }}assets-file/img/besmani-logo-head.png"
+                                alt="besmani"> --}}
 
                             </span>
                             <span class="service-square-title">Market</span>
@@ -388,7 +560,7 @@
     @livewire('footer')
 
     <?php
-    $countryCode = countryCode();
+$countryCode = countryCode();
     
     ?>
 
@@ -418,14 +590,14 @@
                     <div class="input-group">
                         <select name="country-code" id="country-code" class="modal-input country-code">
                             @foreach ($countryCode as $country)
-                                <option value="{{ $country->id }}"
-                                    {{ strtolower($country->name_en) == 'united states' || strtolower($country->name_en) == 'usa' || $country->code == '+1' ? 'selected' : '' }}>
-                                    {{ $country->code }} {{ $country->name_en }}</option>
+                                <option value="{{ $country->id }}" {{ strtolower($country->name_en) == 'united states' || strtolower($country->name_en) == 'usa' || $country->code == '+1' ? 'selected' : '' }}>
+                                    {{ $country->code }} {{ $country->name_en }}
+                                </option>
                             @endforeach
                         </select>
                         {{-- <input type="text" id="country-code" placeholder="+1" class="modal-input country-code" > --}}
-                        <input type="tel" id="phone" placeholder="Phone Number"
-                            class="modal-input phone-input" required>
+                        <input type="tel" id="phone" placeholder="Phone Number" class="modal-input phone-input"
+                            required>
                     </div>
                     <input type="email" id="email" placeholder="Email" class="modal-input" required>
 
@@ -435,8 +607,7 @@
                     <div class="terms-checkbox-container"
                         style="margin: 15px 0; display: flex; align-items: flex-start; gap: 12px;">
                         <input type="checkbox" id="agree-terms-signup" name="agree-terms-signup"
-                            class="terms-checkbox-input" required
-                            style="margin-top: 2px; cursor: pointer; width: 20px; height: 20px; min-width: 20px; min-height: 20px; flex-shrink: 0; 
+                            class="terms-checkbox-input" required style="margin-top: 2px; cursor: pointer; width: 20px; height: 20px; min-width: 20px; min-height: 20px; flex-shrink: 0; 
                                    appearance: none; -webkit-appearance: none; -moz-appearance: none;
                                    background-color: #ffffff; border: 2px solid #d1d5db; border-radius: 4px;
                                    position: relative; outline: none; opacity: 1; visibility: visible;">
@@ -504,8 +675,8 @@
             <!-- Form Container -->
             <div class="modal-form-container">
                 <form id="login-form" class="login-form">
-                    <input type="text" id="emailOrPhoneLogin" placeholder="Email Or Phone Number"
-                        class="modal-input" required>
+                    <input type="text" id="emailOrPhoneLogin" placeholder="Email Or Phone Number" class="modal-input"
+                        required>
                     <input type="password" id="passwordLogin" placeholder="Password" class="modal-input" required>
 
 
@@ -546,7 +717,9 @@
             </div>
         </div>
     </div>
-
+    @php
+        $mainUser = Auth::guard('mainUsers')->user();
+    @endphp
     @livewireScripts
     <script src="{{ config('app.url') }}assets-file/js/sonnet-toast.js"></script>
 
@@ -558,15 +731,23 @@
 
     {{-- n8n --}}
     <script type="module">
+
         import {
             createChat
         } from 'https://cdn.jsdelivr.net/npm/@n8n/chat/dist/chat.bundle.es.js';
 
         createChat({
-            webhookUrl: 'https://besmaniadmin.app.n8n.cloud/webhook/2c14ab50-043f-4ff2-8092-d06e8b2e2516/chat'
+            webhookUrl: 'https://ai.besmani.com/webhook/2c14ab50-043f-4ff2-8092-d06e8b2e2516/chat',
+            metadata: {
+                is_logged_in: @json(Auth::guard('mainUsers')->check()),
+                user_id: @json($mainUser?->id),
+                user_name: @json($mainUser?->name),
+                user_mobile: @json($mainUser?->mobile),
+                user_email: @json($mainUser?->email),
+            },
         });
     </script>
-        {{-- n8n end --}}
+    {{-- n8n end --}}
 
 
 </body>
@@ -582,7 +763,7 @@
 <script src="{{ config('app.url') }}assets-file/js/script.js"></script>
 <script src="{{ config('app.url') }}assets-file/lightbox/js/lightbox.min.js"></script>
 <script>
-    $('#Subscribe').click(function() {
+    $('#Subscribe').click(function () {
         var subscribeEmail = $('.email-subscribe').val();
 
         // Validate email is entered
@@ -604,7 +785,7 @@
         $('#Subscribe').prop('disabled', true);
 
         // Small delay for better UX
-        setTimeout(function() {
+        setTimeout(function () {
             $('#Subscribe .fa-spinner').hide();
             $('#Subscribe').prop('disabled', false);
 
@@ -614,7 +795,7 @@
 
             // Add visual indication that email was pre-filled
             $('#email').css('background-color', '#f0f9ff');
-            setTimeout(function() {
+            setTimeout(function () {
                 $('#email').css('background-color', '');
             }, 2000);
         }, 500);
@@ -647,21 +828,21 @@
     }
 
     // Close modal when clicking outside
-    $('#signup-modal').click(function(e) {
+    $('#signup-modal').click(function (e) {
         if (e.target === this) {
             closeSignupModal();
         }
     });
 
     // Close modal with Escape key
-    $(document).keydown(function(e) {
+    $(document).keydown(function (e) {
         if (e.keyCode === 27 && $('#signup-modal').is(':visible')) {
             closeSignupModal();
         }
     });
 
     // Form submission
-    $('#signup-form').submit(function(e) {
+    $('#signup-form').submit(function (e) {
         e.preventDefault();
 
         var fname = $('#fname').val();
@@ -702,18 +883,18 @@
 
         // Submit the form via AJAX  
         $.ajax({
-                url: '{{ route('signup') }}',
-                type: 'POST',
-                data: {
-                    fname: fname,
-                    // lname: lname,
-                    email: email,
-                    country_code: countryCode,
-                    phone: phone,
-                    password: password,
-                }
-            })
-            .done(function(response) {
+            url: '{{ route('signup') }}',
+            type: 'POST',
+            data: {
+                fname: fname,
+                // lname: lname,
+                email: email,
+                country_code: countryCode,
+                phone: phone,
+                password: password,
+            }
+        })
+            .done(function (response) {
                 $('.fa-spinner').hide();
                 $('#submit-btn').prop('disabled', false);
 
@@ -732,7 +913,7 @@
                     toastSuccess('Welcome to BESMANI!', 'Your account has been created successfully.',
                         3000);
 
-                    setTimeout(function() {
+                    setTimeout(function () {
                         closeSignupModal();
                         window.location.href = '/';
                     }, 3000);
@@ -742,7 +923,7 @@
 
                 }
             })
-            .fail(function(xhr) {
+            .fail(function (xhr) {
                 $('.fa-spinner').hide();
                 $('#submit-btn').prop('disabled', false);
 
@@ -771,7 +952,7 @@
             });
 
     });
-    $('#confirm-btn').click(function() {
+    $('#confirm-btn').click(function () {
         var confirmCode = $('#confirm-code').val();
         var phone = $('#phone').val();
 
@@ -786,21 +967,21 @@
         $('#confirm-btn').prop('disabled', true);
 
         $.ajax({
-                url: '{{ route('confirm-code') }}',
-                type: 'POST',
-                data: {
-                    confirmCode: confirmCode,
-                    phone: phone,
-                }
-            })
-            .done(function(response) {
+            url: '{{ route('confirm-code') }}',
+            type: 'POST',
+            data: {
+                confirmCode: confirmCode,
+                phone: phone,
+            }
+        })
+            .done(function (response) {
                 $('#confirm-btn .fa-spinner').hide();
                 $('#confirm-btn').prop('disabled', false);
 
                 if (response.success) {
                     // alert(response.message || 'Code confirmed! Welcome to BESMANI!');
                     toastSuccess('Code Confirmed!', 'Welcome to BESMANI!', 3000);
-                    setTimeout(function() {
+                    setTimeout(function () {
                         closeSignupModal();
                         window.location.href = '/panel';
                     }, 3000);
@@ -812,7 +993,7 @@
                     toastError('Invalid Code', response.message || 'Invalid confirmation code.', 4000);
                 }
             })
-            .fail(function(xhr) {
+            .fail(function (xhr) {
                 $('#confirm-btn .fa-spinner').hide();
                 $('#confirm-btn').prop('disabled', false);
                 // alert(xhr.responseJSON?.message || 'An error occurred. Please try again.');
@@ -822,7 +1003,7 @@
     });
 
     if (window.innerWidth < 768) {
-        $(window).scroll(function() {
+        $(window).scroll(function () {
             var scrollTop = $(window).scrollTop();
             if (scrollTop > 331) {
                 $('.inMobileRemoveCover').css('display', 'none');
@@ -835,7 +1016,7 @@
         });
     }
 
-    $(document).ready(function() {
+    $(document).ready(function () {
         // Setup CSRF token for all AJAX requests
         $.ajaxSetup({
             headers: {
@@ -861,39 +1042,39 @@
         }
 
         // Phone number input formatting and copy-paste prevention
-        $('#phone').on('input', function() {
+        $('#phone').on('input', function () {
             const formatted = formatPhoneNumber($(this).val());
             $(this).val(formatted);
         });
 
         // Prevent copy-paste on phone number field
-        $('#phone').on('paste', function(e) {
+        $('#phone').on('paste', function (e) {
             e.preventDefault();
         });
 
-        $('#phone').on('copy cut', function(e) {
+        $('#phone').on('copy cut', function (e) {
             e.preventDefault();
         });
 
         // Prevent copy-paste on email field
-        $('#email').on('paste', function(e) {
+        $('#email').on('paste', function (e) {
             e.preventDefault();
         });
 
-        $('#email').on('copy cut', function(e) {
+        $('#email').on('copy cut', function (e) {
             e.preventDefault();
         });
 
         // Also prevent right-click context menu on both fields
-        $('#phone, #email').on('contextmenu', function(e) {
+        $('#phone, #email').on('contextmenu', function (e) {
             e.preventDefault();
         });
 
         // Prevent keyboard shortcuts for copy/paste
-        $('#phone, #email').on('keydown', function(e) {
+        $('#phone, #email').on('keydown', function (e) {
             // Prevent Ctrl+C, Ctrl+V, Ctrl+X
             if ((e.ctrlKey || e.metaKey) && (e.keyCode === 67 || e.keyCode === 86 || e.keyCode ===
-                    88)) {
+                88)) {
                 e.preventDefault();
             }
         });
@@ -912,7 +1093,7 @@
     }
 
     // sign in form submission
-    $('#login-form').submit(function(e) {
+    $('#login-form').submit(function (e) {
         e.preventDefault();
         var emailOrPhone = $('#emailOrPhoneLogin').val();
         var password = $('#passwordLogin').val();
@@ -922,14 +1103,14 @@
         $('#submit-btn-login').prop('disabled', true);
 
         $.ajax({
-                url: '{{ route('login') }}',
-                type: 'POST',
-                data: {
-                    emailOrPhone: emailOrPhone,
-                    password: password,
-                }
-            })
-            .done(function(response) {
+            url: '{{ route('login') }}',
+            type: 'POST',
+            data: {
+                emailOrPhone: emailOrPhone,
+                password: password,
+            }
+        })
+            .done(function (response) {
 
                 if (response.success) {
                     // alert('Welcome to BESMANI!');
@@ -944,12 +1125,12 @@
                     //     localStorage.removeItem('loginRedirectUrl');
                     // }
 
-                    setTimeout(function() {
+                    setTimeout(function () {
                         closeLoginModal();
                         // current url
                         var currentUrl = window.location.href;
                         // window.location.href = currentUrl;
-                        window.location.href = '/panel';
+                        window.location.href = '/panel'; 
                     }, 2000);
                     $('.WuserName').text(response.userName);
                     $('.welcome-user').show();
@@ -963,7 +1144,7 @@
                 $('#submit-btn-login').prop('disabled', false);
                 // closeLoginModal();
             })
-            .fail(function(xhr) {
+            .fail(function (xhr) {
                 $('.fa-spinner').hide();
                 $('#submit-btn-login').prop('disabled', false);
                 // alert(xhr.responseJSON?.message || 'An error occurred. Please try again.');

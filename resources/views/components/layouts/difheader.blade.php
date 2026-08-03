@@ -51,7 +51,7 @@
         <link rel="stylesheet" href="{{ config('app.url') }}assets-file/css/owl.carousel.min.css">
         <link rel="stylesheet" href="{{ config('app.url') }}assets-file/css/owl.theme.default.min.css">
     
-  
+   
         <script src="{{ config('app.url') }}assets-file/js/jquery.min.js"></script>
 
     @livewireStyles

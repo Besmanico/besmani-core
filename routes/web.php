@@ -20,6 +20,7 @@ use App\Livewire\Agreement\AgreementPage;
 use App\Livewire\Panel\Invoice\InvoicePage;
 use App\Livewire\Panel\Payment\PaymentPage;
 use App\Livewire\Panel\Profile\ProfilePage;
+use App\Livewire\Panel\Referral\ReferralPage;
 use App\Http\Controllers\Api\UserController;
 use App\Livewire\Panel\Business\BusinessPage;
 
@@ -72,6 +73,10 @@ Route::middleware(['auth:mainUsers'])->group(function () {
     Route::get('/panel/payment/details', [CartController::class, 'getPaymentDetails'])->name('panel.payment.details');
     Route::get('/panel/profile', ProfilePage::class); 
     Route::get('/panel/business', BusinessPage::class); 
+    Route::get('/panel/referral', ReferralPage::class)->name('panel.referral');
+    Route::get('/panel/referral/new', ReferralPage::class)->defaults('section', 'new')->name('panel.referral.new');
+    Route::get('/panel/referral/incoming', ReferralPage::class)->defaults('section', 'incoming')->name('panel.referral.incoming');
+    Route::get('/panel/referral/outgoing', ReferralPage::class)->defaults('section', 'outgoing')->name('panel.referral.outgoing');
 });
 
 // end user panel
@@ -91,3 +96,4 @@ Route::post('/goPaySingle', [CartController::class, 'goPaySingle'])->name('goPay
 
 // check referense api
 Route::get('/check-referense/{id}', [UserController::class, 'checkReferenseApi'])->name('check-referense'); 
+  
