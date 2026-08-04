@@ -15,15 +15,15 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Str;
 use Illuminate\Validation\ValidationException;
 use Livewire\Component;  
-        
+         
 class ReferralPage extends Component
 {  
     use AuthorizesRequests;      
-
+ 
     public string $section = 'dashboard';
  
     public bool $isProvider = false;
-
+ 
     public bool $showUseCoinsModal = false;
 
     public bool $showConfirmation = false;
@@ -367,6 +367,7 @@ class ReferralPage extends Component
         }
 
         $search = '%'.$term.'%';
+        $normalizedTextSearch = '%'.mb_strtolower($term).'%';
         $normalizedPhone = $this->normalizePhone($term);
         $isPhoneSearch = preg_match('/^[\d\s()+-]+$/', $term) === 1;
         if ($isPhoneSearch && strlen($normalizedPhone) < 10) {
@@ -389,11 +390,12 @@ class ReferralPage extends Component
             })
             ->pluck('id');
 
-        $businessOwnerIds = InfoActivity::query()
-            ->where(function ($query) use ($search, $normalizedPhone): void {
-                $query->where('name', 'like', $search)
-                    ->orWhere('email', 'like', $search)
-                    ->orWhere('city', 'like', $search);
+        $matchedBusinessIds = InfoActivity::query()
+            ->where(function ($query) use ($normalizedTextSearch, $normalizedPhone): void {
+                $query->whereRaw("LOWER(COALESCE(name, '')) LIKE ?", [$normalizedTextSearch])
+                    ->orWhereRaw("LOWER(COALESCE(email, '')) LIKE ?", [$normalizedTextSearch])
+                    ->orWhereRaw("LOWER(COALESCE(city, '')) LIKE ?", [$normalizedTextSearch])
+                    ->orWhereRaw("LOWER(COALESCE(province, '')) LIKE ?", [$normalizedTextSearch]);
 
                 if ($normalizedPhone !== '') {
                     $query->orWhereRaw(
@@ -402,32 +404,36 @@ class ReferralPage extends Component
                     );
                 }
             })
-            ->pluck('user_id');
+            ->pluck('id');
 
-        return $this->destinationOptionsForProviderIds(
-            $providerIds->concat($businessOwnerIds)->unique()->map(static fn ($id): int => (int) $id)->all(),
-            16
+        $providerBusinessIds = InfoActivity::query()
+            ->whereIn('user_id', $providerIds)
+            ->pluck('id');
+
+        return $this->destinationOptionsForBusinessIds(
+            $matchedBusinessIds->concat($providerBusinessIds)->unique()->map(static fn ($id): int => (int) $id)->all()
         );
     }
 
-    private function destinationOptionsForProviderIds(array $providerIds, int $limit)
+    private function destinationOptionsForBusinessIds(array $businessIds)
     {
-        if ($providerIds === []) {
+        if ($businessIds === []) {
             return collect();
         }
 
-        $providers = MainUser::query()
-            ->whereIn('id', $providerIds)
-            ->get()
-            ->keyBy('id');
-
-        return InfoActivity::query()
-            ->whereIn('user_id', $providers->keys())
+        $businesses = InfoActivity::query()
+            ->whereIn('id', $businessIds)
             ->whereNotNull('name')
             ->where('name', '<>', '')
             ->orderBy('name')
-            ->limit($limit)
+            ->get();
+
+        $providers = MainUser::query()
+            ->whereIn('id', $businesses->pluck('user_id')->filter()->unique())
             ->get()
+            ->keyBy('id');
+
+        return $businesses
             ->map(function (InfoActivity $infoActivity) use ($providers): array {
                 $provider = $providers->get($infoActivity->user_id);
                 $providerName = trim(($provider?->fl_name ?? '').' '.($provider?->last_name ?? ''));

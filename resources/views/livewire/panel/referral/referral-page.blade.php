@@ -35,7 +35,7 @@
             <a href="{{ route('panel.referral.new') }}" class="{{ $section === 'new' ? 'active' : '' }}"><i class="fa fa-exchange"></i><span>New Referral</span></a>
         </nav>       
 
-        <div class="ref-page-content" wire:loading.class="is-loading">
+        <div class="ref-page-content" wire:loading.class="is-loading" wire:target="createReferral,confirmAction,viewReferral">
             <div class="ref-loading-overlay" wire:loading.flex wire:target="createReferral,confirmAction,viewReferral">
                 <x-referrals.ui-state type="loading" title="Please wait" message="Updating your referral information..." />
             </div>
@@ -79,7 +79,7 @@
                                 && (! $receiverLooksLikePhone || strlen($receiverDigits) >= 10);
                             $receiverResultCount = $receiverOptions->count();
                         @endphp
-                        <div class="ref-combobox" x-data="{ active: -1 }" wire:click.outside="closeDestinationDropdown">
+                        <div class="ref-combobox" x-data="{ active: -1 }" @click.outside="if ($wire.showDestinationDropdown) $wire.closeDestinationDropdown()">
                             <span class="ref-combobox-label">Search Provider or Business <b>*</b></span>
                             <div class="ref-combobox-control">
                                 @if ($destination !== '' && $selectedDestinationName !== '')
@@ -169,7 +169,7 @@
                                 @error('serviceId') <small class="ref-field-error">{{ $message }}</small> @enderror
                             </label>
                             <label class="ref-field ref-field-wide"><span>Short note</span><textarea wire:model="note" rows="3" placeholder="Add helpful details for the destination Provider"></textarea>@error('note') <small class="ref-field-error">{{ $message }}</small> @enderror</label>
-                        </div>
+                        </div> 
                         <div class="ref-agreement-note"><i class="fa fa-star"></i><span>The BC award is controlled by Besmani configuration. Neither the User nor Provider can enter or modify it.</span></div>
                     </section>
 
