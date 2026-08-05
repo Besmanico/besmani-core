@@ -45,18 +45,24 @@
                     <section class="ref-panel-card ref-form-card"> 
                           <div class="ref-section-heading">
                             <div><span class="ref-step">1</span><h2>Referral From</h2></div>
-                            <p>Choose a Provider or Business that will receive the customer.</p>
+                            <p>Select the person or business sending this referral.</p>
                         </div>  
- @if ($isProvider && $businesses->isNotEmpty())  
+                        @if ($isProvider && $businesses->isNotEmpty())
                             <label class="ref-field">
                                 <span>  who is sending this</span>
                                 <select wire:model="referringAccount">
                                     <option value="personal">Select the person or  business sending this referral</option>
+                                    <option value="personal:{{ $referringUserId }}"> {{ $referringUserName ?: 'Personal Account' }}</option>
                                     @foreach ($businesses as $business)
                                         <option value="business:{{ $business->id }}">{{ $business->name ?? $business->title ?? 'Business' }}</option>
                                     @endforeach 
                                 </select>
                                 @error('referringAccount') <small class="ref-field-error">{{ $message }}</small> @enderror
+                            </label> 
+                        @else
+                            <label class="ref-field">
+                                <span>Who is sending this</span>
+                                <input type="text" value="{{ $referringUserName ?: 'Personal Account' }}" readonly>
                             </label>
                         @endif
 
@@ -68,8 +74,8 @@
          <div class="ref-section-heading">
                             <div><span class="ref-step">2</span><h2>Referral destination</h2></div>
                             <p>Choose a Provider or Business that will receive the customer.</p>
-                        </div>  
-                        
+                        </div>   
+                          
 
                         @php
                             $receiverTerm = trim($receiverSearch);
@@ -92,6 +98,7 @@
                                     <div class="ref-input-icon ref-combobox-input">
                                         <i class="fa fa-search"></i>
                                         <input type="search"
+                                        autocomplete="nope"
                                                wire:model.live.debounce.350ms="receiverSearch"
                                                placeholder="Search by Provider name, Business name, phone, email, or city"
                                                role="combobox"
@@ -123,10 +130,10 @@
                                                     <i class="fa fa-check ref-option-check"></i>
                                                 </button>
                                             @empty
-                                                <div class="ref-inline-empty">
+                                                <div class="ref-inline-empty"> 
                                                     <strong>No Provider or Business found on Besmani.</strong>
                                                     <span>Ask them to register before sending a referral.</span>
-                                                    <button type="button" class="ref-btn ref-btn-secondary" wire:click="openInvite('provider')">Invite Provider</button>
+                                                    <button type="button" class="ref-btn ref-btn-secondary " style="background-color: var(--ref-navy);color:white" wire:click="openInvite('provider')">Invite Provider</button>
                                                 </div>
                                             @endforelse
                                         </div>
@@ -138,7 +145,7 @@
                     </section>
 
                     <section class="ref-panel-card ref-form-card">
-                        <div class="ref-section-heading"><div><span class="ref-step">2</span><h2>Customer details</h2></div></div>
+                        <div class="ref-section-heading"><div><span class="ref-step">3</span><h2>Customer details</h2></div></div>
                         <div class="ref-form-grid">
                             <label class="ref-field"><span>Phone Number <b>*</b></span><input type="tel" inputmode="tel" autocomplete="new-password" data-1p-ignore="true" wire:model.live.debounce.350ms="customerPhone" wire:keydown.enter.prevent="findCustomerByPhone" placeholder="Enter the complete registered phone number"></label>
                             <label class="ref-field"><span>Email <em>Optional</em></span><input type="email" wire:model="customerEmail" placeholder="Filled automatically" readonly></label>
@@ -151,14 +158,15 @@
                             <div class="ref-inline-empty">
                                 <strong>Customer not found on Besmani.</strong>
                                 <span>Please ask the Customer to register with Besmani before sending the referral.</span>
-                                <button type="button" class="ref-btn ref-btn-secondary" wire:click="openInvite('customer')">Invite Customer to Besmani</button>
+                                <button type="button" class="ref-btn ref-btn-secondary " style="background: #15803d;
+    color: #fff;" wire:click="openInvite('customer')">Invite Customer to Besmani</button>
                             </div>
                         @endif
                         @error('customerUserId') <small class="ref-field-error">{{ $message }}</small> @enderror
                     </section>
 
                     <section class="ref-panel-card ref-form-card">
-                        <div class="ref-section-heading"><div><span class="ref-step">3</span><h2>Referral details</h2></div></div>
+                        <div class="ref-section-heading"><div><span class="ref-step">4</span><h2>Referral details</h2></div></div>
                         <div class="ref-form-grid">
                             <label class="ref-field">
                                 <span>Service</span>

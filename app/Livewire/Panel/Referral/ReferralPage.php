@@ -14,16 +14,16 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Str;
 use Illuminate\Validation\ValidationException;
-use Livewire\Component;  
-         
+use Livewire\Component;
+
 class ReferralPage extends Component
-{  
-    use AuthorizesRequests;      
- 
+{
+    use AuthorizesRequests;
+
     public string $section = 'dashboard';
- 
+
     public bool $isProvider = false;
- 
+
     public bool $showUseCoinsModal = false;
 
     public bool $showConfirmation = false;
@@ -231,9 +231,9 @@ class ReferralPage extends Component
         $business = InfoActivity::query()->findOrFail($id);
         $provider = MainUser::query()->findOrFail($business->user_id);
 
-        $this->destination = 'business:'.$business->getKey();
+        $this->destination = 'business:' . $business->getKey();
         $this->selectedDestinationName = (string) $business->name;
-        $this->selectedDestinationDetails = trim(($provider->fl_name ?? '').' '.($provider->last_name ?? ''));
+        $this->selectedDestinationDetails = trim(($provider->fl_name ?? '') . ' ' . ($provider->last_name ?? ''));
         $this->receiverSearch = (string) $business->name;
         $this->showDestinationDropdown = false;
         $this->serviceId = null;
@@ -354,6 +354,8 @@ class ReferralPage extends Component
             'businesses' => $this->isProvider
                 ? InfoActivity::query()->where('user_id', $user->getKey())->get()
                 : collect(),
+            'referringUserName' => trim((string) ($user->fl_name ?? '') . ' ' . (string) ($user->last_name ?? '')),
+            'referringUserId' => trim((int) ($user->id ?? '')),
             'receiverOptions' => $receiverOptions,
             'selectedReferral' => $selectedReferral,
         ])->layout('components.layouts.panel', ['title' => 'Referrals']);
@@ -366,8 +368,8 @@ class ReferralPage extends Component
             return collect();
         }
 
-        $search = '%'.$term.'%';
-        $normalizedTextSearch = '%'.mb_strtolower($term).'%';
+        $search = '%' . $term . '%';
+        $normalizedTextSearch = '%' . mb_strtolower($term) . '%';
         $normalizedPhone = $this->normalizePhone($term);
         $isPhoneSearch = preg_match('/^[\d\s()+-]+$/', $term) === 1;
         if ($isPhoneSearch && strlen($normalizedPhone) < 10) {
@@ -411,7 +413,7 @@ class ReferralPage extends Component
             ->pluck('id');
 
         return $this->destinationOptionsForBusinessIds(
-            $matchedBusinessIds->concat($providerBusinessIds)->unique()->map(static fn ($id): int => (int) $id)->all()
+            $matchedBusinessIds->concat($providerBusinessIds)->unique()->map(static fn($id): int => (int) $id)->all()
         );
     }
 
@@ -436,10 +438,10 @@ class ReferralPage extends Component
         return $businesses
             ->map(function (InfoActivity $infoActivity) use ($providers): array {
                 $provider = $providers->get($infoActivity->user_id);
-                $providerName = trim(($provider?->fl_name ?? '').' '.($provider?->last_name ?? ''));
+                $providerName = trim(($provider?->fl_name ?? '') . ' ' . ($provider?->last_name ?? ''));
 
                 return [
-                    'value' => 'business:'.$infoActivity->getKey(),
+                    'value' => 'business:' . $infoActivity->getKey(),
                     'name' => $infoActivity->name,
                     'details' => collect([$providerName, $infoActivity->city ?? null, $infoActivity->province ?? null])->filter()->join(' · '),
                     'type' => 'Business',
@@ -463,7 +465,7 @@ class ReferralPage extends Component
             ->where('service_pr', 1)
             ->where('approved', 1)
             ->pluck('id')
-            ->map(static fn ($id): int => (int) $id)
+            ->map(static fn($id): int => (int) $id)
             ->all();
     }
 
@@ -492,7 +494,7 @@ class ReferralPage extends Component
 
     private function maskPhone(string $phone): string
     {
-        return $phone === '' ? '—' : str_repeat('*', max(0, strlen($phone) - 4)).substr($phone, -4);
+        return $phone === '' ? '—' : str_repeat('*', max(0, strlen($phone) - 4)) . substr($phone, -4);
     }
 
     private function maskEmail(string $email): string
@@ -501,7 +503,7 @@ class ReferralPage extends Component
             return '—';
         }
         [$name, $domain] = explode('@', $email, 2);
-        return mb_substr($name, 0, 1).str_repeat('*', max(1, mb_strlen($name) - 1)).'@'.$domain;
+        return mb_substr($name, 0, 1) . str_repeat('*', max(1, mb_strlen($name) - 1)) . '@' . $domain;
     }
 
     private function findVisibleReferral(int $referralId): Referral
@@ -534,7 +536,7 @@ class ReferralPage extends Component
     private function newReferralNumber(): string
     {
         do {
-            $number = 'REF-'.now()->format('ymd').'-'.Str::upper(Str::random(6));
+            $number = 'REF-' . now()->format('ymd') . '-' . Str::upper(Str::random(6));
         } while (Referral::query()->where('referral_number', $number)->exists());
 
         return $number;

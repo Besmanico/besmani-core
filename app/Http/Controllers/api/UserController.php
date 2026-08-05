@@ -327,6 +327,8 @@ class UserController extends Controller
             $item->clinic_id = $item->id;
             $item->clinic_service_id = $res->id ?? null;
             $item->price = $res->price ?? null;
+            $item->discount = $res->discount ?? null;
+            $item->bc = $res->bc ?? null;
             $item->maxprice = $res->maxprice ?? null;
             $item->time_work = $res->time_work ?? null;
             $item->capacity = $res->capacity ?? null;
@@ -356,6 +358,8 @@ class UserController extends Controller
 
         $service_id = $request->service_id;
         $price = $request->price;
+        $discount = $request->discount;
+        $bc = $request->bc;
         $sort = $request->sort;
         $capacity = $request->capacity;
         $time_work = $request->time_work;
@@ -363,6 +367,8 @@ class UserController extends Controller
 
         $clinicService = ClinicService::findOrFail($service_id);
         $clinicService->price = $price;
+        $clinicService->discount = $discount;
+        $clinicService->bc = $bc;
         $clinicService->capacity = $capacity;
         $clinicService->time_work = $time_work;
         $clinicService->sort = $sort;
