@@ -1,7 +1,7 @@
 <div>
     <link rel="stylesheet" href="{{ asset('assets-file/css/referrals.css') }}">
 
-    <main class="panel-main referral-shell">
+    <main class="panel-main referral-shell {{ $section === 'new' ? 'is-new-referral' : '' }}">
         <header class="ref-page-header">
             <div>
                 <span class="ref-eyebrow">Besmani Referral Network</span>
@@ -24,8 +24,8 @@
                     <i class="fa fa-exchange"></i>
                     {{ $isProvider ? 'New Referral' : 'Refer Someone' }}
                 </a> --}}
-            </div>
-        </header>   
+            </div> 
+        </header>    
   
         @if ($showUseCoinsModal)
             <div class="ref-token-notice">
@@ -51,8 +51,8 @@
                             <label class="ref-field">
                                 <span>  who is sending this</span>
                                 <select wire:model="referringAccount">
-                                    <option value="personal">Select the person or  business sending this referral</option>
-                                    <option value="personal:{{ $referringUserId }}"> {{ $referringUserName ?: 'Personal Account' }}</option>
+                                    <option value="">Select Personal or Business Account</option>
+                                    <option value="personal">Personal Account — {{ $referringUserName ?: 'User' }}</option>
                                     @foreach ($businesses as $business)
                                         <option value="business:{{ $business->id }}">{{ $business->name ?? $business->title ?? 'Business' }}</option>
                                     @endforeach 
@@ -144,14 +144,23 @@
                         </div>
                     </section>
 
-                    <section class="ref-panel-card ref-form-card">
+                    <section class="ref-panel-card ref-form-card ref-combobox" x-data @click.outside="$wire.closeCustomerDropdown()">
                         <div class="ref-section-heading"><div><span class="ref-step">3</span><h2>Customer details</h2></div></div>
                         <div class="ref-form-grid">
                             <label class="ref-field"><span>Phone Number <b>*</b></span><input type="tel" inputmode="tel" autocomplete="new-password" data-1p-ignore="true" wire:model.live.debounce.350ms="customerPhone" wire:keydown.enter.prevent="findCustomerByPhone" placeholder="Enter the complete registered phone number"></label>
-                            <label class="ref-field"><span>Email Address <em>Optional</em></span><input type="email" wire:model="customerEmail" placeholder="Filled automatically" readonly></label>
-                            <label class="ref-field"><span>First Name</span><input type="text" wire:model="customerFirstName" placeholder="Filled after selecting the User" readonly></label>
-                            <label class="ref-field"><span>Last Name</span><input type="text" wire:model="customerLastName" placeholder="Filled after selecting the User" readonly></label>
+                            <label class="ref-field"><span>Email Address <em>Optional</em></span><input type="email" wire:model.live.debounce.350ms="customerEmail" placeholder="Search registered email"></label>
+                            <label class="ref-field"><span>First Name</span><input type="text" wire:model.live.debounce.350ms="customerFirstName" placeholder="Search first name"></label>
+                            <label class="ref-field"><span>Last Name</span><input type="text" wire:model.live.debounce.350ms="customerLastName" placeholder="Search last name"></label>
                         </div>
+                        @if ($showCustomerDropdown && $customerUserId === null && $customerOptions->isNotEmpty())
+                            <div class="ref-search-dropdown ref-customer-search-dropdown" role="listbox">
+                                @foreach ($customerOptions as $customer)
+                                    <button type="button" role="option" class="ref-receiver-option" wire:click="selectCustomer({{ $customer['id'] }})">
+                                        <span class="ref-option-content"><strong>{{ $customer['name'] ?: 'Besmani User' }}</strong><small>Phone: {{ $customer['phone'] }} · Email: {{ $customer['email'] }}</small></span>
+                                    </button>
+                                @endforeach
+                            </div>
+                        @endif
                         @if ($customerUserId)
                             <div class="ref-selected-user"><i class="fa fa-check-circle"></i><span>{{ trim($customerFirstName.' '.$customerLastName) }} — Registered Besmani User found</span></div>
                         @elseif (strlen(preg_replace('/\D+/', '', $customerPhone)) >= 10)
@@ -164,14 +173,14 @@
                         @endif
                         @error('customerUserId') <small class="ref-field-error">{{ $message }}</small> @enderror
                     </section>
-
+  
                     <section class="ref-panel-card ref-form-card">
                         <div class="ref-section-heading"><div><span class="ref-step">4</span><h2>Referral details</h2></div></div>
                         <div class="ref-form-grid">
-                            <label class="ref-field">
+                            <label class="ref-field"> 
                                 <span>Service</span>
                                 <select wire:model="serviceId" @disabled($destination === '')>
-                                    <option value="">{{ $destination === '' ? 'Select a Provider first' : 'General Referral' }}</option>
+                                    <option value="">{{ $destination === '' ? 'Select a Provider first' : 'Select a Service' }}</option>
                                     @foreach ($serviceOptions as $service)
                                         <option value="{{ $service['key'] }}">{{ $service['title'] }}
 
@@ -182,17 +191,35 @@
                                         </option>
                                      @endforeach
                                 </select>
-                                @if ($destination !== '' && $serviceOptions->isEmpty()) <small class="ref-field-hint">This Provider has no mapped active services available. The referral will be sent as General Referral.</small> @endif
+                                @if ($destination !== '' && $serviceOptions->count() === 1) <small class="ref-field-hint">This destination has no referral-enabled Services. General Referral is available.</small> @endif
                                 @error('serviceId') <small class="ref-field-error">{{ $message }}</small> @enderror
                             </label>
+                            @php
+                                $selectedService = $serviceOptions->firstWhere('key', $serviceId);
+                            @endphp
+                            @if ($selectedService)
+                                <div class="ref-agreement-note ref-field-wide">
+                                    <i class="fa fa-lock"></i>
+                                    <span><strong>Referral Reward: {{ number_format($selectedService['reward_bc']) }} BC</strong><br>
+                                        Customer Discount:
+                                        @if ($selectedService['discount_type'] === 'percentage')
+                                            {{ rtrim(rtrim(number_format($selectedService['discount_value'], 2), '0'), '.') }}%
+                                        @elseif ($selectedService['discount_type'] === 'fixed')
+                                            {{ $selectedService['discount_currency'] ?: '$' }}{{ number_format($selectedService['discount_value'], 2) }}
+                                        @else
+                                            No Discount
+                                        @endif
+                                    </span>
+                                </div>
+                            @endif
                             <label class="ref-field ref-field-wide"><span>Short note</span><textarea wire:model="note" rows="3" placeholder="Add helpful details for the destination Provider"></textarea>@error('note') <small class="ref-field-error">{{ $message }}</small> @enderror</label>
                         </div> 
-                        <div class="ref-agreement-note"><i class="fa fa-star"></i><span>The BC award is controlled by Besmani configuration. Neither the User nor Provider can enter or modify it.</span></div>
+                        <div class="ref-agreement-note"><i class="fa fa-star"></i><span>Reward and discount are read-only and locked when the referral is created.</span></div>
                     </section>
 
                     <div class="ref-form-actions">
                         <a href="{{ route('panel.referral') }}" class="ref-btn ref-btn-secondary">Cancel</a>
-                        <button type="submit" class="ref-btn ref-btn-primary" @disabled($destination === '' || $customerUserId === null)><i class="fa fa-paper-plane"></i> Send Referral</button>
+                        <button type="submit" class="ref-btn ref-btn-primary" @disabled($destination === '' || $customerUserId === null || $serviceId === null || $serviceId === '')><i class="fa fa-paper-plane"></i> Send Referral</button>
                     </div>
                 </form>
             @else
@@ -202,7 +229,7 @@
                         <button type="button" wire:click="setListTab('incoming')" class="ref-summary-card is-blue {{ $listTab === 'incoming' ? 'active' : '' }}"><span class="ref-summary-icon"><i class="fa fa-arrow-down"></i></span><div><p>Incoming</p><strong>{{ $counts['incoming'] }}</strong><small>Connected to you</small></div></button>
                         <button type="button" wire:click="setListTab('outgoing')" class="ref-summary-card is-orange {{ $listTab === 'outgoing' ? 'active' : '' }}"><span class="ref-summary-icon"><i class="fa fa-arrow-up"></i></span><div><p>Outgoing</p><strong>{{ $counts['outgoing'] }}</strong><small>Sent by you</small></div></button>
                     @else
-                        <button type="button" wire:click="setListTab('outgoing')" class="ref-summary-card is-blue {{ $listTab === 'outgoing' ? 'active' : '' }}"><span class="ref-summary-icon"><i class="fa fa-exchange"></i></span><div><p>Outgoing</p><strong>{{ $counts['outgoing'] }}</strong><small>Created by you</small></div></button>
+                        <button type="button" wire:click="setListTab('outgoing')" class="ref-summary-card is-orange {{ $listTab === 'outgoing' ? 'active' : '' }}"><span class="ref-summary-icon"><i class="fa fa-exchange"></i></span><div><p>Outgoing</p><strong>{{ $counts['outgoing'] }}</strong><small>Created by you</small></div></button>
                     @endif
                    <button type="button"
     wire:click="setListTab('pending')"
@@ -259,7 +286,7 @@
                                             <td>{{ $destinationName ?: 'Provider' }}</td>
                                             <td>{{ $referral->service_title ?? 'General referral' }}</td>
                                             <td><x-referrals.status-badge :status="$referral->status" /></td>
-                                            <td><strong>{{ $referral->status === 'completed' ? number_format($referral->token_amount) . ' BC' : '—' }}</strong></td>
+                                            <td><strong>{{ in_array(strtolower(trim($referral->status)), ['completed', 'complete', 'settled'], true) ? number_format($referral->token_amount) . ' BC' : '—' }}</strong></td>
                                             <td>{{ $referral->created_at?->format('M d, Y') }}</td>
                                             <td class="ref-table-actions">
                                                 <button type="button" class="ref-action-btn is-view" wire:click="viewReferral({{ $referral->id }})"><i class="fa fa-eye"></i> View</button>
@@ -290,9 +317,36 @@
                     <h2>Invite {{ ucfirst($inviteModal) }} to Besmani</h2>
                     <p id="ref-invite-message">{{ $inviteModal === 'provider' ? 'Join Besmani as a Provider or Business so I can send registered referrals to you.' : 'Please register with Besmani so I can connect you with trusted Providers through a secure referral.' }}</p>
                     <label class="ref-field ref-invite-recipient"><span>Email or phone number</span><input type="text" wire:model="invitationRecipient" placeholder="name@example.com or phone number">@error('invitationRecipient') <small class="ref-field-error">{{ $message }}</small> @enderror</label>
-                    <div class="ref-modal-actions">
-                        <button type="button" class="ref-btn ref-btn-primary" onclick="navigator.clipboard.writeText(document.getElementById('ref-invite-message').innerText)"><i class="fa fa-copy"></i> Copy invitation</button>
-                        <button type="button" class="ref-btn ref-btn-primary" wire:click="sendInvitation" wire:loading.attr="disabled" wire:target="sendInvitation"><i class="fa fa-paper-plane"></i> Send invitation</button>
+                    <label class="ref-field" wire:key="invitation-link-field-{{ md5($invitationUrl) }}"><span>Invitation Link</span><div class="ref-combobox-control"><input id="ref-invitation-url" type="text" value="{{ $invitationUrl }}" placeholder="Generate a secure invitation link" readonly></div></label>
+                    <div class="ref-modal-actions" wire:key="invitation-link-actions-{{ md5($invitationUrl) }}">
+                        @if ($invitationUrl === '')
+                            <button type="button" class="ref-btn ref-btn-secondary" wire:click="generateInvitationLink" wire:loading.attr="disabled" wire:target="generateInvitationLink">
+                                <i class="fa fa-link"></i>
+                                <span wire:loading.remove wire:target="generateInvitationLink">Generate Link</span>
+                                <span wire:loading wire:target="generateInvitationLink">Generating...</span>
+                            </button>
+                        @else
+                            <button type="button" class="ref-btn ref-btn-secondary"
+                                    x-data="{ copied: false }"
+                                    @click="
+                                        const input = document.getElementById('ref-invitation-url');
+                                        const copy = navigator.clipboard && window.isSecureContext
+                                            ? navigator.clipboard.writeText(input.value)
+                                            : new Promise((resolve, reject) => {
+                                                input.focus(); input.select();
+                                                document.execCommand('copy') ? resolve() : reject();
+                                            });
+                                        copy.then(() => { copied = true; setTimeout(() => copied = false, 2000) });
+                                    ">
+                                <i class="fa" :class="copied ? 'fa-check' : 'fa-copy'"></i>
+                                <span x-text="copied ? 'Copied' : 'Copy Link'">Copy Link</span>
+                            </button>
+                        @endif
+                        <button type="button" class="ref-btn ref-btn-secondary" wire:click="sendInvitation('sms')" wire:loading.attr="disabled"><i class="fa fa-comment"></i> Text / SMS</button>
+                        <button type="button" class="ref-btn ref-btn-secondary" wire:click="sendInvitation('email')" wire:loading.attr="disabled"><i class="fa fa-envelope"></i> Email</button>
+                        @if ($invitationUrl !== '')
+                            <button type="button" class="ref-btn ref-btn-primary" x-data @click="navigator.share ? navigator.share({ title: 'Join Besmani', text: document.getElementById('ref-invite-message').innerText, url: document.getElementById('ref-invitation-url').value }) : navigator.clipboard.writeText(document.getElementById('ref-invitation-url').value)"><i class="fa fa-share-alt"></i> Share</button>
+                        @endif
                     </div>
                 </div>
             </div>
@@ -327,7 +381,7 @@
                     <button class="ref-modal-close" wire:click="closeReferral"><i class="fa fa-times"></i></button>
                     <span class="ref-eyebrow">{{ $selectedReferral->referral_number }}</span><h2>{{ trim($selectedReferral->customer_first_name . ' ' . $selectedReferral->customer_last_name) }}</h2>
                     <x-referrals.status-badge :status="$selectedReferral->status" />
-                    <div class="ref-detail-list"><span>Phone<strong>{{ $selectedReferral->customer_phone }}</strong></span><span>Email<strong>{{ $selectedReferral->customer_email ?: '—' }}</strong></span><span>Service<strong>{{ $selectedReferral->service_title ?? 'General referral' }}</strong></span><span>Besmani COIN<strong>{{ $selectedReferral->status === 'completed' ? number_format($selectedReferral->token_amount) . ' BC' : 'Awarded after completion' }}</strong></span></div>
+                    <div class="ref-detail-list"><span>Phone<strong>{{ $selectedReferral->customer_phone }}</strong></span><span>Email<strong>{{ $selectedReferral->customer_email ?: '—' }}</strong></span><span>Service<strong>{{ $selectedReferral->service_title ?? 'General referral' }}</strong></span><span>Besmani COIN<strong>{{ in_array(strtolower(trim($selectedReferral->status)), ['completed', 'complete', 'settled'], true) ? number_format($selectedReferral->token_amount) . ' BC' : 'Awarded after completion' }}</strong></span></div>
                     @if ($selectedReferral->note)<div class="ref-agreement-note"><i class="fa fa-sticky-note"></i><span>{{ $selectedReferral->note }}</span></div>@endif
                 </section>
             </div>

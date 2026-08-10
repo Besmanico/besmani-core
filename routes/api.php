@@ -56,8 +56,10 @@ Route::middleware('auth:sanctum')->group(function (): void {
     Route::get('referral-destinations', [ReferralController::class, 'destinations']);
     Route::get('referral-destinations/{business}/services', [ReferralController::class, 'services']);
     Route::get('referral-customers/by-phone', [ReferralController::class, 'customerByPhone']);
+    Route::get('referral-customers', [ReferralController::class, 'customers']);
+    Route::put('referral-services/{type}/{service}/settings', [ReferralController::class, 'updateServiceSettings']);
     Route::post('referrals', [ReferralController::class, 'store']);
     Route::get('referrals/{referral}', [ReferralController::class, 'show']);
     Route::post('referrals/{referral}/actions/{action}', [ReferralController::class, 'action']);
 });
- 
+  

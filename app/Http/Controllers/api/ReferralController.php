@@ -11,6 +11,7 @@ use App\Models\TokenLedger;
 use App\Services\Referrals\ReferralAccessService;
 use App\Services\Referrals\ReferralServiceCatalog;
 use App\Services\Referrals\ReferralWorkflowService;
+use App\Services\Referrals\ServiceReferralSettingsService;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
@@ -106,8 +107,10 @@ class ReferralController extends Controller
             }
         })->pluck('id');
 
+        $activeProviderIds = MainUser::query()->where('service_pr', 1)->pluck('id');
         $businesses = InfoActivity::query()
             ->whereNotNull('name')->where('name', '<>', '')
+            ->whereIn('user_id', $activeProviderIds)
             ->where(function (Builder $query) use ($like, $phone, $providerIds): void {
                 $query->where('name', 'like', $like)->orWhere('email', 'like', $like)
                     ->orWhere('city', 'like', $like)->orWhere('province', 'like', $like)
@@ -135,7 +138,10 @@ class ReferralController extends Controller
     public function services(Request $request, int $business): JsonResponse
     {
         $this->user($request);
-        $destination = InfoActivity::query()->findOrFail($business);
+        $destination = InfoActivity::query()
+            ->whereKey($business)
+            ->whereIn('user_id', MainUser::query()->where('service_pr', 1)->select('id'))
+            ->firstOrFail();
 
         return response()->json(['data' => $this->catalog->forBusiness($destination)]);
     }
@@ -157,6 +163,45 @@ class ReferralController extends Controller
             'phone' => $this->normalizePhone((string) ($customer->mobile ?? '')),
             'email' => (string) ($customer->email ?? ''),
         ] : null]);
+    }  
+    public function customers(Request $request): JsonResponse
+    { 
+        $this->user($request);
+        $validated = $request->validate(['q' => ['required', 'string', 'min:2', 'max:100']]);
+        $term = trim($validated['q']);
+        $like = '%'.mb_strtolower($term).'%';
+        $phone = $this->normalizePhone($term);
+        $customers = MainUser::query()->where(function (Builder $query) use ($like, $phone): void {
+            $query->whereRaw("LOWER(COALESCE(email, '')) LIKE ?", [$like])
+                ->orWhereRaw("LOWER(COALESCE(fl_name, '')) LIKE ?", [$like])
+                ->orWhereRaw("LOWER(COALESCE(last_name, '')) LIKE ?", [$like])
+                ->orWhereRaw("LOWER(CONCAT(COALESCE(fl_name, ''), ' ', COALESCE(last_name, ''))) LIKE ?", [$like]);
+            if (strlen($phone) >= 4) {
+                $query->orWhereRaw($this->phoneSql('mobile').' OR mobile LIKE ?', [$this->canonicalPhone($phone), '%'.$phone.'%']);
+            }
+        })->limit(10)->get();
+
+        return response()->json(['data' => $customers->map(fn (MainUser $customer): array => [
+            'id' => (int) $customer->getKey(),
+            'name' => trim((string) $customer->fl_name.' '.(string) $customer->last_name),
+            'phone' => $this->maskPhone($this->normalizePhone((string) $customer->mobile)),
+            'email' => $this->maskEmail((string) $customer->email),
+        ])->values()]);
+    }
+
+    public function updateServiceSettings(Request $request, string $type, int $service, ServiceReferralSettingsService $settings): JsonResponse
+    {
+        $user = $this->user($request);
+        $validated = $request->validate([
+            'business_id' => ['nullable', 'integer'],
+            'enabled' => ['required', 'boolean'],
+            'reward_bc' => ['required_if:enabled,true', 'integer', 'min:0'],
+            'discount_type' => ['required_if:enabled,true', Rule::in(['none', 'percentage', 'fixed'])],
+            'discount_value' => ['nullable', 'numeric', 'min:0', Rule::when($request->input('discount_type') === 'percentage', ['gt:0', 'max:100'])],
+            'discount_currency' => ['nullable', 'string', 'size:3'],
+        ]);
+
+        return response()->json(['data' => $settings->update($user, $type, $service, $validated, $this->access)]);
     }
 
     public function store(Request $request): JsonResponse
@@ -167,11 +212,11 @@ class ReferralController extends Controller
             'referring_account' => ['sometimes', 'string', 'max:100'],
             'destination_business_id' => ['required', 'integer'],
             'customer_user_id' => ['required', 'integer'],
-            'service_key' => ['nullable', 'string', 'max:100'],
+            'service_key' => ['required', 'string', 'max:100'],
             'note' => ['nullable', 'string', 'max:1000'],
         ]);
         $business = InfoActivity::query()->find($validated['destination_business_id']);
-        if (! $business || ! MainUser::query()->whereKey($business->user_id)->exists()) {
+        if (! $business || ! MainUser::query()->whereKey($business->user_id)->where('service_pr', 1)->exists()) {
             throw ValidationException::withMessages(['destination_business_id' => 'Select an existing registered Besmani Business.']);
         }
         $customer = MainUser::query()->find($validated['customer_user_id']);
@@ -179,7 +224,7 @@ class ReferralController extends Controller
             throw ValidationException::withMessages(['customer_user_id' => 'Select an existing registered Besmani User.']);
         }
         $service = $this->catalog->findForBusiness($business, $validated['service_key'] ?? null);
-        if (! empty($validated['service_key']) && $service === null) {
+        if ($service === null) {
             throw ValidationException::withMessages(['service_key' => 'The selected service is not available for this destination.']);
         }
         $referrerBusinessId = $this->referrerBusinessId($user, $validated['referring_account'] ?? 'personal');
@@ -201,6 +246,11 @@ class ReferralController extends Controller
                 'service_title' => $service['title'] ?? null,
                 'reward_type' => 'besmani_coin',
                 'token_amount' => 0,
+                'referral_reward_bc' => (int) ($service['reward_bc'] ?? 0),
+                'customer_discount_type' => $service['discount_type'] ?? 'none',
+                'customer_discount_value' => (float) ($service['discount_value'] ?? 0),
+                'customer_discount_currency' => $service['discount_currency'] ?? null,
+                'referral_terms_snapshot_at' => now(),
                 'note' => $validated['note'] ?? null,
                 'status' => 'pending',
             ]);
@@ -252,7 +302,10 @@ class ReferralController extends Controller
             'service' => $referral->service_id ? [
                 'key' => $referral->service_type.':'.$referral->service_id,
                 'type' => $referral->service_type, 'id' => (int) $referral->service_id, 'title' => $referral->service_title,
-                'bc' => $referral->bc,
+                'reward_bc' => (int) $referral->referral_reward_bc,
+                'discount_type' => $referral->customer_discount_type,
+                'discount_value' => (float) $referral->customer_discount_value,
+                'discount_currency' => $referral->customer_discount_currency,
             ] : null,
             'referrer' => $this->partyData($referral, 'referrer'),
             'receiver' => $this->partyData($referral, 'receiver'),
@@ -307,6 +360,13 @@ class ReferralController extends Controller
 
     private function normalizePhone(string $phone): string
     {
+        $phone = strtr($phone, [
+            '۰' => '0', '۱' => '1', '۲' => '2', '۳' => '3', '۴' => '4',
+            '۵' => '5', '۶' => '6', '۷' => '7', '۸' => '8', '۹' => '9',
+            '٠' => '0', '١' => '1', '٢' => '2', '٣' => '3', '٤' => '4',
+            '٥' => '5', '٦' => '6', '٧' => '7', '٨' => '8', '٩' => '9',
+        ]);
+
         return preg_replace('/\D+/', '', $phone) ?? '';
     }
 
@@ -318,6 +378,21 @@ class ReferralController extends Controller
     private function phoneSql(string $column): string
     {
         return "RIGHT(REPLACE(REPLACE(REPLACE(REPLACE(REPLACE({$column}, ' ', ''), '-', ''), '(', ''), ')', ''), '+', ''), 10) = ?";
+    }
+
+    private function maskPhone(string $phone): string
+    {
+        return $phone === '' ? '—' : '***-***-'.substr($phone, -4);
+    }
+
+    private function maskEmail(string $email): string
+    {
+        if (! str_contains($email, '@')) {
+            return '—';
+        }
+        [$name, $domain] = explode('@', $email, 2);
+
+        return mb_substr($name, 0, 1).'***@'.$domain;
     }
 
     private function newReferralNumber(): string

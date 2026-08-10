@@ -54,7 +54,7 @@ class ReferralPage extends Component
 
     public string $receiverSearch = '';
 
-    public string $referringAccount = 'personal';
+    public string $referringAccount = '';
 
     public string $destination = '';
 
@@ -74,9 +74,13 @@ class ReferralPage extends Component
 
     public ?int $customerUserId = null;
 
+    public bool $showCustomerDropdown = false;
+
     public ?string $inviteModal = null;
 
     public string $invitationRecipient = '';
+
+    public string $invitationUrl = '';
 
     public ?string $serviceId = null;
 
@@ -101,6 +105,7 @@ class ReferralPage extends Component
 
         if (! $this->isProvider) {
             $this->listTab = 'outgoing';
+            $this->referringAccount = 'personal';
         }
     }
 
@@ -113,29 +118,40 @@ class ReferralPage extends Component
             'referringAccount' => ['required', 'string'],
             'destination' => ['required', 'string'],
             'customerUserId' => ['required', 'integer'],
-            'serviceId' => ['nullable'],
+            'serviceId' => ['required', 'string'],
             'note' => ['nullable', 'string', 'max:1000'],
         ]);
 
         [$destinationType, $destinationId] = $this->parseAccountValue($this->destination);
         [$referrerType, $referrerId] = $this->parseAccountValue($this->referringAccount);
 
-        abort_unless($destinationType === 'business', 422);
-
         $receiverUserId = null;
         $receiverBusinessId = null;
+        $selectedService = null;
 
-        $receiverBusiness = InfoActivity::query()->whereKey($destinationId)->first();
-        if (! $receiverBusiness || ! MainUser::query()->whereKey($receiverBusiness->user_id)->exists()) {
-            throw ValidationException::withMessages([
-                'destination' => 'Select an existing registered Besmani Business.',
-            ]);
+        if ($destinationType === 'business') {
+            $receiverBusiness = InfoActivity::query()->whereKey($destinationId)->first();
+            if (! $receiverBusiness || ! $this->activeProviderQuery()->whereKey($receiverBusiness->user_id)->exists()) {
+                throw ValidationException::withMessages(['destination' => 'Select an active Besmani Provider or Business.']);
+            }
+            $receiverBusinessId = (int) $receiverBusiness->getKey();
+            $selectedService = $this->serviceId === 'general'
+                ? $this->generalReferralOption() 
+                : app(ReferralServiceCatalog::class)->findForBusiness($receiverBusiness, $this->serviceId);
+        } elseif ($destinationType === 'provider') {
+            $receiver = $this->activeProviderQuery()->whereKey($destinationId)->first();
+            if (! $receiver) {
+                throw ValidationException::withMessages(['destination' => 'Select an active Besmani Provider or Business.']);
+            }
+            $receiverUserId = (int) $receiver->getKey();
+            $selectedService = $this->serviceId === 'general'
+                ? $this->generalReferralOption()
+                : app(ReferralServiceCatalog::class)->findForUser($receiverUserId, $this->serviceId);
+        } else {
+            throw ValidationException::withMessages(['destination' => 'Select an active Besmani Provider or Business.']);
         }
-        $receiverBusinessId = (int) $receiverBusiness->getKey();
 
-        $selectedService = app(ReferralServiceCatalog::class)->findForBusiness($receiverBusiness, $this->serviceId);
-
-        if ($this->serviceId !== null && $selectedService === null) {
+        if ($selectedService === null) {
             throw ValidationException::withMessages([
                 'serviceId' => 'The selected service is not available for this destination.',
             ]);
@@ -172,6 +188,11 @@ class ReferralPage extends Component
                 'service_title' => $selectedService['title'] ?? null,
                 'reward_type' => 'besmani_coin',
                 'token_amount' => 0,
+                'referral_reward_bc' => (int) ($selectedService['reward_bc'] ?? 0),
+                'customer_discount_type' => $selectedService['discount_type'] ?? 'none',
+                'customer_discount_value' => (float) ($selectedService['discount_value'] ?? 0),
+                'customer_discount_currency' => $selectedService['discount_currency'] ?? null,
+                'referral_terms_snapshot_at' => now(),
                 'note' => $this->note ?: null,
                 'status' => 'pending',
             ]);
@@ -257,15 +278,23 @@ class ReferralPage extends Component
     public function selectDestination(string $value): void
     {
         [$type, $id] = $this->parseAccountValue($value);
-        abort_unless($type === 'business', 422);
-
-        $business = InfoActivity::query()->findOrFail($id);
-        $provider = MainUser::query()->findOrFail($business->user_id);
-
-        $this->destination = 'business:'.$business->getKey();
-        $this->selectedDestinationName = (string) $business->name;
-        $this->selectedDestinationDetails = trim(($provider->fl_name ?? '').' '.($provider->last_name ?? ''));
-        $this->receiverSearch = (string) $business->name;
+        if ($type === 'business') {
+            $business = InfoActivity::query()->findOrFail($id);
+            $provider = $this->activeProviderQuery()->whereKey($business->user_id)->firstOrFail();
+            $this->destination = 'business:'.$business->getKey();
+            $this->selectedDestinationName = (string) $business->name;
+            $this->selectedDestinationDetails = trim(($provider->fl_name ?? '').' '.($provider->last_name ?? ''));
+            $this->receiverSearch = (string) $business->name;
+        } elseif ($type === 'provider') {
+            $provider = $this->activeProviderQuery()->whereKey($id)->firstOrFail();
+            $providerName = trim(($provider->fl_name ?? '').' '.($provider->last_name ?? ''));
+            $this->destination = 'provider:'.$provider->getKey();
+            $this->selectedDestinationName = $providerName ?: 'Besmani Provider';
+            $this->selectedDestinationDetails = 'Provider';
+            $this->receiverSearch = $this->selectedDestinationName;
+        } else {
+            abort(422);
+        }
         $this->showDestinationDropdown = false;
         $this->serviceId = null;
         $this->resetValidation(['destination', 'serviceId']);
@@ -293,13 +322,40 @@ class ReferralPage extends Component
 
     public function updatedCustomerPhone(): void
     {
+        $this->showCustomerDropdown = true;
         $this->findCustomerByPhone();
     }
 
+    public function updatedCustomerEmail(): void
+    {
+        $this->customerUserId = null;
+        $this->customerPhone = '';
+        $this->customerFirstName = '';
+        $this->customerLastName = '';
+        $this->showCustomerDropdown = true;
+    }
+
+    public function updatedCustomerFirstName(): void
+    {
+        $this->customerUserId = null;
+        $this->showCustomerDropdown = true;
+    }
+
+    public function updatedCustomerLastName(): void
+    {
+        $this->customerUserId = null;
+        $this->showCustomerDropdown = true;
+    }
+
+    public function closeCustomerDropdown(): void
+    {
+        $this->showCustomerDropdown = false;
+    }
+ 
     public function findCustomerByPhone(): void
     {
         $this->customerUserId = null;
-        $this->customerEmail = '';
+        $this->customerEmail = ''; 
         $this->customerFirstName = '';
         $this->customerLastName = '';
 
@@ -327,6 +383,7 @@ class ReferralPage extends Component
         $this->customerFirstName = (string) ($customer->fl_name ?? '');
         $this->customerLastName = (string) ($customer->last_name ?? '');
         $this->resetValidation('customerUserId');
+        $this->showCustomerDropdown = false;
     }
 
     public function openInvite(string $party): void
@@ -334,19 +391,37 @@ class ReferralPage extends Component
         abort_unless(in_array($party, ['provider', 'customer'], true), 404);
         $this->inviteModal = $party;
         $this->invitationRecipient = trim($party === 'provider' ? $this->receiverSearch : $this->customerPhone);
+        $this->invitationUrl = '';
         $this->resetValidation('invitationRecipient');
+    }
+
+    public function generateInvitationLink(ReferralInvitationService $invitations): void
+    {
+        abort_unless(in_array($this->inviteModal, ['provider', 'customer'], true), 422);
+        $businessId = str_starts_with($this->referringAccount, 'business:') ? (int) substr($this->referringAccount, 9) : null;
+        $invitation = $invitations->create(
+            $this->user(),
+            trim($this->invitationRecipient),
+            $this->inviteModal,
+            'copy',
+            $businessId
+        );
+        $this->invitationUrl = (string) $invitation->getAttribute('invitation_url');
+        $this->successMessage = 'Invitation link created. You can now copy or share it.';
     }
 
     public function closeInvite(): void
     {
         $this->inviteModal = null;
         $this->invitationRecipient = '';
+        $this->invitationUrl = '';
         $this->resetValidation('invitationRecipient');
     }
 
-    public function sendInvitation(ReferralInvitationService $invitations): void
+    public function sendInvitation(string $channel, ReferralInvitationService $invitations): void
     {
         abort_unless(in_array($this->inviteModal, ['provider', 'customer'], true), 422);
+        abort_unless(in_array($channel, ['email', 'sms'], true), 422);
 
         $recipient = trim($this->invitationRecipient);
         $isEmail = filter_var($recipient, FILTER_VALIDATE_EMAIL) !== false;
@@ -358,19 +433,24 @@ class ReferralPage extends Component
                 'invitationRecipient' => 'Enter a valid email address or phone number.',
             ]);
         }
- 
+
+        if (($channel === 'email' && ! $isEmail) || ($channel === 'sms' && ! $isPhone)) {
+            throw ValidationException::withMessages(['invitationRecipient' => "Enter a valid {$channel} recipient."]);
+        }
+
         try {
-            $invitations->send($this->user(), $isEmail ? $recipient : $this->normalizePhone($recipient), $this->inviteModal);
+            $businessId = str_starts_with($this->referringAccount, 'business:') ? (int) substr($this->referringAccount, 9) : null;
+            $invitations->send($this->user(), $isEmail ? mb_strtolower($recipient) : $this->normalizePhone($recipient), $this->inviteModal, $channel, $businessId);
         } catch (\Throwable $exception) {
             report($exception);
             throw ValidationException::withMessages([
                 'invitationRecipient' => 'The invitation could not be sent. Please try again or contact support.',
             ]);
-        } 
+        }
 
-        $channel = $isEmail ? 'email' : 'SMS'; 
+        $channelLabel = $channel === 'email' ? 'email' : 'SMS';
         $this->closeInvite();
-        $this->successMessage = "Invitation sent by {$channel}.";
+        $this->successMessage = "Invitation sent by {$channelLabel}.";
     }
 
     public function setListTab(string $tab): void
@@ -432,7 +512,7 @@ class ReferralPage extends Component
             'incoming' => (clone $incomingQuery),
             'outgoing' => (clone $outgoingQuery),
             'pending' => (clone $baseQuery)->where('status', 'pending'),
-            'completed' => (clone $baseQuery)->where('status', 'completed'),
+            'completed' => $this->completedQuery(clone $baseQuery),
             'coin' => (clone $baseQuery),
             default => (clone $baseQuery),
         };
@@ -442,7 +522,7 @@ class ReferralPage extends Component
         $filteredIncomingQuery = clone $incomingQuery;
         $filteredOutgoingQuery = clone $outgoingQuery;
         $filteredPendingQuery = (clone $baseQuery)->where('status', 'pending');
-        $filteredCompletedQuery = (clone $baseQuery)->where('status', 'completed');
+        $filteredCompletedQuery = $this->completedQuery(clone $baseQuery);
         $filteredTotalQuery = clone $baseQuery;
         $this->applyListFilters($filteredIncomingQuery, 'incoming');
         $this->applyListFilters($filteredOutgoingQuery, 'outgoing');
@@ -451,6 +531,7 @@ class ReferralPage extends Component
         $this->applyListFilters($filteredTotalQuery);
 
         $receiverOptions = $this->receiverOptions();
+        $customerOptions = $this->customerOptions();
         $serviceOptions = $this->destinationServiceOptions();
         $selectedReferral = $this->selectedReferralId
             ? $this->findVisibleReferral($this->selectedReferralId)->load(['referrerUser', 'receiverUser'])
@@ -473,7 +554,7 @@ class ReferralPage extends Component
                 'incoming' => $this->isProvider ? (clone $incomingQuery)->count() : 0,
                 'outgoing' => (clone $outgoingQuery)->count(),
                 'pending' => (clone $baseQuery)->where('status', 'pending')->count(),
-                'completed' => (clone $baseQuery)->where('status', 'completed')->count(),
+                'completed' => $this->completedQuery(clone $baseQuery)->count(),
             ],
             'coinBalance' => (int) $coinBalance,
             'coinSummary' => [
@@ -490,6 +571,7 @@ class ReferralPage extends Component
             'referringUserName' => trim((string) ($user->fl_name ?? '').' '.(string) ($user->last_name ?? '')),
             'referringUserId' => trim((int) ($user->id ?? '')),
             'receiverOptions' => $receiverOptions,
+            'customerOptions' => $customerOptions,
             'serviceOptions' => $serviceOptions,
             'selectedReferral' => $selectedReferral,
         ])->layout('components.layouts.panel', ['title' => 'Referrals']);
@@ -525,6 +607,11 @@ class ReferralPage extends Component
         }
     }
 
+    private function completedQuery($query)
+    {
+        return $query->whereIn(DB::raw('LOWER(TRIM(status))'), ['completed', 'complete', 'settled']);
+    }
+
     private function receiverOptions()
     {
         $term = trim($this->receiverSearch);
@@ -540,7 +627,7 @@ class ReferralPage extends Component
             return collect();
         }
 
-        $providerIds = MainUser::query()
+        $providerIds = $this->activeProviderQuery()
             ->where(function ($query) use ($search, $normalizedPhone): void {
                 $query->where('fl_name', 'like', $search)
                     ->orWhere('last_name', 'like', $search)
@@ -549,8 +636,8 @@ class ReferralPage extends Component
 
                 if ($normalizedPhone !== '') {
                     $query->orWhereRaw(
-                        "RIGHT(REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(mobile, ' ', ''), '-', ''), '(', ''), ')', ''), '+', ''), 10) = ?",
-                        [substr($normalizedPhone, -10)]
+                        "RIGHT(REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(mobile, ' ', ''), '-', ''), '(', ''), ')', ''), '+', ''), 10) LIKE ?",
+                        ['%'.substr($normalizedPhone, -7)]
                     );
                 }
             })
@@ -565,8 +652,8 @@ class ReferralPage extends Component
 
                 if ($normalizedPhone !== '') {
                     $query->orWhereRaw(
-                        "RIGHT(REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(phone, ' ', ''), '-', ''), '(', ''), ')', ''), '+', ''), 10) = ?",
-                        [substr($normalizedPhone, -10)]
+                        "RIGHT(REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(phone, ' ', ''), '-', ''), '(', ''), ')', ''), '+', ''), 10) LIKE ?",
+                        ['%'.substr($normalizedPhone, -7)]
                     );
                 }
             })
@@ -576,9 +663,59 @@ class ReferralPage extends Component
             ->whereIn('user_id', $providerIds)
             ->pluck('id');
 
-        return $this->destinationOptionsForBusinessIds(
+        $businessOptions = $this->destinationOptionsForBusinessIds(
             $matchedBusinessIds->concat($providerBusinessIds)->unique()->map(static fn ($id): int => (int) $id)->all()
         );
+
+        $businessProviderIds = $businessOptions->pluck('provider_id')->filter()->map(static fn ($id): int => (int) $id);
+        $providerOptions = $this->activeProviderQuery()->whereIn('id', $providerIds)
+            ->whereNotIn('id', $businessProviderIds)
+            ->limit(20)->get()->map(function (MainUser $provider): array {
+                $name = trim(($provider->fl_name ?? '').' '.($provider->last_name ?? ''));
+
+                return [
+                    'value' => 'provider:'.$provider->getKey(),
+                    'name' => $name ?: 'Besmani Provider',
+                    'details' => 'Provider',
+                    'type' => 'Provider',
+                    'provider_id' => (int) $provider->getKey(),
+                ];
+            });
+
+        return $businessOptions->concat($providerOptions)->take(20)->values();
+    }
+
+    private function customerOptions()
+    {
+        if ($this->customerUserId !== null) {
+            return collect();
+        }
+
+        $term = trim(collect([$this->customerEmail, $this->customerFirstName, $this->customerLastName, $this->customerPhone])
+            ->first(fn (string $value): bool => trim($value) !== '') ?? '');
+        if (mb_strlen($term) < 2) {
+            return collect();
+        }
+        $like = '%'.mb_strtolower($term).'%';
+        $phone = $this->normalizePhone($term);
+
+        return MainUser::query()->where(function ($query) use ($like, $phone): void {
+            $query->whereRaw("LOWER(COALESCE(email, '')) LIKE ?", [$like])
+                ->orWhereRaw("LOWER(COALESCE(fl_name, '')) LIKE ?", [$like])
+                ->orWhereRaw("LOWER(COALESCE(last_name, '')) LIKE ?", [$like])
+                ->orWhereRaw("LOWER(CONCAT(COALESCE(fl_name, ''), ' ', COALESCE(last_name, ''))) LIKE ?", [$like]);
+            if (strlen($phone) >= 4) {
+                $query->orWhereRaw(
+                    "RIGHT(REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(mobile, ' ', ''), '-', ''), '(', ''), ')', ''), '+', ''), 10) LIKE ?",
+                    ['%'.substr($phone, -7)]
+                );
+            }
+        })->limit(10)->get()->map(fn (MainUser $customer): array => [
+            'id' => (int) $customer->getKey(),
+            'name' => trim((string) $customer->fl_name.' '.(string) $customer->last_name),
+            'phone' => $this->maskPhone($this->userPhone($customer)),
+            'email' => $this->maskEmail((string) $customer->email),
+        ]);
     }
 
     private function destinationServiceOptions()
@@ -589,14 +726,35 @@ class ReferralPage extends Component
 
         [$type, $businessId] = $this->parseAccountValue($this->destination);
         if ($type !== 'business') {
-            return collect();
+            $services = $type === 'provider'
+                ? app(ReferralServiceCatalog::class)->forUser($businessId)
+                : collect();
+
+            return $type === 'provider'
+                ? $services->prepend($this->generalReferralOption())
+                : collect();
         }
 
         $business = InfoActivity::query()->find($businessId);
 
         return $business
-            ? app(ReferralServiceCatalog::class)->forBusiness($business)
+            ? app(ReferralServiceCatalog::class)->forBusiness($business)->prepend($this->generalReferralOption())
             : collect();
+    }
+
+    private function generalReferralOption(): array
+    {
+        return [
+            'key' => 'general',
+            'type' => null,
+            'id' => null,
+            'title' => 'General Referral',
+            'bc' => 0,
+            'reward_bc' => 0,
+            'discount_type' => 'none',
+            'discount_value' => 0,
+            'discount_currency' => null,
+        ];
     }
 
     private function destinationOptionsForBusinessIds(array $businessIds)
@@ -607,6 +765,7 @@ class ReferralPage extends Component
 
         $businesses = InfoActivity::query()
             ->whereIn('id', $businessIds)
+            ->whereIn('user_id', $this->activeProviderIds())
             ->whereNotNull('name')
             ->where('name', '<>', '')
             ->orderBy('name')
@@ -627,6 +786,7 @@ class ReferralPage extends Component
                     'name' => $infoActivity->name,
                     'details' => collect([$providerName, $infoActivity->city ?? null, $infoActivity->province ?? null])->filter()->join(' · '),
                     'type' => 'Business',
+                    'provider_id' => (int) $infoActivity->user_id,
                 ];
             });
     }
@@ -635,20 +795,24 @@ class ReferralPage extends Component
     {
         return MainUser::query()
             ->whereRaw(
-                "RIGHT(REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(mobile, ' ', ''), '-', ''), '(', ''), ')', ''), '+', ''), 10) = ?",
-                [$this->canonicalPhone($phone)]
+                "RIGHT(REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(mobile, ' ', ''), '-', ''), '(', ''), ')', ''), '+', ''), 10) LIKE ?",
+                ['%'.substr($this->normalizePhone($phone), -7)]
             )
             ->first();
     }
 
     private function activeProviderIds(): array
     {
-        return MainUser::query()
-            ->where('service_pr', 1)
-            ->where('approved', 1)
+        return $this->activeProviderQuery()
             ->pluck('id')
             ->map(static fn ($id): int => (int) $id)
             ->all();
+    }
+
+    private function activeProviderQuery()
+    {
+        return MainUser::query()
+            ->where('service_pr', 1);
     }
 
     private function customerDetailsMatch(MainUser $customer): bool
@@ -666,6 +830,13 @@ class ReferralPage extends Component
 
     private function normalizePhone(string $phone): string
     {
+        $phone = strtr($phone, [
+            '۰' => '0', '۱' => '1', '۲' => '2', '۳' => '3', '۴' => '4',
+            '۵' => '5', '۶' => '6', '۷' => '7', '۸' => '8', '۹' => '9',
+            '٠' => '0', '١' => '1', '٢' => '2', '٣' => '3', '٤' => '4',
+            '٥' => '5', '٦' => '6', '٧' => '7', '٨' => '8', '٩' => '9',
+        ]);
+
         return preg_replace('/\D+/', '', $phone) ?? '';
     }
 
@@ -741,7 +912,7 @@ class ReferralPage extends Component
             'serviceId',
             'note',
         ]);
-        $this->referringAccount = 'personal';
+        $this->referringAccount = $this->isProvider ? '' : 'personal';
     }
 
     private function resetActionState(): void

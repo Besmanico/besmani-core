@@ -11,5 +11,5 @@ return [
     |
     */
     'completion_coin_award' => (int) env('REFERRAL_COMPLETION_COIN_AWARD', 100),
+    'invitation_expiry_days' => (int) env('REFERRAL_INVITATION_EXPIRY_DAYS', 30),
 ];
- 

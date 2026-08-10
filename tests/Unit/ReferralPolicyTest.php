@@ -17,7 +17,7 @@ class ReferralPolicyTest extends TestCase
         Mockery::close();
         parent::tearDown();
     }
- 
+
     public function test_personal_user_can_view_only_a_referral_they_created(): void
     {
         $user = $this->user(10, false);
@@ -81,6 +81,21 @@ class ReferralPolicyTest extends TestCase
             'receiver_user_id' => 20,
             'status' => 'pending',
         ])));
+    }
+
+    public function test_terminal_referrals_reject_all_status_actions(): void
+    {
+        $provider = $this->user(20, true);
+        $policy = $this->policy(true);
+        $referral = $this->referral([
+            'receiver_user_id' => 20,
+            'referrer_user_id' => 20,
+            'status' => 'completed',
+        ]);
+
+        $this->assertFalse($policy->accept($provider, $referral));
+        $this->assertFalse($policy->complete($provider, $referral));
+        $this->assertFalse($policy->cancel($provider, $referral));
     }
 
     public function test_provider_cannot_view_an_unrelated_referral(): void

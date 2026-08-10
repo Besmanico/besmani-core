@@ -16,6 +16,7 @@ use App\Livewire\Privacy\PrivacyPage;
 use App\Livewire\Service\ServicePage;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\CartController;
+use App\Http\Controllers\ReferralInvitationController;
 use App\Livewire\Agreement\AgreementPage;
 use App\Livewire\Panel\Invoice\InvoicePage;
 use App\Livewire\Panel\Payment\PaymentPage;
@@ -38,6 +39,7 @@ Route::get('/raw', function () {
     return response()->json(['ok' => true]);
 });
 Route::get('/', Home::class);
+Route::get('/join/{token}', [ReferralInvitationController::class, 'accept'])->where('token', '[A-Za-z0-9]{64}')->name('referral-invitations.accept');
 Route::get('/services', Services::class);
 Route::get('/services/service/{slug}', ServicePage::class);
 Route::post('/services/AddRequest', [Controller::class, 'AddRequest']);
@@ -58,8 +60,8 @@ Route::post('/other-site-login', [Controller::class, 'otherSiteLogin'])->name('o
 Route::post('/other-signup', [Controller::class, 'otherSiteSignup'])->name('other-site-signup');
 
 Route::post('/confirm-code', [Controller::class, 'confirmCode'])->name('confirm-code');
-Route::post('/logout', [Controller::class, 'logout'])->name('logout');
-
+Route::post('/logout', [Controller::class, 'logout'])->name('logout'); 
+ 
 // order
 Route::get('/order/{slug}/{service_id}', OrderPage::class)->name('order');
 // check guard is user panel check if user is logged in

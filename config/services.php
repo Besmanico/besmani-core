@@ -33,9 +33,11 @@ return [
         'region' => env('AWS_DEFAULT_REGION', 'us-east-1'),
     ],
 
-    'referral_sms' => [
-        'endpoint' => env('REFERRAL_SMS_ENDPOINT'),
-        'token' => env('REFERRAL_SMS_TOKEN'),
+    'customerio' => [
+        'app_api_key' => env('CUSTOMERIO_APP_API_KEY'),
+        'transactional_endpoint' => env('CUSTOMERIO_TRANSACTIONAL_ENDPOINT', 'https://api.customer.io/v1/send/email'),
+        'invitation_email_transactional_id' => env('CUSTOMERIO_INVITATION_EMAIL_TRANSACTIONAL_ID'),
+        'invitation_sms_transactional_id' => env('CUSTOMERIO_INVITATION_SMS_TRANSACTIONAL_ID'),
     ],
 
 ];

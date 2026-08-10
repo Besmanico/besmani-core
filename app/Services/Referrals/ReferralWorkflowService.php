@@ -30,8 +30,8 @@ class ReferralWorkflowService
                 throw ValidationException::withMessages([
                     'status' => 'Only an accepted referral can be completed.',
                 ]);
-            } 
-            $coinAward = (int) config('referrals.completion_coin_award', 100);
+            }
+            $coinAward = (int) $referral->referral_reward_bc;
 
             $referral->update([
                 'status' => 'completed',
@@ -76,6 +76,8 @@ class ReferralWorkflowService
 
             if ($newStatus === 'accepted') {
                 $attributes['accepted_at'] = now();
+            } elseif ($newStatus === 'cancelled') {
+                $attributes['cancelled_at'] = now();
             }
 
             $referral->update($attributes);

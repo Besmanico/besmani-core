@@ -2,39 +2,49 @@
 
 namespace App\Services\Referrals;
 
-use App\Mail\ProviderSendMail;
 use App\Models\MainUser;
 use App\Models\ReferralInvitation;
-use Illuminate\Support\Facades\Http;
-use Illuminate\Support\Facades\Mail;
-use RuntimeException;
+use App\Services\Notifications\NotificationService;
+use Illuminate\Support\Str;
 use Throwable;
 
 class ReferralInvitationService
 {
-    public function send(MainUser $inviter, string $recipient, string $party): ReferralInvitation
+    public function __construct(private readonly NotificationService $notifications) {}
+
+    public function create(MainUser $inviter, string $recipient, string $party, string $channel = 'copy', ?int $businessId = null): ReferralInvitation
     {
-        $channel = filter_var($recipient, FILTER_VALIDATE_EMAIL) ? 'email' : 'sms';
+        $token = Str::random(64);
         $inviterName = trim(($inviter->fl_name ?? '').' '.($inviter->last_name ?? '')) ?: config('app.name');
-        $url = url('/');
-        $message = "{$inviterName} invited you to join ".config('app.name')." as a {$party}. Register here: {$url}";
+        $url = route('referral-invitations.accept', ['token' => $token]);
+        $message = "{$inviterName} invited you to join Besmani".($party === 'provider' ? ' and connect your business for referrals.' : ' and connect with trusted Providers.')." {$url}";
 
         $invitation = ReferralInvitation::query()->create([
             'invited_by_user_id' => $inviter->getKey(),
+            'inviter_business_id' => $businessId,
             'recipient' => $recipient,
+            'recipient_email' => filter_var($recipient, FILTER_VALIDATE_EMAIL) ? mb_strtolower($recipient) : null,
+            'recipient_phone' => filter_var($recipient, FILTER_VALIDATE_EMAIL) ? null : preg_replace('/\D+/', '', $recipient),
             'channel' => $channel,
             'party' => $party,
+            'token_hash' => hash('sha256', $token),
             'inviter_name' => $inviterName,
             'message' => $message,
+            'expires_at' => now()->addDays((int) config('referrals.invitation_expiry_days', 30)),
         ]);
 
-        try {
-            if ($channel === 'email') {
-                Mail::to($recipient)->send(new ProviderSendMail($inviterName, $message));
-            } else {
-                $this->sendSms($recipient, $message);
-            }
+        $invitation->setAttribute('invitation_url', $url);
 
+        return $invitation;
+    }
+
+    public function send(MainUser $inviter, string $recipient, string $party, ?string $channel = null, ?int $businessId = null): ReferralInvitation
+    {
+        $channel ??= filter_var($recipient, FILTER_VALIDATE_EMAIL) ? 'email' : 'sms';
+        $invitation = $this->create($inviter, $recipient, $party, $channel, $businessId);
+
+        try {
+            $this->notifications->sendInvitation($channel, $recipient, $party, $invitation->message);
             $invitation->update(['status' => 'sent', 'sent_at' => now()]);
         } catch (Throwable $exception) {
             $invitation->update([
@@ -45,18 +55,5 @@ class ReferralInvitationService
         }
 
         return $invitation;
-    }
-
-    private function sendSms(string $phone, string $message): void
-    {
-        $endpoint = config('services.referral_sms.endpoint');
-        if (! $endpoint) {
-            throw new RuntimeException('The referral SMS gateway is not configured.');
-        }
-
-        Http::withToken((string) config('services.referral_sms.token'))
-            ->timeout(10)
-            ->post($endpoint, ['to' => $phone, 'message' => $message])
-            ->throw();
     }
 }

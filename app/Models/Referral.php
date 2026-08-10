@@ -14,9 +14,13 @@ class Referral extends Model
 
     protected $casts = [
         'token_amount' => 'integer',
+        'referral_reward_bc' => 'integer',
+        'customer_discount_value' => 'decimal:2',
+        'referral_terms_snapshot_at' => 'datetime',
         'expiration_date' => 'date',
         'accepted_at' => 'datetime',
         'completed_at' => 'datetime',
+        'cancelled_at' => 'datetime',
         'settled_at' => 'datetime',
     ];
 

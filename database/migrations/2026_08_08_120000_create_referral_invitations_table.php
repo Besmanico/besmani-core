@@ -20,7 +20,7 @@ return new class extends Migration
             $table->string('status', 30)->default('pending');
             $table->text('failure_reason')->nullable();
             $table->timestamp('sent_at')->nullable();
-            $table->timestamps();
+            $table->timestamps(); 
 
             $table->index(['invited_by_user_id', 'created_at']);
         });
