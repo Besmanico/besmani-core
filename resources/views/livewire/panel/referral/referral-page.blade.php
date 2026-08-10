@@ -8,33 +8,33 @@
                 <h1>{{ $isProvider ? 'Business Referrals' : 'My Referrals' }}</h1>
                 <p>{{ $isProvider ? 'Manage referrals connected to you and your authorized businesses.' : 'Refer someone to a Besmani Provider and earn Besmani COIN after completion.' }}</p>
             </div>
+            <nav class="ref-subnav {{ $isProvider ? '' : 'is-personal' }}" aria-label="Referral sections">
+            <a href="{{ route('panel.referral') }}" class="{{ $section === 'dashboard' ? 'active' : '' }}"><i class="fa fa-th-large"></i><span>Overview</span></a>
+            <a href="{{ route('panel.referral.new') }}" class="{{ $section === 'new' ? 'active' : '' }}"><i class="fa fa-exchange"></i><span> {{ $isProvider ? 'New Referral' : 'Refer Someone' }}</span></a>
+        </nav>      
             <div class="ref-header-actions">
+                    
+
                 @if ($isProvider)
-                    <button type="button" class="ref-btn ref-btn-secondary" wire:click="$set('showUseCoinsModal', true)">
+                    <button type="button" class="ref-btn ref-btn-secondary ref-use-bc-btn" wire:click="$set('showUseCoinsModal', true)">
                         <i class="fa fa-star"></i> Use BC
                     </button>
                 @endif
-                <a href="{{ route('panel.referral.new') }}" class="ref-btn ref-btn-primary">
+                {{-- <a href="{{ route('panel.referral.new') }}" class="ref-btn ref-btn-primary">
                     <i class="fa fa-exchange"></i>
                     {{ $isProvider ? 'New Referral' : 'Refer Someone' }}
-                </a>
+                </a> --}}
             </div>
-        </header>  
+        </header>   
   
-        <div class="ref-token-notice">
-            <i class="fa fa-shield"></i>
-            <p><strong>Besmani COIN (BC) is an internal, non-cash credit.</strong> BC is awarded only after a referral is Completed. It cannot be transferred, withdrawn, converted to cash, or used as cryptocurrency.</p>
-        </div>
+        @if ($showUseCoinsModal)
+            <div class="ref-token-notice">
+                <i class="fa fa-shield"></i>
+                <p><strong>Besmani COIN (BC) is an internal, non-cash credit.</strong> BC is awarded only after a referral is Completed. It cannot be transferred, withdrawn, converted to cash, or used as cryptocurrency.</p>
+            </div>
+        @endif
 
-        <nav class="ref-subnav {{ $isProvider ? '' : 'is-personal' }}" aria-label="Referral sections">
-            <a href="{{ route('panel.referral') }}" class="{{ $section === 'dashboard' ? 'active' : '' }}"><i class="fa fa-th-large"></i><span>Overview</span></a>
-            @if ($isProvider)
-                <a href="{{ route('panel.referral.incoming') }}" class="{{ $section === 'incoming' ? 'active' : '' }}"><i class="fa fa-arrow-down"></i><span>Incoming</span></a>
-                <a href="{{ route('panel.referral.outgoing') }}" class="{{ $section === 'outgoing' ? 'active' : '' }}"><i class="fa fa-arrow-up"></i><span>Outgoing</span></a>
-            @endif
-            <a href="{{ route('panel.referral.new') }}" class="{{ $section === 'new' ? 'active' : '' }}"><i class="fa fa-exchange"></i><span>New Referral</span></a>
-        </nav>       
-
+     
         <div class="ref-page-content" wire:loading.class="is-loading" wire:target="createReferral,confirmAction,viewReferral">
             <div class="ref-loading-overlay" wire:loading.flex wire:target="createReferral,confirmAction,viewReferral">
                 <x-referrals.ui-state type="loading" title="Please wait" message="Updating your referral information..." />
@@ -148,7 +148,7 @@
                         <div class="ref-section-heading"><div><span class="ref-step">3</span><h2>Customer details</h2></div></div>
                         <div class="ref-form-grid">
                             <label class="ref-field"><span>Phone Number <b>*</b></span><input type="tel" inputmode="tel" autocomplete="new-password" data-1p-ignore="true" wire:model.live.debounce.350ms="customerPhone" wire:keydown.enter.prevent="findCustomerByPhone" placeholder="Enter the complete registered phone number"></label>
-                            <label class="ref-field"><span>Email <em>Optional</em></span><input type="email" wire:model="customerEmail" placeholder="Filled automatically" readonly></label>
+                            <label class="ref-field"><span>Email Address <em>Optional</em></span><input type="email" wire:model="customerEmail" placeholder="Filled automatically" readonly></label>
                             <label class="ref-field"><span>First Name</span><input type="text" wire:model="customerFirstName" placeholder="Filled after selecting the User" readonly></label>
                             <label class="ref-field"><span>Last Name</span><input type="text" wire:model="customerLastName" placeholder="Filled after selecting the User" readonly></label>
                         </div>
@@ -172,8 +172,17 @@
                                 <span>Service</span>
                                 <select wire:model="serviceId" @disabled($destination === '')>
                                     <option value="">{{ $destination === '' ? 'Select a Provider first' : 'General Referral' }}</option>
+                                    @foreach ($serviceOptions as $service)
+                                        <option value="{{ $service['key'] }}">{{ $service['title'] }}
+
+ @if(isset($service['bc']) && $service['bc'] !== null && $service['bc'] !== '')
+            - {{ $service['bc'] }} BC
+        @endif
+ 
+                                        </option>
+                                     @endforeach
                                 </select>
-                                @if ($destination !== '') <small class="ref-field-hint">This Provider has no mapped active services available. The referral will be sent as General Referral.</small> @endif
+                                @if ($destination !== '' && $serviceOptions->isEmpty()) <small class="ref-field-hint">This Provider has no mapped active services available. The referral will be sent as General Referral.</small> @endif
                                 @error('serviceId') <small class="ref-field-error">{{ $message }}</small> @enderror
                             </label>
                             <label class="ref-field ref-field-wide"><span>Short note</span><textarea wire:model="note" rows="3" placeholder="Add helpful details for the destination Provider"></textarea>@error('note') <small class="ref-field-error">{{ $message }}</small> @enderror</label>
@@ -188,23 +197,46 @@
                 </form>
             @else
                 <section class="ref-summary-grid {{ $isProvider ? '' : 'is-personal' }}">
+ 
                     @if ($isProvider)
-                        <article class="ref-summary-card is-blue"><span class="ref-summary-icon"><i class="fa fa-arrow-down"></i></span><div><p>Incoming</p><strong>{{ $counts['incoming'] }}</strong><small>Connected to you</small></div></article>
-                        <article class="ref-summary-card is-orange"><span class="ref-summary-icon"><i class="fa fa-arrow-up"></i></span><div><p>Outgoing</p><strong>{{ $counts['outgoing'] }}</strong><small>Sent by you</small></div></article>
+                        <button type="button" wire:click="setListTab('incoming')" class="ref-summary-card is-blue {{ $listTab === 'incoming' ? 'active' : '' }}"><span class="ref-summary-icon"><i class="fa fa-arrow-down"></i></span><div><p>Incoming</p><strong>{{ $counts['incoming'] }}</strong><small>Connected to you</small></div></button>
+                        <button type="button" wire:click="setListTab('outgoing')" class="ref-summary-card is-orange {{ $listTab === 'outgoing' ? 'active' : '' }}"><span class="ref-summary-icon"><i class="fa fa-arrow-up"></i></span><div><p>Outgoing</p><strong>{{ $counts['outgoing'] }}</strong><small>Sent by you</small></div></button>
                     @else
-                        <article class="ref-summary-card is-blue"><span class="ref-summary-icon"><i class="fa fa-exchange"></i></span><div><p>My Referrals</p><strong>{{ $counts['all'] }}</strong><small>Created by you</small></div></article>
+                        <button type="button" wire:click="setListTab('outgoing')" class="ref-summary-card is-blue {{ $listTab === 'outgoing' ? 'active' : '' }}"><span class="ref-summary-icon"><i class="fa fa-exchange"></i></span><div><p>Outgoing</p><strong>{{ $counts['outgoing'] }}</strong><small>Created by you</small></div></button>
                     @endif
-                    <article class="ref-summary-card is-orange"><span class="ref-summary-icon"><i class="fa fa-clock-o"></i></span><div><p>Pending</p><strong>{{ $counts['pending'] }}</strong><small>Awaiting action</small></div></article>
-                    <article class="ref-summary-card is-green"><span class="ref-summary-icon"><i class="fa fa-check"></i></span><div><p>Completed</p><strong>{{ $counts['completed'] }}</strong><small>Service delivered</small></div></article>
-                    <article class="ref-summary-card is-purple"><span class="ref-summary-icon"><i class="fa fa-star"></i></span><div><p>{{ $isProvider ? 'COIN Balance' : 'My COIN' }}</p><strong>{{ number_format($coinBalance) }}</strong><small>Besmani COIN (BC)</small></div></article>
+                   <button type="button"
+    wire:click="setListTab('pending')"
+    class="ref-summary-card is-yellow {{ $listTab === 'pending' ? 'active' : '' }}"><span class="ref-summary-icon"><i class="fa fa-clock-o"></i></span><div><p>Pending</p><strong>{{ $counts['pending'] }}</strong><small>Awaiting action</small></div></button>
+                    <button type="button" wire:click="setListTab('completed')" class="ref-summary-card is-green {{ $listTab === 'completed' ? 'active' : '' }}"><span class="ref-summary-icon"><i class="fa fa-check"></i></span><div><p>Completed</p><strong>{{ $counts['completed'] }}</strong><small>Service delivered</small></div></button>
+                    <button type="button" wire:click="setListTab('coin')" class="ref-summary-card is-purple {{ $listTab === 'coin' ? 'active' : '' }}"><span class="ref-summary-icon"><i class="fa fa-star"></i></span><div><p>{{ $isProvider ? 'COIN Balance' : 'My COIN' }}</p><strong>{{ number_format($coinBalance) }}</strong><small>Besmani COIN (BC)</small></div></button>
                 </section>
-
+   
                 <section class="ref-panel-card">
                     <div class="ref-section-heading">
                         <div>
-                            <span class="ref-eyebrow">{{ $section === 'incoming' ? 'Addressed to you' : ($section === 'outgoing' ? 'Created by you' : 'Recent activity') }}</span>
-                            <h2>{{ $section === 'incoming' ? 'Incoming Referrals' : ($section === 'outgoing' ? 'Outgoing Referrals' : ($isProvider ? 'Provider Referrals' : 'My Referrals')) }}</h2>
+                            <span class="ref-eyebrow">Filtered referral history</span>
+                            <h2>{{ $listTab === 'coin' ? 'COIN Balance Referrals' : ucfirst($listTab).' Referrals' }}</h2>
                         </div>
+                    </div>
+
+                    @if ($listTab === 'coin')
+                        <div class="ref-coin-summary" aria-label="Filtered Besmani COIN summary">
+                            @foreach (['incoming' => 'Incoming', 'outgoing' => 'Outgoing', 'pending' => 'Pending', 'completed' => 'Completed', 'total' => 'Total BC'] as $key => $label)
+                                <div class="{{ $key === 'total' ? 'is-total' : '' }}">
+                                    <span>{{ $label }}</span>
+                                    <strong>{{ number_format($coinSummary[$key]) }} BC</strong>
+                                </div>
+                            @endforeach
+                        </div>
+                    @endif
+
+                    <div class="ref-filter-grid">
+                        <label class="ref-field"><span>{{ $listTab === 'incoming' ? 'Who sent it to me' : 'Who I sent it to' }}</span><input type="search" wire:model.live.debounce.350ms="partyFilter" placeholder="Name or business"></label>
+                        <label class="ref-field"><span>Customer phone</span><input type="tel" wire:model.live.debounce.350ms="phoneFilter" placeholder="Phone number"></label>
+                        <label class="ref-field"><span>From date</span><input type="date" wire:model.live="dateFrom"></label>
+                        <label class="ref-field"><span>To date</span><input type="date" wire:model.live="dateTo"></label>
+                        <label class="ref-field"><span>Per page</span><select wire:model.live="perPage"><option value="10">10</option><option value="25">25</option><option value="50">50</option></select></label>
+                        <button type="button" class="ref-btn ref-btn-secondary ref-filter-submit" wire:click="resetFilters"><i class="fa fa-refresh"></i> Clear filters</button>
                     </div>
 
                     @if ($referrals->isEmpty())
@@ -212,20 +244,20 @@
                     @else
                         <div class="ref-table-wrap">
                             <table class="ref-table">
-                                <thead><tr><th>Customer</th><th>{{ $section === 'incoming' ? 'Referred By' : 'Destination' }}</th><th>Service / Note</th><th>Status</th><th>BC</th><th>Date</th><th class="ref-table-action-heading">Action</th></tr></thead>
+                                <thead><tr><th>Customer</th><th>{{ $listTab === 'incoming' ? 'Referred By' : 'Destination' }}</th><th>Service / Note</th><th>Status</th><th>BC</th><th>Date</th><th class="ref-table-action-heading">Action</th></tr></thead>
                                 <tbody>
                                     @foreach ($referrals as $referral)
                                         @php
                                             $isIncoming = $isProvider && ((int) $referral->receiver_user_id === (int) Auth::guard('mainUsers')->id() || in_array((int) $referral->receiver_business_id, $businessIds, true));
                                             $customerName = trim($referral->customer_first_name . ' ' . $referral->customer_last_name);
                                             $destinationName = $isIncoming
-                                                ? ($referral->referrerUser ? trim($referral->referrerUser->fl_name . ' ' . $referral->referrerUser->last_name) : 'Business')
-                                                : ($referral->receiverUser ? trim($referral->receiverUser->fl_name . ' ' . $referral->receiverUser->last_name) : 'Business');
+                                                ? ($referral->referrerBusiness?->name ?? ($referral->referrerUser ? trim($referral->referrerUser->fl_name . ' ' . $referral->referrerUser->last_name) : 'Business'))
+                                                : ($referral->receiverBusiness?->name ?? ($referral->receiverUser ? trim($referral->receiverUser->fl_name . ' ' . $referral->receiverUser->last_name) : 'Business'));
                                         @endphp
                                         <tr wire:key="referral-{{ $referral->id }}">
                                             <td><span class="ref-person-cell"><span class="ref-avatar">{{ strtoupper(substr($customerName ?: 'C', 0, 1)) }}</span><span><strong>{{ $customerName ?: 'Customer' }}</strong><small>{{ $referral->referral_number }}</small></span></span></td>
                                             <td>{{ $destinationName ?: 'Provider' }}</td>
-                                            <td>{{ $referral->service?->title ?? ($referral->note ?: 'General referral') }}</td>
+                                            <td>{{ $referral->service_title ?? 'General referral' }}</td>
                                             <td><x-referrals.status-badge :status="$referral->status" /></td>
                                             <td><strong>{{ $referral->status === 'completed' ? number_format($referral->token_amount) . ' BC' : '—' }}</strong></td>
                                             <td>{{ $referral->created_at?->format('M d, Y') }}</td>
@@ -244,6 +276,7 @@
                                 </tbody>
                             </table>
                         </div>
+                        <div class="ref-pagination">{{ $referrals->links() }}</div>
                     @endif
                 </section>
             @endif
@@ -256,8 +289,10 @@
                     <span class="ref-modal-icon"><i class="fa fa-user-plus"></i></span>
                     <h2>Invite {{ ucfirst($inviteModal) }} to Besmani</h2>
                     <p id="ref-invite-message">{{ $inviteModal === 'provider' ? 'Join Besmani as a Provider or Business so I can send registered referrals to you.' : 'Please register with Besmani so I can connect you with trusted Providers through a secure referral.' }}</p>
+                    <label class="ref-field ref-invite-recipient"><span>Email or phone number</span><input type="text" wire:model="invitationRecipient" placeholder="name@example.com or phone number">@error('invitationRecipient') <small class="ref-field-error">{{ $message }}</small> @enderror</label>
                     <div class="ref-modal-actions">
                         <button type="button" class="ref-btn ref-btn-primary" onclick="navigator.clipboard.writeText(document.getElementById('ref-invite-message').innerText)"><i class="fa fa-copy"></i> Copy invitation</button>
+                        <button type="button" class="ref-btn ref-btn-primary" wire:click="sendInvitation" wire:loading.attr="disabled" wire:target="sendInvitation"><i class="fa fa-paper-plane"></i> Send invitation</button>
                     </div>
                 </div>
             </div>
@@ -292,7 +327,7 @@
                     <button class="ref-modal-close" wire:click="closeReferral"><i class="fa fa-times"></i></button>
                     <span class="ref-eyebrow">{{ $selectedReferral->referral_number }}</span><h2>{{ trim($selectedReferral->customer_first_name . ' ' . $selectedReferral->customer_last_name) }}</h2>
                     <x-referrals.status-badge :status="$selectedReferral->status" />
-                    <div class="ref-detail-list"><span>Phone<strong>{{ $selectedReferral->customer_phone }}</strong></span><span>Email<strong>{{ $selectedReferral->customer_email ?: '—' }}</strong></span><span>Service<strong>{{ $selectedReferral->service?->title ?? 'General referral' }}</strong></span><span>Besmani COIN<strong>{{ $selectedReferral->status === 'completed' ? number_format($selectedReferral->token_amount) . ' BC' : 'Awarded after completion' }}</strong></span></div>
+                    <div class="ref-detail-list"><span>Phone<strong>{{ $selectedReferral->customer_phone }}</strong></span><span>Email<strong>{{ $selectedReferral->customer_email ?: '—' }}</strong></span><span>Service<strong>{{ $selectedReferral->service_title ?? 'General referral' }}</strong></span><span>Besmani COIN<strong>{{ $selectedReferral->status === 'completed' ? number_format($selectedReferral->token_amount) . ' BC' : 'Awarded after completion' }}</strong></span></div>
                     @if ($selectedReferral->note)<div class="ref-agreement-note"><i class="fa fa-sticky-note"></i><span>{{ $selectedReferral->note }}</span></div>@endif
                 </section>
             </div>

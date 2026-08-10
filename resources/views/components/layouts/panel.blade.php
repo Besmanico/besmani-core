@@ -198,6 +198,10 @@
                     <i class="fa fa-user"></i>
                     <span>My Profile</span> 
                 </a>
+                   <a href="{{ rtrim(env('BEAUTY_URL'), '/') }}" target="_blank" class="nav-link ">
+                    <i class="fa fa-id-card"></i>
+                    <span>My Page</span> 
+                </a>
                 <a href="{{ config('app.url') }}panel/invoice" class="nav-link {{ request()->is('panel/invoice*') ? 'active' : '' }}">
                     <i class="fa fa-shopping-cart"></i>
                     <span>Orders</span>
@@ -206,10 +210,28 @@
                     <i class="fa fa-briefcase"></i>
                     <span>Payments</span>  
                 </a>
-                <a href="{{ route('panel.referral') }}" class="nav-link {{ request()->is('panel/referral*') ? 'active' : '' }}">
-                    <i class="fa fa-exchange"></i>
-                    <span>Referrals</span> 
-                </a>
+             <a href="{{ route('panel.referral') }}" class="nav-link {{ request()->is('panel/referral*') ? 'active' : '' }}">
+    <svg
+        xmlns="http://www.w3.org/2000/svg"
+        width="20"
+        height="20"
+        viewBox="0 0 24 24"
+        fill="none"
+        stroke="currentColor"
+        stroke-width="2"
+        stroke-linecap="round"
+        stroke-linejoin="round"
+        class="nav-icon"
+    >
+        <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/>
+        <circle cx="9" cy="7" r="4"/>
+        <path d="M22 21v-2a4 4 0 0 0-3-3.87"/>
+        <path d="M16 3.13a4 4 0 0 1 0 7.75"/>
+    </svg>
+
+    <span>Referrals</span>
+</a>
+
                 {{-- <a href="#" class="nav-link">
                     <i class="fa fa-briefcase"></i>
                     <span>My Projects</span>
