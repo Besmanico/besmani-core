@@ -490,13 +490,14 @@ class ReferralPage extends Component
     public function setListTab(string $tab): void
     {
         $allowed = $this->isProvider
-            ? ['incoming', 'outgoing', 'pending', 'completed', 'coin']
-            : ['outgoing', 'pending', 'completed', 'coin'];
+            ? ['incoming', 'outgoing', 'my-referrals', 'pending', 'completed', 'coin']
+            : ['outgoing', 'my-referrals', 'pending', 'completed', 'coin'];
+
         abort_unless(in_array($tab, $allowed, true), 404);
 
         $this->listTab = $tab;
         $this->resetFilters();
-    } 
+    }
 
     public function resetFilters(): void
     {
@@ -542,9 +543,15 @@ class ReferralPage extends Component
         $incomingQuery = $this->isProvider ? $access->incomingQuery($user) : Referral::query()->whereRaw('1 = 0');
         $outgoingQuery = $access->outgoingQuery($user);
 
+        $myReferralsQuery = Referral::query()
+            ->where('customer_user_id', $user->getKey());
         $referrals = match ($this->listTab) {
             'incoming' => (clone $incomingQuery),
             'outgoing' => (clone $outgoingQuery),
+
+            // Referralهایی که خود کاربر Customer آن‌هاست
+            'my-referrals' => (clone $myReferralsQuery),
+
             'pending' => (clone $baseQuery)->where('status', 'pending'),
             'completed' => $this->completedQuery(clone $baseQuery),
             'coin' => (clone $baseQuery),
@@ -585,10 +592,21 @@ class ReferralPage extends Component
             'referrals' => $referrals->with(['referrerUser', 'referrerBusiness', 'receiverUser', 'receiverBusiness'])->latest()->paginate($this->perPage),
             'counts' => [
                 'all' => (clone $baseQuery)->count(),
-                'incoming' => $this->isProvider ? (clone $incomingQuery)->count() : 0,
+                'incoming' => $this->isProvider
+                    ? (clone $incomingQuery)->count()
+                    : 0,
+
                 'outgoing' => (clone $outgoingQuery)->count(),
-                'pending' => (clone $baseQuery)->where('status', 'pending')->count(),
-                'completed' => $this->completedQuery(clone $baseQuery)->count(),
+
+                'my_referrals' => (clone $myReferralsQuery)->count(),
+
+                'pending' => (clone $baseQuery)
+                    ->where('status', 'pending')
+                    ->count(),
+
+                'completed' => $this
+                    ->completedQuery(clone $baseQuery)
+                    ->count(),
             ],
             'coinBalance' => (int) $coinBalance,
             'coinSummary' => [

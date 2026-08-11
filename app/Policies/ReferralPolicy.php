@@ -15,17 +15,25 @@ class ReferralPolicy
         return true;
     }
 
+    
     public function view(MainUser $user, Referral $referral): bool
-    {
-        if (! $this->access->isProvider($user)) {
-            return (int) $referral->referrer_user_id === (int) $user->getKey();
-        }
+{
+    // Customer / Patient can always view their own referral
+    if ((int) $referral->customer_user_id === (int) $user->getKey()) {
+        return true;
+    }
 
-        return (int) $referral->referrer_user_id === (int) $user->getKey()
-            || (int) $referral->receiver_user_id === (int) $user->getKey()
-            || $this->access->ownsBusiness($user, $referral->referrer_business_id)
-             || $this->access->ownsBusiness($user, $referral->receiver_business_id);
-    } 
+    // Normal user can view referrals they created
+    if (! $this->access->isProvider($user)) {
+        return (int) $referral->referrer_user_id === (int) $user->getKey();
+    }
+
+    // Provider access
+    return (int) $referral->referrer_user_id === (int) $user->getKey()
+        || (int) $referral->receiver_user_id === (int) $user->getKey()
+        || $this->access->ownsBusiness($user, $referral->referrer_business_id)
+        || $this->access->ownsBusiness($user, $referral->receiver_business_id);
+}
 
     public function create(MainUser $user): bool
     {

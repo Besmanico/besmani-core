@@ -233,6 +233,25 @@
                     @else
                         <button type="button" wire:click="setListTab('outgoing')" class="ref-summary-card is-orange {{ $listTab === 'outgoing' ? 'active' : '' }}"><span class="ref-summary-icon"><i class="fa fa-exchange"></i></span><div><p>Outgoing</p><strong>{{ $counts['outgoing'] }}</strong><small>Created by you</small></div></button>
                     @endif
+                    <button
+    type="button"
+    wire:click="setListTab('my-referrals')"
+    class="ref-summary-card is-blue {{ $listTab === 'my-referrals' ? 'active' : '' }}"
+>
+    <span class="ref-summary-icon">
+        <i class="fa fa-user"></i>
+    </span>
+
+    <div>
+        <p>My Referrals</p>
+
+        <strong>
+            {{ $counts['my_referrals'] }}
+        </strong>
+
+        <small>Referrals made for me</small>
+    </div>
+</button>
                    <button type="button"
     wire:click="setListTab('pending')"
     class="ref-summary-card is-yellow {{ $listTab === 'pending' ? 'active' : '' }}"><span class="ref-summary-icon"><i class="fa fa-clock-o"></i></span><div><p>Pending</p><strong>{{ $counts['pending'] }}</strong><small>Awaiting action</small></div></button>
@@ -244,7 +263,15 @@
                     <div class="ref-section-heading">
                         <div>
                             <span class="ref-eyebrow">Filtered referral history</span>
-                            <h2>{{ $listTab === 'coin' ? 'COIN Balance Referrals' : ucfirst($listTab).' Referrals' }}</h2>
+                            <h2>
+    @if ($listTab === 'coin')
+        COIN Balance Referrals
+    @elseif ($listTab === 'my-referrals')
+        My Referrals
+    @else
+        {{ ucfirst($listTab) }} Referrals
+    @endif
+</h2>
                         </div>
                     </div>
 
@@ -376,8 +403,23 @@
                     <x-referrals.status-badge :status="$selectedReferral->status" />
                     <div class="ref-detail-list"><span>Phone<strong>{{ $selectedReferral->customer_phone }}</strong></span><span>Email<strong>{{ $selectedReferral->customer_email ?: '—' }}</strong></span><span>Service<strong>{{ $selectedReferral->service_title ?? 'General referral' }}</strong></span><span>Besmani COIN<strong>{{ in_array(strtolower(trim($selectedReferral->status)), ['completed', 'complete', 'settled'], true) ? number_format($selectedReferral->token_amount) . ' BC' : 'Awarded after completion' }}</strong></span></div>
                     @if ($selectedReferral->note)<div class="ref-agreement-note"><i class="fa fa-sticky-note"></i><span>{{ $selectedReferral->note }}</span></div>@endif
+              
+                 @if ($selectedReferral && $selectedReferral->status === 'accepted')
+    <div class="ref-modal-actions appointment"> 
+        <a
+            href="#"
+            class="ref-appointment-btn"
+        >
+            <i class="fa fa-calendar-check-o"></i>
+            Book Appointment
+        </a>
+    </div>
+@endif
+              
                 </section>
+             
             </div>
+            
         @endif
 
         @if ($successMessage)
