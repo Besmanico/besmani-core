@@ -82,6 +82,8 @@ class ReferralPage extends Component
 
     public string $invitationUrl = '';
 
+    public ?int $invitationId = null;
+
     public ?string $serviceId = null;
 
     public string $note = '';
@@ -103,10 +105,16 @@ class ReferralPage extends Component
             $this->section = $section;
         }
 
+        // if (! $this->isProvider) {
+        //     $this->listTab = 'outgoing';
+        //     $this->referringAccount = 'personal';
+        // }
         if (! $this->isProvider) {
             $this->listTab = 'outgoing';
-            $this->referringAccount = 'personal';
         }
+
+        // Provider or Customer can always send from Personal Account
+        $this->referringAccount = 'personal';
     }
 
     public function createReferral(): void
@@ -136,7 +144,7 @@ class ReferralPage extends Component
             }
             $receiverBusinessId = (int) $receiverBusiness->getKey();
             $selectedService = $this->serviceId === 'general'
-                ? $this->generalReferralOption() 
+                ? $this->generalReferralOption()
                 : app(ReferralServiceCatalog::class)->findForBusiness($receiverBusiness, $this->serviceId);
         } elseif ($destinationType === 'provider') {
             $receiver = $this->activeProviderQuery()->whereKey($destinationId)->first();
@@ -281,14 +289,14 @@ class ReferralPage extends Component
         if ($type === 'business') {
             $business = InfoActivity::query()->findOrFail($id);
             $provider = $this->activeProviderQuery()->whereKey($business->user_id)->firstOrFail();
-            $this->destination = 'business:'.$business->getKey();
+            $this->destination = 'business:' . $business->getKey();
             $this->selectedDestinationName = (string) $business->name;
-            $this->selectedDestinationDetails = trim(($provider->fl_name ?? '').' '.($provider->last_name ?? ''));
+            $this->selectedDestinationDetails = trim(($provider->fl_name ?? '') . ' ' . ($provider->last_name ?? ''));
             $this->receiverSearch = (string) $business->name;
         } elseif ($type === 'provider') {
             $provider = $this->activeProviderQuery()->whereKey($id)->firstOrFail();
-            $providerName = trim(($provider->fl_name ?? '').' '.($provider->last_name ?? ''));
-            $this->destination = 'provider:'.$provider->getKey();
+            $providerName = trim(($provider->fl_name ?? '') . ' ' . ($provider->last_name ?? ''));
+            $this->destination = 'provider:' . $provider->getKey();
             $this->selectedDestinationName = $providerName ?: 'Besmani Provider';
             $this->selectedDestinationDetails = 'Provider';
             $this->receiverSearch = $this->selectedDestinationName;
@@ -351,11 +359,11 @@ class ReferralPage extends Component
     {
         $this->showCustomerDropdown = false;
     }
- 
+
     public function findCustomerByPhone(): void
     {
         $this->customerUserId = null;
-        $this->customerEmail = ''; 
+        $this->customerEmail = '';
         $this->customerFirstName = '';
         $this->customerLastName = '';
 
@@ -389,25 +397,50 @@ class ReferralPage extends Component
     public function openInvite(string $party): void
     {
         abort_unless(in_array($party, ['provider', 'customer'], true), 404);
-        $this->inviteModal = $party;
-        $this->invitationRecipient = trim($party === 'provider' ? $this->receiverSearch : $this->customerPhone);
-        $this->invitationUrl = '';
         $this->resetValidation('invitationRecipient');
-    }
 
-    public function generateInvitationLink(ReferralInvitationService $invitations): void
-    {
-        abort_unless(in_array($this->inviteModal, ['provider', 'customer'], true), 422);
+        $invitations = app(ReferralInvitationService::class);
+
+        if ($party === 'provider') {
+            $recipient = trim($this->receiverSearch);
+        } else {
+            $email = trim($this->customerEmail);
+            $phone = trim($this->customerPhone);
+            $recipient = filter_var($email, FILTER_VALIDATE_EMAIL) ? mb_strtolower($email) : $phone;
+        }
+
+        $isEmail = filter_var($recipient, FILTER_VALIDATE_EMAIL) !== false;
+        $normalizedPhone = $this->normalizePhone($recipient);
+        $isPhone = strlen($normalizedPhone) >= 10;
+
+        if (! $isEmail && ! $isPhone) {
+            throw ValidationException::withMessages([
+                'invitationRecipient' => 'Enter a valid email address or phone number before creating the invitation.',
+            ]);
+        }
+
+        $this->invitationRecipient = $isEmail ? mb_strtolower($recipient) : $normalizedPhone;
         $businessId = str_starts_with($this->referringAccount, 'business:') ? (int) substr($this->referringAccount, 9) : null;
-        $invitation = $invitations->create(
-            $this->user(),
-            trim($this->invitationRecipient),
-            $this->inviteModal,
-            'copy',
-            $businessId
-        );
-        $this->invitationUrl = (string) $invitation->getAttribute('invitation_url');
-        $this->successMessage = 'Invitation link created. You can now copy or share it.';
+
+        try {
+            $invitation = $invitations->create($this->user(), $this->invitationRecipient, $party, 'copy', $businessId);
+        } catch (\Throwable $exception) {
+            report($exception);
+
+            throw ValidationException::withMessages([
+                'invitationRecipient' => $exception->getMessage(),
+            ]);
+        }
+        $this->invitationId = (int) $invitation->getKey();
+
+        $this->invitationUrl = (string) $invitation->getAttribute('invitation_url')
+            . '?part=' . urlencode($party)
+            . '&recipient=' . urlencode($this->invitationRecipient);
+
+        $this->inviteModal = $party;
+        // $this->invitationId = (int) $invitation->getKey();
+        // $this->invitationUrl = (string) $invitation->getAttribute('invitation_url');
+        // $this->inviteModal = $party;
     }
 
     public function closeInvite(): void
@@ -415,6 +448,7 @@ class ReferralPage extends Component
         $this->inviteModal = null;
         $this->invitationRecipient = '';
         $this->invitationUrl = '';
+        $this->invitationId = null;
         $this->resetValidation('invitationRecipient');
     }
 
@@ -422,6 +456,7 @@ class ReferralPage extends Component
     {
         abort_unless(in_array($this->inviteModal, ['provider', 'customer'], true), 422);
         abort_unless(in_array($channel, ['email', 'sms'], true), 422);
+        abort_unless($this->invitationId !== null, 422);
 
         $recipient = trim($this->invitationRecipient);
         $isEmail = filter_var($recipient, FILTER_VALIDATE_EMAIL) !== false;
@@ -439,15 +474,14 @@ class ReferralPage extends Component
         }
 
         try {
-            $businessId = str_starts_with($this->referringAccount, 'business:') ? (int) substr($this->referringAccount, 9) : null;
-            $invitations->send($this->user(), $isEmail ? mb_strtolower($recipient) : $this->normalizePhone($recipient), $this->inviteModal, $channel, $businessId);
+            $invitations->sendExisting($this->user(), $this->invitationId, $channel);
         } catch (\Throwable $exception) {
             report($exception);
+
             throw ValidationException::withMessages([
-                'invitationRecipient' => 'The invitation could not be sent. Please try again or contact support.',
+                'invitationRecipient' => $exception->getMessage(),
             ]);
         }
-
         $channelLabel = $channel === 'email' ? 'email' : 'SMS';
         $this->closeInvite();
         $this->successMessage = "Invitation sent by {$channelLabel}.";
@@ -462,7 +496,7 @@ class ReferralPage extends Component
 
         $this->listTab = $tab;
         $this->resetFilters();
-    }
+    } 
 
     public function resetFilters(): void
     {
@@ -568,7 +602,7 @@ class ReferralPage extends Component
             'businesses' => $this->isProvider
                 ? InfoActivity::query()->where('user_id', $user->getKey())->get()
                 : collect(),
-            'referringUserName' => trim((string) ($user->fl_name ?? '').' '.(string) ($user->last_name ?? '')),
+            'referringUserName' => trim((string) ($user->fl_name ?? '') . ' ' . (string) ($user->last_name ?? '')),
             'referringUserId' => trim((int) ($user->id ?? '')),
             'receiverOptions' => $receiverOptions,
             'customerOptions' => $customerOptions,
@@ -586,18 +620,18 @@ class ReferralPage extends Component
                 : ['receiverUser', 'receiverBusiness'];
 
             $query->where(function ($query) use ($relationNames, $term): void {
-                $like = '%'.$term.'%';
+                $like = '%' . $term . '%';
                 $query->whereHas($relationNames[0], function ($user) use ($like): void {
                     $user->where('fl_name', 'like', $like)
                         ->orWhere('last_name', 'like', $like)
                         ->orWhereRaw("CONCAT(COALESCE(fl_name, ''), ' ', COALESCE(last_name, '')) LIKE ?", [$like]);
-                })->orWhereHas($relationNames[1], fn ($business) => $business->where('name', 'like', $like));
+                })->orWhereHas($relationNames[1], fn($business) => $business->where('name', 'like', $like));
             });
         }
 
         if ($this->phoneFilter !== '') {
             $digits = $this->normalizePhone($this->phoneFilter);
-            $query->where('customer_phone', 'like', '%'.substr($digits, -10).'%');
+            $query->where('customer_phone', 'like', '%' . substr($digits, -10) . '%');
         }
         if ($this->dateFrom !== '') {
             $query->whereDate('created_at', '>=', $this->dateFrom);
@@ -619,8 +653,8 @@ class ReferralPage extends Component
             return collect();
         }
 
-        $search = '%'.$term.'%';
-        $normalizedTextSearch = '%'.mb_strtolower($term).'%';
+        $search = '%' . $term . '%';
+        $normalizedTextSearch = '%' . mb_strtolower($term) . '%';
         $normalizedPhone = $this->normalizePhone($term);
         $isPhoneSearch = preg_match('/^[\d\s()+-]+$/', $term) === 1;
         if ($isPhoneSearch && strlen($normalizedPhone) < 10) {
@@ -637,7 +671,7 @@ class ReferralPage extends Component
                 if ($normalizedPhone !== '') {
                     $query->orWhereRaw(
                         "RIGHT(REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(mobile, ' ', ''), '-', ''), '(', ''), ')', ''), '+', ''), 10) LIKE ?",
-                        ['%'.substr($normalizedPhone, -7)]
+                        ['%' . substr($normalizedPhone, -7)]
                     );
                 }
             })
@@ -653,7 +687,7 @@ class ReferralPage extends Component
                 if ($normalizedPhone !== '') {
                     $query->orWhereRaw(
                         "RIGHT(REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(phone, ' ', ''), '-', ''), '(', ''), ')', ''), '+', ''), 10) LIKE ?",
-                        ['%'.substr($normalizedPhone, -7)]
+                        ['%' . substr($normalizedPhone, -7)]
                     );
                 }
             })
@@ -664,17 +698,17 @@ class ReferralPage extends Component
             ->pluck('id');
 
         $businessOptions = $this->destinationOptionsForBusinessIds(
-            $matchedBusinessIds->concat($providerBusinessIds)->unique()->map(static fn ($id): int => (int) $id)->all()
+            $matchedBusinessIds->concat($providerBusinessIds)->unique()->map(static fn($id): int => (int) $id)->all()
         );
 
-        $businessProviderIds = $businessOptions->pluck('provider_id')->filter()->map(static fn ($id): int => (int) $id);
+        $businessProviderIds = $businessOptions->pluck('provider_id')->filter()->map(static fn($id): int => (int) $id);
         $providerOptions = $this->activeProviderQuery()->whereIn('id', $providerIds)
             ->whereNotIn('id', $businessProviderIds)
             ->limit(20)->get()->map(function (MainUser $provider): array {
-                $name = trim(($provider->fl_name ?? '').' '.($provider->last_name ?? ''));
+                $name = trim(($provider->fl_name ?? '') . ' ' . ($provider->last_name ?? ''));
 
                 return [
-                    'value' => 'provider:'.$provider->getKey(),
+                    'value' => 'provider:' . $provider->getKey(),
                     'name' => $name ?: 'Besmani Provider',
                     'details' => 'Provider',
                     'type' => 'Provider',
@@ -692,11 +726,11 @@ class ReferralPage extends Component
         }
 
         $term = trim(collect([$this->customerEmail, $this->customerFirstName, $this->customerLastName, $this->customerPhone])
-            ->first(fn (string $value): bool => trim($value) !== '') ?? '');
+            ->first(fn(string $value): bool => trim($value) !== '') ?? '');
         if (mb_strlen($term) < 2) {
             return collect();
         }
-        $like = '%'.mb_strtolower($term).'%';
+        $like = '%' . mb_strtolower($term) . '%';
         $phone = $this->normalizePhone($term);
 
         return MainUser::query()->where(function ($query) use ($like, $phone): void {
@@ -707,12 +741,12 @@ class ReferralPage extends Component
             if (strlen($phone) >= 4) {
                 $query->orWhereRaw(
                     "RIGHT(REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(mobile, ' ', ''), '-', ''), '(', ''), ')', ''), '+', ''), 10) LIKE ?",
-                    ['%'.substr($phone, -7)]
+                    ['%' . substr($phone, -7)]
                 );
             }
-        })->limit(10)->get()->map(fn (MainUser $customer): array => [
+        })->limit(10)->get()->map(fn(MainUser $customer): array => [
             'id' => (int) $customer->getKey(),
-            'name' => trim((string) $customer->fl_name.' '.(string) $customer->last_name),
+            'name' => trim((string) $customer->fl_name . ' ' . (string) $customer->last_name),
             'phone' => $this->maskPhone($this->userPhone($customer)),
             'email' => $this->maskEmail((string) $customer->email),
         ]);
@@ -779,10 +813,10 @@ class ReferralPage extends Component
         return $businesses
             ->map(function (InfoActivity $infoActivity) use ($providers): array {
                 $provider = $providers->get($infoActivity->user_id);
-                $providerName = trim(($provider?->fl_name ?? '').' '.($provider?->last_name ?? ''));
+                $providerName = trim(($provider?->fl_name ?? '') . ' ' . ($provider?->last_name ?? ''));
 
                 return [
-                    'value' => 'business:'.$infoActivity->getKey(),
+                    'value' => 'business:' . $infoActivity->getKey(),
                     'name' => $infoActivity->name,
                     'details' => collect([$providerName, $infoActivity->city ?? null, $infoActivity->province ?? null])->filter()->join(' · '),
                     'type' => 'Business',
@@ -796,7 +830,7 @@ class ReferralPage extends Component
         return MainUser::query()
             ->whereRaw(
                 "RIGHT(REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(mobile, ' ', ''), '-', ''), '(', ''), ')', ''), '+', ''), 10) LIKE ?",
-                ['%'.substr($this->normalizePhone($phone), -7)]
+                ['%' . substr($this->normalizePhone($phone), -7)]
             )
             ->first();
     }
@@ -805,7 +839,7 @@ class ReferralPage extends Component
     {
         return $this->activeProviderQuery()
             ->pluck('id')
-            ->map(static fn ($id): int => (int) $id)
+            ->map(static fn($id): int => (int) $id)
             ->all();
     }
 
@@ -831,10 +865,26 @@ class ReferralPage extends Component
     private function normalizePhone(string $phone): string
     {
         $phone = strtr($phone, [
-            '۰' => '0', '۱' => '1', '۲' => '2', '۳' => '3', '۴' => '4',
-            '۵' => '5', '۶' => '6', '۷' => '7', '۸' => '8', '۹' => '9',
-            '٠' => '0', '١' => '1', '٢' => '2', '٣' => '3', '٤' => '4',
-            '٥' => '5', '٦' => '6', '٧' => '7', '٨' => '8', '٩' => '9',
+            '۰' => '0',
+            '۱' => '1',
+            '۲' => '2',
+            '۳' => '3',
+            '۴' => '4',
+            '۵' => '5',
+            '۶' => '6',
+            '۷' => '7',
+            '۸' => '8',
+            '۹' => '9',
+            '٠' => '0',
+            '١' => '1',
+            '٢' => '2',
+            '٣' => '3',
+            '٤' => '4',
+            '٥' => '5',
+            '٦' => '6',
+            '٧' => '7',
+            '٨' => '8',
+            '٩' => '9',
         ]);
 
         return preg_replace('/\D+/', '', $phone) ?? '';
@@ -847,7 +897,7 @@ class ReferralPage extends Component
 
     private function maskPhone(string $phone): string
     {
-        return $phone === '' ? '—' : str_repeat('*', max(0, strlen($phone) - 4)).substr($phone, -4);
+        return $phone === '' ? '—' : str_repeat('*', max(0, strlen($phone) - 4)) . substr($phone, -4);
     }
 
     private function maskEmail(string $email): string
@@ -857,7 +907,7 @@ class ReferralPage extends Component
         }
         [$name, $domain] = explode('@', $email, 2);
 
-        return mb_substr($name, 0, 1).str_repeat('*', max(1, mb_strlen($name) - 1)).'@'.$domain;
+        return mb_substr($name, 0, 1) . str_repeat('*', max(1, mb_strlen($name) - 1)) . '@' . $domain;
     }
 
     private function findVisibleReferral(int $referralId): Referral
@@ -890,7 +940,7 @@ class ReferralPage extends Component
     private function newReferralNumber(): string
     {
         do {
-            $number = 'REF-'.now()->format('ymd').'-'.Str::upper(Str::random(6));
+            $number = 'REF-' . now()->format('ymd') . '-' . Str::upper(Str::random(6));
         } while (Referral::query()->where('referral_number', $number)->exists());
 
         return $number;
@@ -912,7 +962,8 @@ class ReferralPage extends Component
             'serviceId',
             'note',
         ]);
-        $this->referringAccount = $this->isProvider ? '' : 'personal';
+        // $this->referringAccount = $this->isProvider ? '' : 'personal';
+        $this->referringAccount = 'personal';
     }
 
     private function resetActionState(): void

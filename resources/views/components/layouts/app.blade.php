@@ -599,9 +599,12 @@ $countryCode = countryCode();
                         <input type="tel" id="phone" placeholder="Phone Number" class="modal-input phone-input"
                             required>
                     </div>
-                    <input type="email" id="email" placeholder="Email" class="modal-input" required>
+                    <input type="email"  autocomplete="new-password"
+    autocorrect="off"
+    autocapitalize="none" 
+    spellcheck="false" autocomplete="off" id="email" placeholder="Email" class="modal-input" required>
 
-                    <input type="password" id="password" placeholder="Password" class="modal-input" required>
+                    <input type="password" autocomplete="off" id="password" placeholder="Password" class="modal-input" required>
 
                     <!-- Terms & Conditions Checkbox -->
                     <div class="terms-checkbox-container"
@@ -983,7 +986,8 @@ $countryCode = countryCode();
                     toastSuccess('Code Confirmed!', 'Welcome to BESMANI!', 3000);
                     setTimeout(function () {
                         closeSignupModal();
-                        window.location.href = '/panel';
+        window.location.href = '/panel/profile'; 
+
                     }, 3000);
                     $('.WuserName').text(response.userName);
                     $('.welcome-user').show();
@@ -1015,8 +1019,8 @@ $countryCode = countryCode();
 
         });
     }
-
     $(document).ready(function () {
+
         // Setup CSRF token for all AJAX requests
         $.ajaxSetup({
             headers: {
@@ -1024,30 +1028,170 @@ $countryCode = countryCode();
             }
         });
 
-        // Phone number formatting function
-        function formatPhoneNumber(value) {
-            // Remove all non-digit characters
-            const phoneNumber = value.replace(/\D/g, '');
 
-            // Format as (XXX) XXX-XXXX
+        /*
+        |--------------------------------------------------------------------------
+        | Phone Formatter
+        |--------------------------------------------------------------------------
+        */
+        function formatPhoneNumber(value) {
+
+            const phoneNumber = String(value).replace(/\D/g, '');
+
             if (phoneNumber.length >= 6) {
-                return '(' + phoneNumber.substring(0, 3) + ') ' + phoneNumber.substring(3, 6) + '-' +
-                    phoneNumber.substring(6, 10);
+
+                return '('
+                    + phoneNumber.substring(0, 3)
+                    + ') '
+                    + phoneNumber.substring(3, 6)
+                    + '-'
+                    + phoneNumber.substring(6, 10);
+
             } else if (phoneNumber.length >= 3) {
-                return '(' + phoneNumber.substring(0, 3) + ') ' + phoneNumber.substring(3);
+
+                return '('
+                    + phoneNumber.substring(0, 3)
+                    + ') '
+                    + phoneNumber.substring(3);
+
             } else if (phoneNumber.length > 0) {
+
                 return '(' + phoneNumber;
             }
+
             return phoneNumber;
         }
 
-        // Phone number input formatting and copy-paste prevention
+
+        /*
+        |--------------------------------------------------------------------------
+        | Phone input formatting
+        |--------------------------------------------------------------------------
+        */
         $('#phone').on('input', function () {
+
             const formatted = formatPhoneNumber($(this).val());
+
             $(this).val(formatted);
         });
 
-        // Prevent copy-paste on phone number field
+
+        /*
+        |--------------------------------------------------------------------------
+        | Referral Invitation
+        |--------------------------------------------------------------------------
+        |
+        | If the visitor arrived through /join/{token},
+        | ReferralInvitationController redirects them to "/"
+        | and asks us to automatically open the existing signup modal.
+        |
+        */
+
+        @if (session('open_signup_modal'))
+
+            const referralRecipient =
+                @json(session('referral_invitation_recipient'));
+
+            const referralParty =
+                @json(session('referral_invitation_party'));
+
+
+            // Open existing signup modal automatically
+            openSignupModal();
+
+
+            if (referralRecipient) {
+
+                const recipient = String(referralRecipient).trim();
+
+                const isEmail = recipient.includes('@');
+
+
+                if (isEmail) {
+
+                    /*
+                    |--------------------------------------------------------------------------
+                    | Email invitation
+                    |--------------------------------------------------------------------------
+                    */
+
+                    $('#email').val(recipient);
+
+                    $('#email').css(
+                        'background-color',
+                        '#f0f9ff'
+                    );
+
+
+                } else {
+
+                    /*
+                    |--------------------------------------------------------------------------
+                    | Phone invitation
+                    |--------------------------------------------------------------------------
+                    */
+
+                    let phone = recipient.replace(/\D/g, '');
+
+
+                    /*
+                     * Current signup form defaults to USA +1.
+                     *
+                     * Example:
+                     *
+                     * 19495551234
+                     *
+                     * becomes:
+                     *
+                     * 9495551234
+                     */
+
+                    if (
+                        phone.length === 11 &&
+                        phone.startsWith('1')
+                    ) {
+                        phone = phone.substring(1);
+                    }
+
+
+                    $('#phone')
+                        .val(phone)
+                        .trigger('input');
+
+
+                    $('#phone').css(
+                        'background-color',
+                        '#f0f9ff'
+                    );
+                }
+
+
+                /*
+                |--------------------------------------------------------------------------
+                | Invitation party
+                |--------------------------------------------------------------------------
+                |
+                | This is ONLY frontend information.
+                |
+                | Do NOT use this value later to assign service_pr.
+                | Provider authorization will be determined on the backend
+                | from referral_invitation_id.
+                |
+                */
+
+                window.referralInvitationParty =
+                    referralParty;
+            }
+
+        @endif
+
+
+        /*
+        |--------------------------------------------------------------------------
+        | Prevent copy / paste
+        |--------------------------------------------------------------------------
+        */
+
         $('#phone').on('paste', function (e) {
             e.preventDefault();
         });
@@ -1056,7 +1200,7 @@ $countryCode = countryCode();
             e.preventDefault();
         });
 
-        // Prevent copy-paste on email field
+
         $('#email').on('paste', function (e) {
             e.preventDefault();
         });
@@ -1065,21 +1209,27 @@ $countryCode = countryCode();
             e.preventDefault();
         });
 
-        // Also prevent right-click context menu on both fields
+
         $('#phone, #email').on('contextmenu', function (e) {
             e.preventDefault();
         });
 
-        // Prevent keyboard shortcuts for copy/paste
+
         $('#phone, #email').on('keydown', function (e) {
-            // Prevent Ctrl+C, Ctrl+V, Ctrl+X
-            if ((e.ctrlKey || e.metaKey) && (e.keyCode === 67 || e.keyCode === 86 || e.keyCode ===
-                88)) {
+
+            if (
+                (e.ctrlKey || e.metaKey) &&
+                (
+                    e.keyCode === 67 ||
+                    e.keyCode === 86 ||
+                    e.keyCode === 88
+                )
+            ) {
                 e.preventDefault();
             }
         });
-    });
 
+    });
 
     // sign in modal
     function openLoginModal() {
@@ -1130,7 +1280,7 @@ $countryCode = countryCode();
                         // current url
                         var currentUrl = window.location.href;
                         // window.location.href = currentUrl;
-                        window.location.href = '/panel'; 
+                        window.location.href = '/panel';
                     }, 2000);
                     $('.WuserName').text(response.userName);
                     $('.welcome-user').show();

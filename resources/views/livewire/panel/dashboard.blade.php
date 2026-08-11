@@ -54,7 +54,9 @@
                 <span class="label">Advertising</span>
             </a>
             <a href="{{ route('panel.referral') }}" class="dash-quick-link dash-referrals">
-                <span class="icon-wrap referrals"><i class="fa fa-exchange"></i></span>
+                <span class="icon-wrap referrals">
+                    <i class="fa f fa-exchange"></i>
+                </span>
                 <span class="label">Referrals</span>
             </a>
             <a href="#" class="dash-quick-link dash-messages">

@@ -26,20 +26,21 @@ class ProfilePage extends Component
     public $website;
     public $mobile_moaref;
     public $moaref_user = null;
-    public function mount()
+    public function mount() 
     {
 
         if (!Auth::guard('mainUsers')->check()) {
             $this->redirect('/', navigate: true);
             return;
         } 
+        $this->country_id = 2;
         $user = Auth::guard('mainUsers')->user();
         $this->fl_name = $user->fl_name ?? '';
         $this->last_name = $user->last_name ?? '';
         $this->ssn = $user->ssn ?? '';
         $this->birthday = $user->birthday ?? ($user->date_of_birth ?? '');
         $this->gender = $user->gender ?? 2;
-        $this->country_id = $user->country_id ?? null;
+        // $this->country_id = $user->country_id ?? null;
         $this->id_province = $user->id_province ?? null;
         $this->id_city = $user->id_city ?? null;
         $this->apt_unit_suite = $user->neighbourhood ?? ($user->apt ?? '');

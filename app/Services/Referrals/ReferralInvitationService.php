@@ -9,7 +9,7 @@ use Illuminate\Support\Str;
 use Throwable;
 
 class ReferralInvitationService
-{
+{ 
     public function __construct(private readonly NotificationService $notifications) {}
 
     public function create(MainUser $inviter, string $recipient, string $party, string $channel = 'copy', ?int $businessId = null): ReferralInvitation
@@ -48,6 +48,32 @@ class ReferralInvitationService
             $invitation->update(['status' => 'sent', 'sent_at' => now()]);
         } catch (Throwable $exception) {
             $invitation->update([
+                'status' => 'failed',
+                'failure_reason' => mb_substr($exception->getMessage(), 0, 2000),
+            ]);
+            throw $exception;
+        }
+
+        return $invitation;
+    }
+
+    public function sendExisting(MainUser $inviter, int $invitationId, string $channel): ReferralInvitation
+    {
+        $invitation = ReferralInvitation::query()
+            ->whereKey($invitationId)
+            ->where('invited_by_user_id', $inviter->getKey())
+            ->firstOrFail();
+
+        $recipient = $channel === 'email'
+            ? (string) $invitation->recipient_email
+            : (string) $invitation->recipient_phone;
+
+        try {
+            $this->notifications->sendInvitation($channel, $recipient, (string) $invitation->party, (string) $invitation->message);
+            $invitation->update(['channel' => $channel, 'status' => 'sent', 'sent_at' => now(), 'failure_reason' => null]);
+        } catch (Throwable $exception) {
+            $invitation->update([
+                'channel' => $channel,
                 'status' => 'failed',
                 'failure_reason' => mb_substr($exception->getMessage(), 0, 2000),
             ]);

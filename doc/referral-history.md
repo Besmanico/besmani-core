@@ -4,7 +4,7 @@
 
 The referral feature has a dedicated `referrals` table containing the sender, destination business, registered customer snapshot, optional service, reward, workflow timestamps, and status. Status changes are recorded in `referral_status_histories`; completed rewards are written to `token_ledger`; `referral_partners` is available for aggregate partner statistics.
 
-Access is controlled through `ReferralPolicy` and `ReferralAccessService`. Workflow transitions (`pending` to `accepted`, `completed`, or `cancelled`) run through `ReferralWorkflowService` inside database transactions. Completion creates the configured Besmani COIN ledger entry.
+Access is controlled through `ReferralPolicy` and `ReferralAccessService`. Workflow transitions (`pending` to `accepted`, `completed`, or `cancelled`) run through `ReferralWorkflowService` inside database transactions. Completion creates the configured Besmani COIN ledger entry. 
 
 The Livewire referral page supports personal/business senders, destination business search, registered-customer lookup by phone, outgoing/incoming lists, action confirmation, details, and the BC balance. Before this change, its Service select only displayed General Referral, the backend rejected every non-null `serviceId`, and every referral stored a null `service_id`.
 
@@ -169,3 +169,10 @@ Database migrations and runtime database verification are performed only on the 
 - Selecting a Provider or Business once again loads Services from its legacy activity-specific model (`ClinicService`, salon assignments, or academy course assignments) and prepends `General Referral` as the first selectable option. Services without an enabled Referral Setting remain selectable with zero BC and no discount.
 - A General Referral is stored with no external service ID/type, a `General Referral` title snapshot, zero BC reward, and no customer discount.
 - The shared Invite Provider/Invite Customer modal continues to generate secure links for either party. Copy Link now shows confirmation and falls back to the legacy selection/copy mechanism when the Clipboard API is unavailable or the page is not in a secure browser context.
+
+## Immediate invitation links (2026-08-10)
+
+- Invite Provider and Invite Customer now validate the best available recipient and create the secure invitation before opening the modal. The generated URL and Copy Link action are therefore available immediately; the separate Generate Link step was removed.
+- Customer invitations prefer a valid email and otherwise use the normalized phone number. The modal recipient is read-only so it cannot drift from the recipient bound to the token.
+- The initial invitation ID is retained while the modal is open. Email and SMS delivery reuse that invitation record, message, and token instead of creating a second invitation URL.
+- Invitation buttons are disabled while creation is in progress, and creation errors leave the modal closed.

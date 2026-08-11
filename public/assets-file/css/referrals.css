@@ -121,7 +121,7 @@
 .ref-btn:hover { transform: translateY(-1px); }
 .ref-btn-primary { background: var(--ref-navy); box-shadow: 0 8px 18px rgba(6, 40, 63, .18); color: #fff; }
 .ref-btn-primary:hover { background: #0a3a5b; color: #fff; }
-.ref-btn-secondary { background: #fff; border-color: #d8dee8; color: var(--ref-navy); }
+.ref-btn-secondary { background: #fff; border-color: #fff !important; color: var(--ref-navy); }
 .ref-btn-secondary:hover { background: #f8fafc; color: var(--ref-navy); }
 
 .ref-token-notice,
@@ -598,7 +598,7 @@
 .ref-all-provider-select { margin-top: 14px; }
 .ref-inline-empty { align-items: center; background: #f8fafc; border: 1px dashed #cfd7e3; border-radius: 11px; display: flex; flex-direction: column; gap: 7px; grid-column: 1 / -1; padding: 18px; text-align: center; }
 .ref-inline-empty strong { color: var(--ref-navy); font-size: 12px; }
-.ref-inline-empty span, .ref-field-hint { color: var(--ref-muted); font-size: 10px; }
+.ref-inline-empty span, .ref-field-hint { color: var(--ref-surface); font-size: 10px; }
 .ref-customer-results-wrap { background: #f8fafc; border: 1px solid #dbe4ec; border-radius: 14px; margin-top: 12px; padding: 13px; }
 .ref-customer-results-heading { align-items: center; display: flex; gap: 9px; margin-bottom: 10px; }
 .ref-customer-results-heading > span { align-items: center; background: #e5f3fb; border-radius: 9px; color: #0878b5; display: inline-flex; flex: 0 0 34px; height: 34px; justify-content: center; }

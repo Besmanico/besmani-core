@@ -13,14 +13,43 @@ class ReferralInvitationController extends Controller
         $invitation = ReferralInvitation::query()
             ->where('token_hash', hash('sha256', $token))
             ->where(function ($query): void {
-                $query->whereNull('expires_at')->orWhere('expires_at', '>', now());
-            })->firstOrFail();
+                $query->whereNull('expires_at')
+                    ->orWhere('expires_at', '>', now());
+            })
+            ->firstOrFail();
 
         if ($invitation->status === 'pending') {
-            $invitation->update(['status' => 'opened']);
+            $invitation->update([
+                'status' => 'opened',
+            ]);
         }
-        $request->session()->put('referral_invitation_id', $invitation->getKey());
 
-        return redirect('/')->with('referral_invitation', 'You were invited to join Besmani. Create or sign in to your account to continue.');
+        // Keep this until signup is completed
+        $request->session()->put(
+            'referral_invitation_id', 
+            $invitation->getKey()
+        );
+
+        // These are only needed on the redirected homepage
+        $request->session()->flash(
+            'open_signup_modal',
+            true
+        );
+
+        $request->session()->flash(
+            'referral_invitation_party',
+            $invitation->party
+        );
+
+        $recipient = $invitation->recipient_email
+            ?: $invitation->recipient_phone
+            ?: $invitation->recipient;
+
+        $request->session()->flash(
+            'referral_invitation_recipient',
+            $recipient
+        );
+
+        return redirect('/');
     }
 }

@@ -133,7 +133,8 @@
                                                 <div class="ref-inline-empty"> 
                                                     <strong>No Provider or Business found on Besmani.</strong>
                                                     <span>Ask them to register before sending a referral.</span>
-                                                    <button type="button" class="ref-btn ref-btn-secondary " style="background-color: var(--ref-navy);color:white" wire:click="openInvite('provider')">Invite Provider</button>
+                                                    <button type="button" class="ref-btn ref-btn-secondary " style="background-color: var(--ref-navy);color:white" wire:click="openInvite('provider')" wire:loading.attr="disabled" wire:target="openInvite('provider')"><span wire:loading.remove wire:target="openInvite('provider')">Invite Provider</span><span wire:loading wire:target="openInvite('provider')"><i class="fa fa-circle-o-notch fa-spin"></i> Creating invitation...</span></button>
+                                                    @error('invitationRecipient') <small class="ref-field-error">{{ $message }}</small> @enderror
                                                 </div>
                                             @endforelse
                                         </div>
@@ -168,11 +169,12 @@
                                 <strong>Customer not found on Besmani.</strong>
                                 <span>Please ask the Customer to register with Besmani before sending the referral.</span>
                                 <button type="button" class="ref-btn ref-btn-secondary " style="background: #15803d;
-    color: #fff;" wire:click="openInvite('customer')">Invite Customer to Besmani</button>
+    color: #fff;" wire:click="openInvite('customer')" wire:loading.attr="disabled" wire:target="openInvite('customer')"><span wire:loading.remove wire:target="openInvite('customer')">Invite Customer to Besmani</span><span wire:loading wire:target="openInvite('customer')"><i class="fa fa-circle-o-notch fa-spin"></i> Creating invitation...</span></button>
+                                @error('invitationRecipient') <small class="ref-field-error">{{ $message }}</small> @enderror
                             </div>
                         @endif
                         @error('customerUserId') <small class="ref-field-error">{{ $message }}</small> @enderror
-                    </section>
+                    </section>    
   
                     <section class="ref-panel-card ref-form-card">
                         <div class="ref-section-heading"><div><span class="ref-step">4</span><h2>Referral details</h2></div></div>
@@ -284,7 +286,7 @@
                                         <tr wire:key="referral-{{ $referral->id }}">
                                             <td><span class="ref-person-cell"><span class="ref-avatar">{{ strtoupper(substr($customerName ?: 'C', 0, 1)) }}</span><span><strong>{{ $customerName ?: 'Customer' }}</strong><small>{{ $referral->referral_number }}</small></span></span></td>
                                             <td>{{ $destinationName ?: 'Provider' }}</td>
-                                            <td>{{ $referral->service_title ?? 'General referral' }}</td>
+                                            <td>{{ $referral->service_title ?? 'General referral' }} / {{ $referral->note ?? '-' }} </td>
                                             <td><x-referrals.status-badge :status="$referral->status" /></td>
                                             <td><strong>{{ in_array(strtolower(trim($referral->status)), ['completed', 'complete', 'settled'], true) ? number_format($referral->token_amount) . ' BC' : '—' }}</strong></td>
                                             <td>{{ $referral->created_at?->format('M d, Y') }}</td>
@@ -316,20 +318,14 @@
                     <span class="ref-modal-icon"><i class="fa fa-user-plus"></i></span>
                     <h2>Invite {{ ucfirst($inviteModal) }} to Besmani</h2>
                     <p id="ref-invite-message">{{ $inviteModal === 'provider' ? 'Join Besmani as a Provider or Business so I can send registered referrals to you.' : 'Please register with Besmani so I can connect you with trusted Providers through a secure referral.' }}</p>
-                    <label class="ref-field ref-invite-recipient"><span>Email or phone number</span><input type="text" wire:model="invitationRecipient" placeholder="name@example.com or phone number">@error('invitationRecipient') <small class="ref-field-error">{{ $message }}</small> @enderror</label>
-                    <label class="ref-field" wire:key="invitation-link-field-{{ md5($invitationUrl) }}"><span>Invitation Link</span><div class="ref-combobox-control"><input id="ref-invitation-url" type="text" value="{{ $invitationUrl }}" placeholder="Generate a secure invitation link" readonly></div></label>
+                    <label class="ref-field ref-invite-recipient"><span>{{ $inviteModal === 'provider' ? 'Provider Email or Phone' : 'Customer Email or Phone' }}</span><input type="text" wire:model="invitationRecipient" readonly>@error('invitationRecipient') <small class="ref-field-error">{{ $message }}</small> @enderror</label>
+                    <label class="ref-field" wire:key="invitation-link-field-{{ md5($invitationUrl) }}"><span>Invitation Link</span><div class="ref-combobox-control"><input id="ref-invitation-url" type="text" value="{{ $invitationUrl }}" readonly></div></label>
                     <div class="ref-modal-actions" wire:key="invitation-link-actions-{{ md5($invitationUrl) }}">
-                        @if ($invitationUrl === '')
-                            <button type="button" class="ref-btn ref-btn-secondary" wire:click="generateInvitationLink" wire:loading.attr="disabled" wire:target="generateInvitationLink">
-                                <i class="fa fa-link"></i>
-                                <span wire:loading.remove wire:target="generateInvitationLink">Generate Link</span>
-                                <span wire:loading wire:target="generateInvitationLink">Generating...</span>
-                            </button>
-                        @else
                             <button type="button" class="ref-btn ref-btn-secondary"
                                     x-data="{ copied: false }"
                                     @click="
                                         const input = document.getElementById('ref-invitation-url');
+                                        if (!input || !input.value) return;
                                         const copy = navigator.clipboard && window.isSecureContext
                                             ? navigator.clipboard.writeText(input.value)
                                             : new Promise((resolve, reject) => {
@@ -339,14 +335,11 @@
                                         copy.then(() => { copied = true; setTimeout(() => copied = false, 2000) });
                                     ">
                                 <i class="fa" :class="copied ? 'fa-check' : 'fa-copy'"></i>
-                                <span x-text="copied ? 'Copied' : 'Copy Link'">Copy Link</span>
+                                <span x-text="copied ? 'Copied!' : 'Copy Link'">Copy Link</span>
                             </button>
-                        @endif
-                        <button type="button" class="ref-btn ref-btn-secondary" wire:click="sendInvitation('sms')" wire:loading.attr="disabled"><i class="fa fa-comment"></i> Text / SMS</button>
-                        <button type="button" class="ref-btn ref-btn-secondary" wire:click="sendInvitation('email')" wire:loading.attr="disabled"><i class="fa fa-envelope"></i> Email</button>
-                        @if ($invitationUrl !== '')
-                            <button type="button" class="ref-btn ref-btn-primary" x-data @click="navigator.share ? navigator.share({ title: 'Join Besmani', text: document.getElementById('ref-invite-message').innerText, url: document.getElementById('ref-invitation-url').value }) : navigator.clipboard.writeText(document.getElementById('ref-invitation-url').value)"><i class="fa fa-share-alt"></i> Share</button>
-                        @endif
+                        {{-- <button type="button" class="ref-btn ref-btn-secondary" wire:click="sendInvitation('sms')" wire:loading.attr="disabled"><i class="fa fa-comment"></i> Text / SMS</button> --}}
+                        {{-- <button type="button" class="ref-btn ref-btn-secondary" wire:click="sendInvitation('email')" wire:loading.attr="disabled"><i class="fa fa-envelope"></i> Email</button> --}}
+                        <button type="button" class="ref-btn ref-btn-primary" x-data @click="navigator.share ? navigator.share({ title: 'Join Besmani', text: document.getElementById('ref-invite-message').innerText, url: document.getElementById('ref-invitation-url').value }) : navigator.clipboard.writeText(document.getElementById('ref-invitation-url').value)"><i class="fa fa-share-alt"></i> Share</button>
                     </div>
                 </div>
             </div>
