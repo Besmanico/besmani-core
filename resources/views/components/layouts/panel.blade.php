@@ -67,26 +67,31 @@
             visibility: hidden;
             transition: opacity 0.25s ease, visibility 0.25s ease;
         }
+
         .panel-logout-modal.is-open {
             opacity: 1;
             visibility: visible;
         }
+
         .panel-logout-modal-backdrop {
             position: absolute;
             inset: 0;
             background: rgba(15, 23, 42, 0.6);
             backdrop-filter: blur(4px);
         }
+
         .panel-logout-modal-dialog {
             position: relative;
             width: 100%;
             max-width: 400px;
             transform: scale(0.9);
             transition: transform 0.25s ease;
-         }
+        }
+
         .panel-logout-modal.is-open .panel-logout-modal-dialog {
             transform: scale(1);
-        } 
+        }
+
         .panel-logout-modal-content {
             background: #06283f;
             border-radius: 16px;
@@ -94,6 +99,7 @@
             padding: 2rem 1.75rem;
             text-align: center;
         }
+
         .panel-logout-modal-icon {
             width: 64px;
             height: 64px;
@@ -106,6 +112,7 @@
             color: #fca5a5;
             font-size: 1.75rem;
         }
+
         .panel-logout-modal-title {
             font-family: 'Montserrat', sans-serif;
             font-size: 1.65rem;
@@ -113,18 +120,21 @@
             color: #fff;
             margin: 0 0 0.5rem;
         }
+
         .panel-logout-modal-text {
             font-size: 1.1rem;
             color: #94a3b8;
             line-height: 1.5;
             margin: 0 0 1.75rem;
         }
+
         .panel-logout-modal-actions {
             display: flex;
             gap: 0.75rem;
             justify-content: center;
             flex-wrap: wrap;
         }
+
         .panel-logout-btn {
             font-family: 'Montserrat', sans-serif;
             font-size: 1.05rem;
@@ -135,21 +145,26 @@
             cursor: pointer;
             transition: background 0.2s, color 0.2s, transform 0.15s;
         }
+
         .panel-logout-btn:active {
             transform: scale(0.98);
         }
+
         .panel-logout-btn-cancel {
             background: rgba(238, 198, 20, 0.813);
-            color: #e2e8f0; 
+            color: #e2e8f0;
         }
+
         .panel-logout-btn-cancel:hover {
             background: rgba(255, 255, 255, 0.3);
             color: #fff;
         }
+
         .panel-logout-btn-confirm {
             background: linear-gradient(135deg, #dc2626 0%, #b91c1c 100%);
             color: #fff;
         }
+
         .panel-logout-btn-confirm:hover {
             background: linear-gradient(135deg, #b91c1c 0%, #991b1b 100%);
         }
@@ -158,16 +173,24 @@
     @livewireStyles
 </head>
 
-<body> 
+<body>
+
+    @php
+        $return_url = request()->query('return_url');
+        $is_other = request()->has('other') || ! empty($return_url) ? 1 : 0;
+    @endphp
 
     <div class="panel-dashboard">
         <aside class="panel-sidebar">
             <div class="sidebar-header">
-                <a href="{{ config('app.url') }}">
-                    <div class="logo">
-                        <img style="width: 100px;" src="{{ config('app.url') }}assets-file/img/logo-footer.png" alt="logo">
-                    </div>
-                </a>
+                @if($is_other == 0)
+                    <a href="{{ config('app.url') }}">
+                        <div class="logo">
+                            <img style="width: 100px;" src="{{ config('app.url') }}assets-file/img/logo-footer.png"
+                                alt="logo">
+                        </div>
+                    </a>
+                @endif 
                 @auth('mainUsers')
                     @php
                         $panelUser = Auth::guard('mainUsers')->user();
@@ -187,69 +210,86 @@
                 @else
                     {{-- <p class="welcome">Welcome back!</p> --}}
                 @endauth
+
             </div>
+            @if($is_other == 0)
+                <nav class="sidebar-nav">
+                    <a href="{{ config('app.url') }}panel"
+                        class="nav-link {{ request()->path() === 'panel' ? 'active' : '' }}">
+                        <i class="fa fa-home"></i>
+                        <span>Dashboard</span>
+                    </a>
+                    <a href="{{ config('app.url') }}panel/profile"
+                        class="nav-link {{ request()->is('panel/profile*') ? 'active' : '' }}">
+                        <i class="fa fa-user"></i>
+                        <span>My Profile</span>
+                    </a>
+                    <a href="{{ rtrim(env('BEAUTY_URL'), '/') }}" target="_blank" class="nav-link ">
+                        <i class="fa fa-id-card"></i>
+                        <span>My Page</span>
+                    </a>
+                    <a href="{{ config('app.url') }}panel/invoice"
+                        class="nav-link {{ request()->is('panel/invoice*') ? 'active' : '' }}">
+                        <i class="fa fa-shopping-cart"></i>
+                        <span>Orders</span>
+                    </a>
+                    <a href="{{ config('app.url') }}panel/payment"
+                        class="nav-link {{ request()->is('panel/payment*') ? 'active' : '' }}">
+                        <i class="fa fa-briefcase"></i>
+                        <span>Payments</span>
+                    </a>
+                    <a href="{{ route('panel.referral') }}"
+                        class="nav-link {{ request()->is('panel/referral*') ? 'active' : '' }}">
+                        <i class="fa fa-exchange"></i>
+                        <span>Referrals</span>
+                    </a>
 
-            <nav class="sidebar-nav">
-                <a href="{{ config('app.url') }}panel" class="nav-link {{ request()->path() === 'panel' ? 'active' : '' }}">
-                    <i class="fa fa-home"></i>
-                    <span>Dashboard</span>
-                </a>
-                <a href="{{ config('app.url') }}panel/profile" class="nav-link {{ request()->is('panel/profile*') ? 'active' : '' }}">
-                    <i class="fa fa-user"></i>
-                    <span>My Profile</span> 
-                </a>
-                   <a href="{{ rtrim(env('BEAUTY_URL'), '/') }}" target="_blank" class="nav-link ">
-                    <i class="fa fa-id-card"></i>
-                    <span>My Page</span> 
-                </a>
-                <a href="{{ config('app.url') }}panel/invoice" class="nav-link {{ request()->is('panel/invoice*') ? 'active' : '' }}">
-                    <i class="fa fa-shopping-cart"></i>
-                    <span>Orders</span>
-                </a>
-                <a href="{{ config('app.url') }}panel/payment" class="nav-link {{ request()->is('panel/payment*') ? 'active' : '' }}">
-                    <i class="fa fa-briefcase"></i>
-                    <span>Payments</span>  
-                </a>
-             <a href="{{ route('panel.referral') }}" class="nav-link {{ request()->is('panel/referral*') ? 'active' : '' }}">
-    <i class="fa fa-exchange"></i>
-    <span>Referrals</span>
-</a>
+                    {{-- <a href="#" class="nav-link">
+                        <i class="fa fa-briefcase"></i>
+                        <span>My Projects</span>
+                    </a> --}}
 
-                {{-- <a href="#" class="nav-link">
-                    <i class="fa fa-briefcase"></i>
-                    <span>My Projects</span>
-                </a> --}}
-              
-                {{-- <a href="#" class="nav-link">
-                    <i class="fa fa-calendar"></i>
-                    <span>Schedule</span>
-                </a> --}}
-                <a href="#" class="nav-link">
-                    <i class="fa fa-envelope"></i>
-                    <span>Messages</span>
-                </a>
-                
-                {{-- <a href="{{ config('app.url') }}panel/business" class="nav-link">
+                    {{-- <a href="#" class="nav-link">
+                        <i class="fa fa-calendar"></i>
+                        <span>Schedule</span>
+                    </a> --}}
+                    <a href="#" class="nav-link">
+                        <i class="fa fa-envelope"></i>
+                        <span>Messages</span>
+                    </a>
+
+                    {{-- <a href="{{ config('app.url') }}panel/business" class="nav-link">
                     <i class="fa fa-briefcase"></i>
                     <span>Business</span>
-                </a> --}}
-                <a href="#" class="nav-link">
-                    <i class="fa fa-cog"></i>
-                    <span>Settings</span>
-                </a>
-              
-                <a href="#" class="nav-link" onclick="event.preventDefault(); panelLogout();">
-                    <i class="fa fa-sign-out"></i>
-                    <span>Logout</span>
-                </a> 
-            </nav>
+                    </a> --}}
+                    <a href="#" class="nav-link">
+                        <i class="fa fa-cog"></i>
+                        <span>Settings</span>
+                    </a>
 
-            <div class="sidebar-footer">
-                <button class="upgrade-btn">
-                    <span>Upgrade Plan</span>
-                    <i class="fa fa-arrow-up"></i>
-                </button>
-            </div>
+                    <a href="#" class="nav-link" onclick="event.preventDefault(); panelLogout();">
+                        <i class="fa fa-sign-out"></i>
+                        <span>Logout</span>
+                    </a>
+                </nav>
+
+                <div class="sidebar-footer">
+                    <button class="upgrade-btn">
+                        <span>Upgrade Plan</span>
+                        <i class="fa fa-arrow-up"></i>
+                    </button>
+                </div>
+            @endif
+
+
+  @if($is_other == 1 && !empty($return_url))
+    <div class="sidebar-footer">
+        <a href="{{ $return_url }}/panel" class="upgrade-btn">
+            <i class="fa fa-arrow-left"></i>
+            <span>Back</span>
+        </a>
+    </div>
+@endif
         </aside>
 
         <button type="button" class="sidebar-toggle" aria-label="Toggle navigation">
@@ -261,7 +301,8 @@
         <div class="sidebar-overlay"></div>
 
         {{-- Logout confirmation modal --}}
-        <div id="panelLogoutModal" class="panel-logout-modal" role="dialog" aria-modal="true" aria-labelledby="panelLogoutModalTitle" aria-hidden="true">
+        <div id="panelLogoutModal" class="panel-logout-modal" role="dialog" aria-modal="true"
+            aria-labelledby="panelLogoutModalTitle" aria-hidden="true">
             <div class="panel-logout-modal-backdrop"></div>
             <div class="panel-logout-modal-dialog">
                 <div class="panel-logout-modal-content">
@@ -269,10 +310,13 @@
                         <i class="fa fa-sign-out" aria-hidden="true"></i>
                     </div>
                     <h3 id="panelLogoutModalTitle" class="panel-logout-modal-title">Log out?</h3>
-                    <p class="panel-logout-modal-text">Are you sure you want to leave? You will need to sign in again.</p>
+                    <p class="panel-logout-modal-text">Are you sure you want to leave? You will need to sign in again.
+                    </p>
                     <div class="panel-logout-modal-actions">
-                        <button type="button" class="panel-logout-btn panel-logout-btn-cancel" data-dismiss="modal">Cancel</button>
-                        <button type="button" class="panel-logout-btn panel-logout-btn-confirm" id="panelLogoutConfirmBtn">Log out</button>
+                        <button type="button" class="panel-logout-btn panel-logout-btn-cancel"
+                            data-dismiss="modal">Cancel</button>
+                        <button type="button" class="panel-logout-btn panel-logout-btn-confirm"
+                            id="panelLogoutConfirmBtn">Log out</button>
                     </div>
                 </div>
             </div>
@@ -365,7 +409,7 @@
             if (e.key === 'Escape' && $modal.hasClass('is-open')) {
                 closeLogoutModal();
             }
-        }); 
+        });
     });
 </script>
 @livewireScripts

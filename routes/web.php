@@ -56,13 +56,13 @@ Route::post('/subscribe/AddSubscribe', [Controller::class, 'AddSubscribe']);
 Route::post('/signup', [Controller::class, 'signup'])->name('signup');
 Route::post('/login', [Controller::class, 'login'])->name('login');
 // other site login or signup
-Route::post('/other-site-login', [Controller::class, 'otherSiteLogin'])->name('other-site-login');
+Route::get('/user-login/{id}', [Controller::class, 'otherSiteLogin'])->name('other-site-login');
 Route::post('/other-signup', [Controller::class, 'otherSiteSignup'])->name('other-site-signup');
 
 Route::post('/confirm-code', [Controller::class, 'confirmCode'])->name('confirm-code');
 Route::post('/logout', [Controller::class, 'logout'])->name('logout'); 
  
-// order
+// order 
 Route::get('/order/{slug}/{service_id}', OrderPage::class)->name('order');
 // check guard is user panel check if user is logged in
 Route::middleware(['auth:mainUsers'])->group(function () {

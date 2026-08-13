@@ -1,6 +1,10 @@
 <div>
     <link rel="stylesheet" href="{{ asset('assets-file/css/referrals.css') }}">
 
+    @php
+        $referralQuery = request()->only(['other', 'return_url']);
+    @endphp
+
     <main class="panel-main referral-shell {{ $section === 'new' ? 'is-new-referral' : '' }}">
         <header class="ref-page-header">
             <div>
@@ -9,11 +13,11 @@
                 <p>{{ $isProvider ? 'Manage referrals connected to you and your authorized businesses.' : 'Refer someone to a Besmani Provider and earn Besmani COIN after completion.' }}</p>
             </div>
             <nav class="ref-subnav {{ $isProvider ? '' : 'is-personal' }}" aria-label="Referral sections">
-            <a href="{{ route('panel.referral') }}" class="{{ $section === 'dashboard' ? 'active' : '' }}"><i class="fa fa-th-large"></i><span>Overview</span></a>
-            <a href="{{ route('panel.referral.new') }}" class="{{ $section === 'new' ? 'active' : '' }}"><i class="fa fa-exchange"></i><span> {{ $isProvider ? 'New Referral' : 'Refer Someone' }}</span></a>
+            <a href="{{ route('panel.referral', $referralQuery) }}" class="{{ $section === 'dashboard' ? 'active' : '' }}"><i class="fa fa-th-large"></i><span>Overview</span></a>
+            <a href="{{ route('panel.referral.new', $referralQuery) }}" class="{{ $section === 'new' ? 'active' : '' }}"><i class="fa fa-exchange"></i><span> {{ $isProvider ? 'New Referral' : 'Refer Someone' }}</span></a>
         </nav>      
-            <div class="ref-header-actions">
-                    
+            <div class="ref-header-actions"> 
+                      
 
                 @if ($isProvider)
                     <button type="button" class="ref-btn ref-btn-secondary ref-use-bc-btn" wire:click="$set('showUseCoinsModal', true)">
@@ -220,7 +224,7 @@
                     </section>
 
                     <div class="ref-form-actions">
-                        <a href="{{ route('panel.referral') }}" class="ref-btn ref-btn-secondary">Cancel</a>
+                        <a href="{{ route('panel.referral', $referralQuery) }}" class="ref-btn ref-btn-secondary">Cancel</a>
                         <button type="submit" class="ref-btn ref-btn-primary" @disabled($destination === '' || $customerUserId === null || $serviceId === null || $serviceId === '')><i class="fa fa-paper-plane"></i> Send Referral</button>
                     </div>
                 </form>
@@ -404,10 +408,24 @@
                     <div class="ref-detail-list"><span>Phone<strong>{{ $selectedReferral->customer_phone }}</strong></span><span>Email<strong>{{ $selectedReferral->customer_email ?: '—' }}</strong></span><span>Service<strong>{{ $selectedReferral->service_title ?? 'General referral' }}</strong></span><span>Besmani COIN<strong>{{ in_array(strtolower(trim($selectedReferral->status)), ['completed', 'complete', 'settled'], true) ? number_format($selectedReferral->token_amount) . ' BC' : 'Awarded after completion' }}</strong></span></div>
                     @if ($selectedReferral->note)<div class="ref-agreement-note"><i class="fa fa-sticky-note"></i><span>{{ $selectedReferral->note }}</span></div>@endif
               
-                 @if ($selectedReferral && $selectedReferral->status === 'accepted')
-    <div class="ref-modal-actions appointment"> 
+                 @if (
+    $selectedReferral &&
+    $selectedReferral->status === 'accepted' &&
+    $selectedReferral->receiver_business_id &&
+    $selectedReferral->receiverBusiness
+)
+    @php
+        $appointmentUrl =
+            'https://beauty.besmani.com/detail/info/'
+            . $selectedReferral->receiver_business_id
+            . '?providerId='
+            . $selectedReferral->receiverBusiness->user_id
+            . '&refTitle=clinic_beauty';
+    @endphp
+
+    <div class="ref-modal-actions appointment">
         <a
-            href="#"
+            href="{{ $appointmentUrl }}"
             class="ref-appointment-btn"
         >
             <i class="fa fa-calendar-check-o"></i>

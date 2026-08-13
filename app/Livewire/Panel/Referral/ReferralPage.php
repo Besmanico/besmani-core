@@ -575,7 +575,11 @@ class ReferralPage extends Component
         $customerOptions = $this->customerOptions();
         $serviceOptions = $this->destinationServiceOptions();
         $selectedReferral = $this->selectedReferralId
-            ? $this->findVisibleReferral($this->selectedReferralId)->load(['referrerUser', 'receiverUser'])
+            ? $this->findVisibleReferral($this->selectedReferralId)->load([
+            'referrerUser',
+            'receiverUser',
+            'receiverBusiness',
+        ])
             : null;
 
         $coinBalance = TokenLedger::query()

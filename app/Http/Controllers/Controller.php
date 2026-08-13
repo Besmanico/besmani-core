@@ -124,170 +124,169 @@ class Controller extends BaseController
     //         ], 500);
     //     }
     // }
-    
-    public function signup(Request $request)
-{
-    try {
-        $cleanPhone = preg_replace('/[^0-9]/', '', $request->phone ?? '');
 
-        if (
-            empty($request->email) ||
-            empty($cleanPhone) ||
-            empty($request->password) ||
-            empty($request->fname)
-        ) {
+    public function signup(Request $request)
+    {
+        try {
+            $cleanPhone = preg_replace('/[^0-9]/', '', $request->phone ?? '');
+
+            if (
+                empty($request->email) ||
+                empty($cleanPhone) ||
+                empty($request->password) ||
+                empty($request->fname)
+            ) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Name, email, phone and password are required.',
+                ], 422);
+            }
+
+            $user = MainUser::where('email', $request->email)
+                ->orWhere('mobile', $cleanPhone)
+                ->first();
+
+            if (! $user) {
+
+                $code_confirm = '6630';
+                $code = rand_Code(5);
+                $str_code = rand_string(6);
+                $child = 'besmani';
+
+                $user = new MainUser();
+
+                $user->fl_name = $request->fname;
+                $user->pc_id = $request->country_code ?? null;
+                $user->country_id = 2;
+                $user->mobile = $cleanPhone;
+                $user->email = $request->email;
+                $user->confirm_code = $code_confirm;
+                $user->code = $code;
+                $user->password = Hash::make($request->password);
+                $user->str_code = $str_code;
+                $user->child = $child;
+
+                $invitation = null;
+
+                $invitationId = $request->session()->get(
+                    'referral_invitation_id'
+                );
+
+                if ($invitationId) {
+
+                    $invitation = \App\Models\ReferralInvitation::query()
+                        ->whereKey($invitationId)
+                        ->where(function ($query): void {
+                            $query->whereNull('expires_at')
+                                ->orWhere('expires_at', '>', now());
+                        })
+                        ->first();
+
+                    if ($invitation) {
+
+                        // Provider invitation
+                        if ($invitation->party === 'provider') {
+                            $user->service_pr = 1;
+                        }
+
+                        // Referrer information
+                        $referrer = MainUser::find(
+                            $invitation->invited_by_user_id
+                        );
+
+                        if ($referrer) {
+                            $user->mobile_moaref = $referrer->mobile;
+
+                            $user->fl_moaref = trim(
+                                ($referrer->fl_name ?? '') . ' ' .
+                                    ($referrer->last_name ?? '')
+                            );
+                        }
+                    }
+                }
+
+                $user->save();
+
+                return response()->json(0);
+            }
+
+            if ($user->confirm == 0) {
+
+                $invitationId = $request->session()->get(
+                    'referral_invitation_id'
+                );
+
+                if ($invitationId) {
+
+                    $invitation = \App\Models\ReferralInvitation::query()
+                        ->whereKey($invitationId)
+                        ->where(function ($query): void {
+                            $query->whereNull('expires_at')
+                                ->orWhere('expires_at', '>', now());
+                        })
+                        ->first();
+
+                    if ($invitation) {
+
+                        $changed = false;
+
+                        if (
+                            $invitation->party === 'provider' &&
+                            (int) $user->service_pr !== 1
+                        ) {
+                            $user->service_pr = 1;
+                            $changed = true;
+                        }
+
+                        $referrer = MainUser::find(
+                            $invitation->invited_by_user_id
+                        );
+
+                        if ($referrer) {
+
+                            $user->mobile_moaref = $referrer->mobile;
+
+                            $user->fl_moaref = trim(
+                                ($referrer->fl_name ?? '') . ' ' .
+                                    ($referrer->last_name ?? '')
+                            );
+
+                            $changed = true;
+                        }
+
+                        if ($changed) {
+                            $user->save();
+                        }
+                    }
+                }
+
+                return response()->json(0);
+            }
+
+            Auth::guard('mainUsers')->login($user);
+
+            return response()->json([
+                'success' => true,
+                'message' => 1,
+                'userName' => $user->fl_name,
+                'isProvider' => (int) $user->service_pr === 1,
+                'redirectUrl' => (int) $user->service_pr === 1
+                    ? '/panel/profile'
+                    : '/panel',
+            ]);
+        } catch (\Throwable $e) {
+
+            Log::error('Signup error: ' . $e->getMessage(), [
+                'trace' => $e->getTraceAsString(),
+                'request' => $request->except(['password']),
+            ]);
+
             return response()->json([
                 'success' => false,
-                'message' => 'Name, email, phone and password are required.',
-            ], 422);
+                'message' => 'An error occurred while creating your account. Please try again.',
+            ], 500);
         }
-
-        $user = MainUser::where('email', $request->email)
-            ->orWhere('mobile', $cleanPhone)
-            ->first();
-
-        if (! $user) {
-
-            $code_confirm = '6630';
-            $code = rand_Code(5);
-            $str_code = rand_string(6);
-            $child = 'besmani';
-
-            $user = new MainUser();
-
-            $user->fl_name = $request->fname;
-            $user->pc_id = $request->country_code ?? null;
-            $user->country_id = 2;
-            $user->mobile = $cleanPhone;
-            $user->email = $request->email;
-            $user->confirm_code = $code_confirm;
-            $user->code = $code;
-            $user->password = Hash::make($request->password);
-            $user->str_code = $str_code;
-            $user->child = $child;
-
-            $invitation = null;
-
-            $invitationId = $request->session()->get(
-                'referral_invitation_id'
-            );
-
-            if ($invitationId) {
-
-                $invitation = \App\Models\ReferralInvitation::query()
-                    ->whereKey($invitationId)
-                    ->where(function ($query): void {
-                        $query->whereNull('expires_at')
-                            ->orWhere('expires_at', '>', now());
-                    })
-                    ->first();
-
-                if ($invitation) {
-
-                    // Provider invitation
-                    if ($invitation->party === 'provider') {
-                        $user->service_pr = 1;
-                    }
-
-                    // Referrer information
-                    $referrer = MainUser::find(
-                        $invitation->invited_by_user_id
-                    );
-
-                    if ($referrer) {
-                        $user->mobile_moaref = $referrer->mobile;
-
-                        $user->fl_moaref = trim(
-                            ($referrer->fl_name ?? '') . ' ' .
-                            ($referrer->last_name ?? '')
-                        );
-                    }
-                }
-            }
-
-            $user->save();
-
-            return response()->json(0);
-        }
-
-        if ($user->confirm == 0) {
-
-            $invitationId = $request->session()->get(
-                'referral_invitation_id'
-            );
-
-            if ($invitationId) {
-
-                $invitation = \App\Models\ReferralInvitation::query()
-                    ->whereKey($invitationId)
-                    ->where(function ($query): void {
-                        $query->whereNull('expires_at')
-                            ->orWhere('expires_at', '>', now());
-                    })
-                    ->first();
-
-                if ($invitation) {
-
-                    $changed = false;
-
-                    if (
-                        $invitation->party === 'provider' &&
-                        (int) $user->service_pr !== 1
-                    ) {
-                        $user->service_pr = 1;
-                        $changed = true;
-                    }
-
-                    $referrer = MainUser::find(
-                        $invitation->invited_by_user_id
-                    );
-
-                    if ($referrer) {
-
-                        $user->mobile_moaref = $referrer->mobile;
-
-                        $user->fl_moaref = trim(
-                            ($referrer->fl_name ?? '') . ' ' .
-                            ($referrer->last_name ?? '')
-                        );
-
-                        $changed = true;
-                    }
-
-                    if ($changed) {
-                        $user->save();
-                    }
-                }
-            }
-
-            return response()->json(0);
-        }
- 
-        Auth::guard('mainUsers')->login($user);
-
-        return response()->json([
-            'success' => true,
-            'message' => 1,
-            'userName' => $user->fl_name,
-            'isProvider' => (int) $user->service_pr === 1,
-            'redirectUrl' => (int) $user->service_pr === 1
-                ? '/panel/profile'
-                : '/panel',
-        ]);
-
-    } catch (\Throwable $e) {
-
-        Log::error('Signup error: ' . $e->getMessage(), [
-            'trace' => $e->getTraceAsString(),
-            'request' => $request->except(['password']),
-        ]);
-
-        return response()->json([
-            'success' => false,
-            'message' => 'An error occurred while creating your account. Please try again.',
-        ], 500);
     }
-} 
     public function login(Request $request)
     {
         // $request->validate([
@@ -379,7 +378,32 @@ class Controller extends BaseController
     }
 
     // other site login or signup
-    public function otherSiteLogin(Request $request) {}
+
+
+
+
+    public function otherSiteLogin(Request $request, $id)
+    {
+        $user = MainUser::find($id);
+
+        if (! $user) {
+            abort(404);
+        }
+
+        Auth::guard('mainUsers')->login($user);
+         
+        $returnUrl = $request->query('return_url');
+
+    return redirect('/panel/referral')
+        ->withInput()
+        ->setTargetUrl(
+            url('/panel/referral') .
+            '?other&return_url=' .
+            urlencode($returnUrl)
+        );
+
+    }
+
     public function otherSiteSignup(Request $request)
     {
 
