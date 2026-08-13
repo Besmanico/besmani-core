@@ -9,19 +9,25 @@ use Illuminate\Support\Str;
 
 class IdentityReconciliationService
 {
-    public function __construct(private LegacyEntityMapRepository $maps) {}
+    public function __construct(
+        private LegacyEntityMapRepository $maps,
+        private E164PhoneNormalizer $phones,
+    ) {}
 
     public function detectCandidates(string $sourceSystem, string $sourceTable, string|int $sourceId, array $identity): array
     {
         $known = $this->maps->lookup($sourceSystem, $sourceTable, $sourceId, 'canonical_user');
         if ($known) {
-            return ['explicit_mapping' => $known->target_id, 'candidates' => []];
+            return ['explicit_mapping' => $known->target_id, 'candidates' => [], 'has_conflict' => false];
         }
 
-        $phone = $this->normalizePhone($identity['phone'] ?? null);
+        $phone = $this->normalizePhone(
+            $identity['phone'] ?? null,
+            $identity['phone_region'] ?? $identity['country_code'] ?? config('canonical.identity.default_phone_region'),
+        );
         $email = $this->normalizeEmail($identity['email'] ?? null);
         if (! $phone && ! $email) {
-            return ['explicit_mapping' => null, 'candidates' => []];
+            return ['explicit_mapping' => null, 'candidates' => [], 'has_conflict' => false];
         }
 
         $matches = CanonicalUser::query()->where(function ($query) use ($phone, $email): void {
@@ -46,7 +52,11 @@ class IdentityReconciliationService
             ], ['match_score' => $score, 'reasons_json' => $reasons, 'status' => 'pending_review']);
         }
 
-        return ['explicit_mapping' => null, 'candidates' => $candidates];
+        return [
+            'explicit_mapping' => null,
+            'candidates' => $candidates,
+            'has_conflict' => count($candidates) > 1,
+        ];
     }
 
     public function normalizeEmail(?string $email): ?string
@@ -56,12 +66,8 @@ class IdentityReconciliationService
         return $value ?: null;
     }
 
-    public function normalizePhone(?string $phone): ?string
+    public function normalizePhone(?string $phone, ?string $region = null): ?string
     {
-        if (! $phone) {
-            return null;
-        } $value = preg_replace('/[^0-9+]/', '', $phone);
-
-        return $value ?: null;
+        return $this->phones->normalize($phone, $region);
     }
 }

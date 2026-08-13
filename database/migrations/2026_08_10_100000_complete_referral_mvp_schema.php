@@ -37,14 +37,27 @@ return new class extends Migration
             'referral_terms_snapshot_at' => now(),
         ]);
 
-        Schema::table('referral_invitations', function (Blueprint $table): void {
-            $table->unsignedBigInteger('inviter_business_id')->nullable()->after('invited_by_user_id')->index();
-            $table->string('recipient_email')->nullable()->after('recipient');
-            $table->string('recipient_phone', 30)->nullable()->after('recipient_email');
-            $table->char('token_hash', 64)->nullable()->after('party')->unique();
-            $table->timestamp('accepted_at')->nullable()->after('sent_at');
-            $table->timestamp('expires_at')->nullable()->after('accepted_at')->index();
-        });
+        // The preceding referral invitation migration already creates these
+        // columns in fresh installations. Keep this upgrade migration safe for
+        // older installations where one or more columns may still be absent.
+        if (! Schema::hasColumn('referral_invitations', 'inviter_business_id')) {
+            Schema::table('referral_invitations', fn (Blueprint $table) => $table->unsignedBigInteger('inviter_business_id')->nullable()->after('invited_by_user_id')->index());
+        }
+        if (! Schema::hasColumn('referral_invitations', 'recipient_email')) {
+            Schema::table('referral_invitations', fn (Blueprint $table) => $table->string('recipient_email')->nullable()->after('recipient'));
+        }
+        if (! Schema::hasColumn('referral_invitations', 'recipient_phone')) {
+            Schema::table('referral_invitations', fn (Blueprint $table) => $table->string('recipient_phone', 30)->nullable()->after('recipient_email'));
+        }
+        if (! Schema::hasColumn('referral_invitations', 'token_hash')) {
+            Schema::table('referral_invitations', fn (Blueprint $table) => $table->char('token_hash', 64)->nullable()->after('party')->unique());
+        }
+        if (! Schema::hasColumn('referral_invitations', 'accepted_at')) {
+            Schema::table('referral_invitations', fn (Blueprint $table) => $table->timestamp('accepted_at')->nullable()->after('sent_at'));
+        }
+        if (! Schema::hasColumn('referral_invitations', 'expires_at')) {
+            Schema::table('referral_invitations', fn (Blueprint $table) => $table->timestamp('expires_at')->nullable()->after('accepted_at')->index());
+        }
     }
 
     public function down(): void

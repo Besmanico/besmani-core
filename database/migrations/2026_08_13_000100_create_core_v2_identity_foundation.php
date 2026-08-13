@@ -15,11 +15,13 @@ return new class extends Migration
             $table->string('last_name', 100)->nullable();
             $table->string('display_name', 150)->nullable();
             $table->string('email')->nullable();
-            $table->string('email_normalized')->nullable()->index();
+            // Intentionally non-unique during reconciliation: duplicate legacy identities
+            // must coexist until reviewed and must never be merged by a DB constraint.
+            $table->string('email_normalized')->nullable()->index()->comment('Non-unique during identity reconciliation; duplicates require review');
             $table->timestamp('email_verified_at')->nullable();
             $table->string('phone_country_code', 8)->nullable();
             $table->string('phone', 30)->nullable();
-            $table->string('phone_e164', 32)->nullable()->index();
+            $table->string('phone_e164', 32)->nullable()->index()->comment('Non-unique during identity reconciliation; duplicates require review');
             $table->timestamp('phone_verified_at')->nullable();
             $table->string('password')->nullable();
             $table->string('status', 30)->default('pending')->index();

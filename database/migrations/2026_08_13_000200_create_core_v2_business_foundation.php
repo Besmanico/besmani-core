@@ -2,6 +2,7 @@
 
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Schema;
 
 return new class extends Migration
@@ -83,7 +84,10 @@ return new class extends Migration
             $table->id();
             $table->foreignId('business_id')->constrained('businesses_v2')->cascadeOnUpdate()->cascadeOnDelete();
             $table->foreignId('user_id')->constrained('canonical_users')->cascadeOnUpdate()->restrictOnDelete();
-            $table->foreignId('business_location_id')->nullable()->constrained('business_locations')->nullOnDelete();
+            $table->foreignId('business_location_id')->nullable()->constrained('business_locations')->restrictOnDelete();
+            // MySQL/MariaDB unique indexes allow repeated NULL values. Persist an
+            // explicit non-null scope key: "business" or "location:{id}".
+            $table->string('membership_scope_key', 64)->default('business');
             $table->foreignId('membership_role_id')->constrained('membership_roles')->restrictOnDelete();
             $table->string('job_title')->nullable();
             $table->string('employment_status', 30)->nullable();
@@ -92,9 +96,18 @@ return new class extends Migration
             $table->boolean('is_primary')->default(false);
             $table->string('status', 30)->default('active')->index();
             $table->timestamps();
-            $table->unique(['business_id', 'user_id', 'business_location_id', 'membership_role_id'], 'business_member_scope_unique');
+            $table->unique(['business_id', 'user_id', 'membership_scope_key', 'membership_role_id'], 'business_member_scope_unique');
             $table->index(['user_id', 'status']);
         });
+        DB::statement(<<<'SQL'
+            ALTER TABLE business_members
+            ADD CONSTRAINT business_members_scope_key_check CHECK (
+                membership_scope_key = CASE
+                    WHEN business_location_id IS NULL THEN 'business'
+                    ELSE CONCAT('location:', business_location_id)
+                END
+            )
+        SQL);
         Schema::create('provider_profiles', function (Blueprint $table): void {
             $table->id();
             $table->foreignId('user_id')->unique()->constrained('canonical_users')->cascadeOnUpdate()->cascadeOnDelete();

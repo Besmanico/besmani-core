@@ -7,6 +7,12 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
+/**
+ * Reconciliation-stage identity record only.
+ *
+ * Phase 1 authentication remains on User and MainUser; this model must not
+ * become an auth provider until an explicitly reviewed cutover phase.
+ */
 class CanonicalUser extends Model
 {
     use HasFactory, HasPublicId, SoftDeletes;

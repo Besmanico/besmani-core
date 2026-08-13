@@ -8,6 +8,15 @@ class BusinessMember extends Model
 {
     protected $guarded = [];
 
+    protected static function booted(): void
+    {
+        static::saving(function (BusinessMember $member): void {
+            $member->membership_scope_key = $member->business_location_id
+                ? 'location:'.$member->business_location_id
+                : 'business';
+        });
+    }
+
     protected $casts = ['starts_at' => 'datetime', 'ends_at' => 'datetime', 'is_primary' => 'boolean'];
 
     public function business()

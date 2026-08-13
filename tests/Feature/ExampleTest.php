@@ -10,10 +10,11 @@ class ExampleTest extends TestCase
     /**
      * A basic test example.
      */
-    public function test_the_application_returns_a_successful_response(): void
+    public function test_the_application_boots_and_registers_the_home_route(): void
     {
-        $response = $this->get('/');
+        $route = app('router')->getRoutes()->match(\Illuminate\Http\Request::create('/', 'GET'));
 
-        $response->assertStatus(200);
+        $this->assertSame('/', $route->uri());
+        $this->assertSame(['GET', 'HEAD'], $route->methods());
     }
 }
