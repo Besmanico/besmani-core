@@ -1,6 +1,7 @@
 # BESMANI Master Database Architecture v1.0
 ## Canonical Ecosystem Design
-**Status:** Architecture baseline for review before implementation  
+**Status:** Approved architecture baseline, amended by the approved Growth Engines & Network requirement on 2026-08-16  
+**Revision note:** Sections 1-26 remain the v1.0 baseline; Section 27 and its linked v1.1 ERD impact report are mandatory pre-Phase-2 additions.  
 **Databases reviewed:** BESMANI Core, Beauty, Vascular  
 **Primary objective:** One logical BESMANI ecosystem with reusable Core domains and protected vertical extensions.
 
@@ -1549,3 +1550,67 @@ Still required before implementation freeze:
 - ERD visual/export
 - migration reconciliation test plan
 - API contract definitions
+
+---
+
+# 27. Approved Growth Engines & Network Requirement
+
+The **BESMANI Core V2 - Growth Engines & Network Addendum v1.0** dated 2026-08-15 is an approved architectural requirement and forms part of this Master Architecture. It is not an optional future feature set.
+
+BESMANI Core must support two connected engines:
+
+1. **Network:** discovery, connections, contextual messaging, Referral, Reference/Recommendation, Campaigns/Opportunities, booking, rewards, reviews, sharing, and repeat relationships.
+2. **AI service intent and preparation:** Style/Look creation, reusable Customer preferences, reference media, Appointment Brief, scoped Provider access, preparation, material readiness, service result capture, Before/After, and consented reuse in My Page/portfolio/discovery.
+
+The normative addendum is stored at `doc/BESMANI_Core_V2_Growth_Engines_Network_Addendum_v1.0.md`. The detailed entity, relationship, privacy, and phased-delivery impact is stored at `doc/BESMANI_Core_V2_Growth_ERD_Impact_Report_v1.1.md`.
+
+## 27.1 Phase 1 decision
+
+The implemented Phase 1 foundation remains valid. Canonical identity, Business/Location/Membership, Provider Profile, public IDs, identity reconciliation, migration mappings, and the Medical trust boundary are retained without redesign. No Phase 1 migration must be edited for this addendum.
+
+## 27.2 Mandatory pre-Phase-2 ERD domains
+
+Before Phase 2 implementation approval, the logical ERD must include:
+
+- Network connections/follows/blocks.
+- Recommendation requests, Recommendations, evidence, recipients, and conversion provenance.
+- Contextual conversations with scoped participants.
+- Campaigns, recurrence, occurrences, audiences, eligibility, Business/Location/Service participation, offers, capacity, booking, Referral, and metrics links.
+- Happening on BESMANI as a policy-filtered projection from canonical source domains.
+- Central Media metadata, derivatives, lineage, moderation, ownership, consent, and controlled entity links.
+- My Page/Social/UGC posts, media, reactions, comments, saves, shares, typed tags, reports, and moderation.
+- Customer Style Profile entries and explicit scoped/revocable sharing.
+- Versioned Service Preference Schemas, fields/options, assignments, responses, and immutable Appointment snapshots.
+- AI Style sessions, inputs, generations, variants, selected result, provenance, and user approval.
+- Appointment Brief, reference media, approved AI result, shared preferences, least-privilege access grants, and Provider Customer View projection.
+- Provider preparation, clarification, assignments, resources, and duration implications.
+- Service Results, Before/After sets, consent, and destination-specific publications.
+- Future Inventory Readiness through Service material rules, Appointment material resolution, reservations, alerts, and substitutions.
+
+## 27.3 Required extensions to planned Core entities
+
+- `business_services` is the central Provider-specific offering referenced by booking, Referral settings, Campaign Offers, preference overrides, preparation rules, and material requirements.
+- `appointment_items` is the execution unit for Provider assignment, preparation, Service Result, and material resolution.
+- `referrals` retains immutable terms and gains controlled Recommendation/Campaign/Appointment provenance.
+- Messaging uses context relations rather than accumulating a nullable foreign key for every future domain.
+- Media access and publication are governed by resource-specific consent; general User consent alone is insufficient.
+- Commerce snapshots Campaign/pricing/eligibility terms used at transaction time.
+
+## 27.4 Mandatory invariants
+
+1. Provider remains a canonical User capability and Business Membership context, never a duplicate identity.
+2. Referral and Recommendation remain distinct workflows with preserved provenance and explicit conversion links.
+3. Service definitions remain separate from Business offerings.
+4. Transactional terms and submitted intent are immutable/versioned at the point of booking or purchase.
+5. Appointment access never reveals an entire private My Page.
+6. Media capture does not imply publication; consent is purpose-specific, revocable, and auditable.
+7. Generic Core does not absorb PHI or clinical media/messages from the protected Medical domain.
+8. Besmo operates only through authorized domain APIs and auditable actions.
+9. Happening is a derived discovery experience, not a replacement source-of-truth Event table.
+10. Early Service and Booking schemas must preserve future material/inventory relationships even when inventory automation is deferred.
+
+## 27.5 Implementation gate
+
+This architecture update does not authorize Phase 2 implementation. Before implementation begins, the decisions and ERD relationships listed in `doc/BESMANI_Core_V2_Growth_ERD_Impact_Report_v1.1.md` Section 7 must be approved.
+
+All source/design changes are prepared locally. Database migrations, seeds, backfills, and schema verification are executed only on the approved server/staging environment after backup confirmation, `migrate:status`, and reviewed `migrate --pretend` output.

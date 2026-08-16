@@ -217,7 +217,8 @@ class UserController extends Controller
     public function getVascularCareClinicServices(Request $request, $id)
     {
 
-        $res = ClinicService::where('user_id', $id)->where('type_category', 'vascular_care')->where('active', 1)->orderByDesc('sort')->get();
+    // ->where('active', 1)
+        $res = ClinicService::where('user_id', $id)->where('type_category', 'vascular_care')->orderByDesc('sort')->get();
         // if service_id is not null
         foreach ($res as $key => $val) {
             if ($val['service_id']) {
@@ -246,7 +247,7 @@ class UserController extends Controller
     public function getVascularBeautyClinicServices(Request $request, $id)
     {
 
-        $res = ClinicService::where('user_id', $id)->where('type_category', 'vascular_beauty')->where('active', 1)->get();
+        $res = ClinicService::where('user_id', $id)->where('type_category', 'facial_aesthetics')->get();
         // if service_id is not null
         foreach ($res as $key => $val) {
             if ($val['service_id']) {
@@ -275,7 +276,7 @@ class UserController extends Controller
  public function getVascularHormoneClinicServices(Request $request, $id)
     {
 
-        $res = ClinicService::where('user_id', $id)->where('type_category', 'hormone-wellness')->where('active', 1)->get();
+        $res = ClinicService::where('user_id', $id)->where('type_category', 'hormone_wellness')->get();
         // if service_id is not null
         foreach ($res as $key => $val) {
             if ($val['service_id']) {
@@ -366,7 +367,7 @@ class UserController extends Controller
         $type_category = $request->category;
 
         $clinicService = ClinicService::findOrFail($service_id);
-        $clinicService->price = $price;
+        $clinicService->price = $price; 
         $clinicService->discount = $discount;
         $clinicService->bc = $bc;
         $clinicService->capacity = $capacity;

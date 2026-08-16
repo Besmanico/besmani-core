@@ -218,17 +218,17 @@
                                     </span>
                                 </div>
                             @endif
-                            <label class="ref-field ref-field-wide"><span>Short note</span><textarea wire:model="note" rows="3" placeholder="Add helpful details for the destination Provider"></textarea>@error('note') <small class="ref-field-error">{{ $message }}</small> @enderror</label>
+                            <label class="ref-field ref-field-wide" wire:key="referral-short-note-field"><span>Short note</span><textarea wire:model="note" rows="3" placeholder="Add helpful details for the destination Provider"></textarea>@error('note') <small class="ref-field-error">{{ $message }}</small> @enderror</label>
                         </div> 
                         <div class="ref-agreement-note"><i class="fa fa-star"></i><span>Reward and discount are read-only and locked when the referral is created.</span></div>
-                    </section>
+                    </section> 
 
                     <div class="ref-form-actions">
                         <a href="{{ route('panel.referral', $referralQuery) }}" class="ref-btn ref-btn-secondary">Cancel</a>
                         <button type="submit" class="ref-btn ref-btn-primary" @disabled($destination === '' || $customerUserId === null || $serviceId === null || $serviceId === '')><i class="fa fa-paper-plane"></i> Send Referral</button>
                     </div>
                 </form>
-            @else
+            @else 
                 <section class="ref-summary-grid {{ $isProvider ? '' : 'is-personal' }}">
  
                     @if ($isProvider)
@@ -398,9 +398,16 @@
                 </section>
             </div>
         @endif
-
+ 
         @if ($selectedReferral)
-            <div class="ref-modal-backdrop" wire:click.self="closeReferral">
+            @php
+                $appointmentPhone = collect([
+                    $selectedReferral->receiverBusiness?->phone,
+                    $selectedReferral->receiverUser?->mobile,
+                    $selectedReferral->receiverUser?->phone,
+                ])->map(fn ($phone) => trim((string) $phone))->first(fn ($phone) => $phone !== '') ?? '';
+            @endphp
+            <div class="ref-modal-backdrop" wire:click.self="closeReferral" x-data="{ appointmentContactOpen: false }" @keydown.escape.window="appointmentContactOpen = false">
                 <section class="ref-modal ref-detail-modal" role="dialog" aria-modal="true">
                     <button class="ref-modal-close" wire:click="closeReferral"><i class="fa fa-times"></i></button>
                     <span class="ref-eyebrow">{{ $selectedReferral->referral_number }}</span><h2>{{ trim($selectedReferral->customer_first_name . ' ' . $selectedReferral->customer_last_name) }}</h2>
@@ -408,31 +415,31 @@
                     <div class="ref-detail-list"><span>Phone<strong>{{ $selectedReferral->customer_phone }}</strong></span><span>Email<strong>{{ $selectedReferral->customer_email ?: '—' }}</strong></span><span>Service<strong>{{ $selectedReferral->service_title ?? 'General referral' }}</strong></span><span>Besmani COIN<strong>{{ in_array(strtolower(trim($selectedReferral->status)), ['completed', 'complete', 'settled'], true) ? number_format($selectedReferral->token_amount) . ' BC' : 'Awarded after completion' }}</strong></span></div>
                     @if ($selectedReferral->note)<div class="ref-agreement-note"><i class="fa fa-sticky-note"></i><span>{{ $selectedReferral->note }}</span></div>@endif
               
-                 @if (
-    $selectedReferral &&
-    $selectedReferral->status === 'accepted' &&
-    $selectedReferral->receiver_business_id &&
-    $selectedReferral->receiverBusiness
-)
-    @php
-        $appointmentUrl =
-            'https://beauty.besmani.com/detail/info/'
-            . $selectedReferral->receiver_business_id
-            . '?providerId='
-            . $selectedReferral->receiverBusiness->user_id
-            . '&refTitle=clinic_beauty';
-    @endphp
+                    @if ($selectedReferral->status === 'accepted')
+                        <div class="ref-modal-actions appointment">
+                            <button type="button" class="ref-appointment-btn" @click="appointmentContactOpen = true">
+                                <i class="fa fa-calendar-check-o"></i>
+                                Book Appointment
+                            </button>
+                        </div>
 
-    <div class="ref-modal-actions appointment">
-        <a
-            href="{{ $appointmentUrl }}"
-            class="ref-appointment-btn"
-        >
-            <i class="fa fa-calendar-check-o"></i>
-            Book Appointment
-        </a>
-    </div>
-@endif
+                        <div class="ref-modal-backdrop" x-cloak x-show="appointmentContactOpen" @click.self="appointmentContactOpen = false">
+                            <section class="ref-modal" role="dialog" aria-modal="true" aria-labelledby="appointment-contact-title">
+                                <button type="button" class="ref-modal-close" @click="appointmentContactOpen = false" aria-label="Close appointment contact details"><i class="fa fa-times"></i></button>
+                                <span class="ref-modal-icon"><i class="fa fa-phone"></i></span>
+                                <h2 id="appointment-contact-title">Book an Appointment</h2>
+                                @if ($appointmentPhone !== '')
+                                    <p>To book an appointment, please call the Referral destination at:</p>
+                                    <p><a href="tel:{{ preg_replace('/[^0-9+]/', '', $appointmentPhone) }}"><strong>{{ $appointmentPhone }}</strong></a></p>
+                                @else
+                                    <p>No phone number is available for this Referral destination. Please contact them directly to book an appointment.</p>
+                                @endif
+                                <div class="ref-modal-actions">
+                                    <button type="button" class="ref-btn ref-btn-secondary" @click="appointmentContactOpen = false">Close</button>
+                                </div>
+                            </section>
+                        </div>
+                    @endif
               
                 </section>
              

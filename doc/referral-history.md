@@ -176,3 +176,10 @@ Database migrations and runtime database verification are performed only on the 
 - Customer invitations prefer a valid email and otherwise use the normalized phone number. The modal recipient is read-only so it cannot drift from the recipient bound to the token.
 - The initial invitation ID is retained while the modal is open. Email and SMS delivery reuse that invitation record, message, and token instead of creating a second invitation URL.
 - Invitation buttons are disabled while creation is in progress, and creation errors leave the modal closed.
+
+## Appointment contact flow (2026-08-16) 
+
+- The accepted Referral detail action no longer links to the external Beauty website.
+- Selecting **Book Appointment** now opens an in-page English dialog instructing the customer to call the Referral destination.
+- The dialog displays the destination Business phone number, falling back to the destination Provider's mobile or phone number when necessary. Direct Provider destinations are supported as well as Business destinations.
+- The displayed number is also a `tel:` link. If the destination has no stored phone number, the dialog shows a clear fallback message instead of producing an invalid link.
