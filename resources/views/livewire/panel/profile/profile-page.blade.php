@@ -109,136 +109,374 @@
                         </div>
                     @endif
                     <div class="row">
-                        <div class=" col-sm-4 mt-2">
-                            <div class="form-group">
-                                <label><i class="fa fa-user"></i> First Name : <span class="text-danger">*</span></label>
-                                <input type="text" class="form-control" wire:model.defer="fl_name">
-                            </div>
-                        </div>
-                        <div class=" col-sm-4 mt-2">
-                            <div class="form-group">
-                                <label><i class="fa fa-user"></i> Last Name : <span class="text-danger">*</span></label>
-                                <input type="text" class="form-control" wire:model.defer="last_name">
-                            </div>
-                        </div>
-                        <div class=" col-sm-4  " style="margin-top: 4px;">
-                            <label style="margin-bottom: 0;"><i class="fa fa-phone"></i> Phone Number : <span
-                                    class="text-danger">*</span></label>
-                            <div class="input-group">
-                                <select class="form-control " style="max-width: 140px;margin-top: 10px;">
-                                    @foreach ($countryCode as $country)
-                                        <option value="{{ $country->id }}" {{ optional($user)->country_id == $country->id ? 'selected' : '' }}>
-                                            {{ $country->code }} {{ $country->name_en }}
-                                        </option>
-                                    @endforeach
-                                </select>
-                                <input type="text" class="form-control" value="{{ $user->mobile ?? '' }}" readonly>
-                            </div>
-                        </div>
-                        <div class=" col-sm-4 mt-2">
-                            <div class="form-group">
-                                <label><i class="fa fa-envelope"></i> Email : <span class="text-danger">*</span></label>
-                                <input type="email" class="form-control" value="{{ $user->email ?? '' }}" readonly>
-                            </div>
-                        </div>
-                        <div class=" col-sm-2 mt-2">
-                            <div class="form-group">
-                                <label><i class="fa fa-id-card"></i> SSN :</label>
-                                <input type="text" class="form-control" placeholder="SSN" wire:model.defer="ssn">
-                            </div>
-                        </div>
-                        <div class=" col-sm-2 mt-2">
-                            <div class="form-group">
-                                <label><i class="fa fa-calendar"></i> Date of Birth :</label>
-                                <input type="date" class="form-control" placeholder="mm/dd/yyyy"
-                                    wire:model.defer="birthday">
-                            </div>
-                        </div>
-                        <div class=" col-sm-4 mt-2">
-                            <label><i class="fa fa-venus-mars"></i> Gender : <span class="text-danger">*</span></label>
-                            <div class="form-control profile-gender-radios" style="padding: 8px 12px;">
-                                <label class="radio-inline mr-3">
-                                    <input type="radio" wire:model.defer="gender" value="1"> Woman</label>
-                                <label class="radio-inline mr-3">
-                                    <input type="radio" wire:model.defer="gender" value="2"> Man</label>
-                                <label class="radio-inline">
-                                    <input type="radio" wire:model.defer="gender" value="3"> Other</label>
-                            </div>
-                        </div>
-                        <div class="col-sm-3 mt-2">
-                            <label>
-                                <i class="fa fa-globe"></i> Country :
-                                <span class="text-danger">*</span>
-                            </label>
 
-                            <select class="form-control" id="profile-country" name="country_id"
-                                wire:model.defer="country_id">
-                                @foreach ($countryCode as $country)
-                                    <option value="{{ $country->id }}">
-                                        {{ $country->name_en }}
-                                    </option>
-                                @endforeach
-                            </select>
-                        </div>
-                        <div class=" col-sm-3 mt-2">
-                            <label><i class="fa fa-map-marker"></i> State/Province : <span
-                                    class="text-danger">*</span></label>
-                            <select class="form-control" id="profile-state-province" name="id_province"
-                                data-selected="{{ optional($user)->id_province ?? '' }}" wire:model.defer="id_province">
-                                <option value="">—</option>
-                                @php
-                                    $provincesByCountry = isset($provinces) ? $provinces->groupBy('phone_country_id') : collect();
-                                    $selectedCountryId = optional($user)->country_id;
-                                    $selectedProvinceId = optional($user)->id_province ?? null;
-                                @endphp
-                                @if ($selectedCountryId && $provincesByCountry->has($selectedCountryId))
-                                    @foreach ($provincesByCountry->get($selectedCountryId) as $prov)
-                                        <option value="{{ $prov->id }}" {{ $selectedProvinceId == $prov->id ? 'selected' : '' }}>
-                                            {{ $prov->name_en ?? $prov->name_fa }}</option>
-                                    @endforeach
-                                @endif
-                            </select>
-                        </div>
-                        <div class=" col-sm-3 mt-2">
-                            <label><i class="fa fa-building"></i> City : <span class="text-danger">*</span></label>
-                            <select class="form-control" id="profile-city" name="id_city"
-                                data-selected="{{ optional($user)->id_city ?? '' }}" wire:model.defer="id_city">
-                                <option value="">—</option>
-                                @php
-                                    $citiesByProvince = isset($cities) ? $cities->groupBy('province_id') : collect();
-                                    $selectedCityId = optional($user)->id_city ?? null;
-                                @endphp
-                                @if ($selectedProvinceId && $citiesByProvince->has($selectedProvinceId))
-                                    @foreach ($citiesByProvince->get($selectedProvinceId) as $city)
-                                        <option value="{{ $city->id }}" {{ $selectedCityId == $city->id ? 'selected' : '' }}>
-                                            {{ $city->name_en ?? $city->name_fa }}</option>
-                                    @endforeach
-                                @endif
-                            </select>
-                        </div>
+    {{-- First Name --}}
+    <div class="col-sm-4 mt-2">
+        <div class="form-group">
+            <label>
+                <i class="fa fa-user"></i>
+                First Name :
+                <span class="text-danger">*</span>
+            </label>
 
-                        <div class=" col-sm-3 mt-2">
-                            <label><i class="fa fa-envelope-o"></i> Postal Code : <span class="text-danger">*</span></label>
-                            <input type="text" class="form-control" wire:model.defer="postal_code">
-                        </div>
+            <input
+                type="text"
+                class="form-control"
+                wire:model.defer="fl_name"
+                name="profile_field_x1"
+                autocomplete="new-password"
+                autocorrect="off"
+                autocapitalize="none"
+                spellcheck="false"
+            >
+        </div>
+    </div>
 
-                        <div class=" col-sm-6 mt-2">
-                            <label><i class="fa fa-map-marker"></i> Street Address : <span
-                                    class="text-danger">*</span></label>
-                            <textarea class="form-control" rows="1" cols="1" wire:model.defer="address"
-                                style="height: 50px;">{{ $user->street_address ?? ($user->address ?? '') }}</textarea>
-                        </div>
+    {{-- Last Name --}}
+    <div class="col-sm-4 mt-2">
+        <div class="form-group">
+            <label>
+                <i class="fa fa-user"></i>
+                Last Name :
+                <span class="text-danger">*</span>
+            </label>
 
-                        <div class=" col-sm-3 mt-2">
-                            <label><i class="fa fa-home"></i> Apt/Unit/Suite :</label>
-                            <input type="text" class="form-control" wire:model.defer="apt_unit_suite">
-                        </div>
-                        <div class=" col-sm-3 mt-2">
-                            <label><i class="fa fa-link"></i> Website / URL :</label>
-                            <input type="url" class="form-control" wire:model.defer="website">
-                        </div>
+            <input
+                type="text"
+                class="form-control"
+                wire:model.defer="last_name"
+                name="profile_field_x2"
+                autocomplete="new-password"
+                autocorrect="off"
+                autocapitalize="none"
+                spellcheck="false"
+            >
+        </div>
+    </div>
 
-                    </div>
+    {{-- Phone --}}
+    <div class="col-sm-4" style="margin-top: 4px;">
+        <label style="margin-bottom: 0;">
+            <i class="fa fa-phone"></i>
+            Phone Number :
+            <span class="text-danger">*</span>
+        </label>
+
+        <div class="input-group">
+            <select
+                class="form-control"
+                style="max-width: 140px;margin-top: 10px;"
+            >
+                @foreach ($countryCode as $country)
+                    <option
+                        value="{{ $country->id }}"
+                        {{ optional($user)->country_id == $country->id ? 'selected' : '' }}
+                    >
+                        {{ $country->code }} {{ $country->name_en }}
+                    </option>
+                @endforeach
+            </select>
+
+            <input
+                type="text"
+                class="form-control"
+                value="{{ $user->mobile ?? '' }}"
+                name="profile_field_x3"
+                autocomplete="new-password"
+                autocorrect="off"
+                autocapitalize="none"
+                spellcheck="false"
+                readonly
+            >
+        </div>
+    </div>
+
+    {{-- Email --}}
+    <div class="col-sm-4 mt-2">
+        <div class="form-group">
+            <label>
+                <i class="fa fa-envelope"></i>
+                Email :
+                <span class="text-danger">*</span>
+            </label>
+
+            <input
+                type="email"
+                class="form-control"
+                value="{{ $user->email ?? '' }}"
+                name="profile_field_x4"
+                autocomplete="new-password"
+                autocorrect="off"
+                autocapitalize="none"
+                spellcheck="false"
+                readonly
+            >
+        </div>
+    </div>
+
+    {{-- SSN --}}
+    <div class="col-sm-2 mt-2">
+        <div class="form-group">
+            <label>
+                <i class="fa fa-id-card"></i>
+                SSN :
+            </label>
+
+            <input
+                type="text"
+                class="form-control"
+                placeholder="SSN"
+                wire:model.defer="ssn"
+                name="identity_lookup_x5"
+                autocomplete="new-password"
+                autocorrect="off"
+                autocapitalize="none"
+                spellcheck="false"
+                inputmode="numeric"
+            >
+        </div>
+    </div>
+
+    {{-- Birthday --}}
+    <div class="col-sm-2 mt-2">
+        <div class="form-group">
+            <label>
+                <i class="fa fa-calendar"></i>
+                Date of Birth :
+            </label>
+
+            <input
+                type="date"
+                class="form-control"
+                placeholder="mm/dd/yyyy"
+                wire:model.defer="birthday"
+                name="date_lookup_x6"
+                autocomplete="new-password"
+            >
+        </div>
+    </div>
+
+    {{-- Gender --}}
+    <div class="col-sm-4 mt-2">
+        <label>
+            <i class="fa fa-venus-mars"></i>
+            Gender :
+            <span class="text-danger">*</span>
+        </label>
+
+        <div
+            class="form-control profile-gender-radios"
+            style="padding: 8px 12px;"
+        >
+            <label class="radio-inline mr-3">
+                <input
+                    type="radio"
+                    wire:model.defer="gender"
+                    value="1"
+                >
+                Woman
+            </label>
+
+            <label class="radio-inline mr-3">
+                <input
+                    type="radio"
+                    wire:model.defer="gender"
+                    value="2"
+                >
+                Man
+            </label>
+
+            <label class="radio-inline">
+                <input
+                    type="radio"
+                    wire:model.defer="gender"
+                    value="3"
+                >
+                Other
+            </label>
+        </div>
+    </div>
+
+    {{-- Country --}}
+    <div class="col-sm-3 mt-2">
+        <label>
+            <i class="fa fa-globe"></i>
+            Country :
+            <span class="text-danger">*</span>
+        </label>
+
+        <select
+            class="form-control"
+            id="profile-country"
+            name="country_id"
+            wire:model.defer="country_id"
+        >
+            @foreach ($countryCode as $country)
+                <option value="{{ $country->id }}">
+                    {{ $country->name_en }}
+                </option>
+            @endforeach
+        </select>
+    </div>
+
+    {{-- State --}}
+    <div class="col-sm-3 mt-2">
+        <label>
+            <i class="fa fa-map-marker"></i>
+            State/Province :
+            <span class="text-danger">*</span>
+        </label>
+
+        <select
+            class="form-control"
+            id="profile-state-province"
+            name="id_province"
+            data-selected="{{ optional($user)->id_province ?? '' }}"
+            wire:model.defer="id_province"
+        >
+            <option value="">—</option>
+
+            @php
+                $provincesByCountry = isset($provinces)
+                    ? $provinces->groupBy('phone_country_id')
+                    : collect();
+
+                $selectedCountryId = optional($user)->country_id;
+                $selectedProvinceId = optional($user)->id_province ?? null;
+            @endphp
+
+            @if ($selectedCountryId && $provincesByCountry->has($selectedCountryId))
+                @foreach ($provincesByCountry->get($selectedCountryId) as $prov)
+                    <option
+                        value="{{ $prov->id }}"
+                        {{ $selectedProvinceId == $prov->id ? 'selected' : '' }}
+                    >
+                        {{ $prov->name_en ?? $prov->name_fa }}
+                    </option>
+                @endforeach
+            @endif
+        </select>
+    </div>
+
+    {{-- City --}}
+    <div class="col-sm-3 mt-2">
+        <label>
+            <i class="fa fa-building"></i>
+            City :
+            <span class="text-danger">*</span>
+        </label>
+
+        <select
+            class="form-control"
+            id="profile-city"
+            name="id_city"
+            data-selected="{{ optional($user)->id_city ?? '' }}"
+            wire:model.defer="id_city"
+        >
+            <option value="">—</option>
+
+            @php
+                $citiesByProvince = isset($cities)
+                    ? $cities->groupBy('province_id')
+                    : collect();
+
+                $selectedCityId = optional($user)->id_city ?? null;
+            @endphp
+
+            @if ($selectedProvinceId && $citiesByProvince->has($selectedProvinceId))
+                @foreach ($citiesByProvince->get($selectedProvinceId) as $city)
+                    <option
+                        value="{{ $city->id }}"
+                        {{ $selectedCityId == $city->id ? 'selected' : '' }}
+                    >
+                        {{ $city->name_en ?? $city->name_fa }}
+                    </option>
+                @endforeach
+            @endif
+        </select>
+    </div>
+
+    {{-- Postal Code --}}
+    <div class="col-sm-3 mt-2">
+        <label>
+            <i class="fa fa-envelope-o"></i>
+            Postal Code :
+            <span class="text-danger">*</span>
+        </label>
+
+        <input
+            type="text"
+            class="form-control"
+            wire:model.defer="postal_code"
+            name="location_code_x7"
+            autocomplete="new-password"
+            autocorrect="off"
+            autocapitalize="none"
+            spellcheck="false"
+        >
+    </div>
+
+    {{-- Street Address --}}
+    <div class="col-sm-6 mt-2">
+        <label>
+            <i class="fa fa-map-marker"></i>
+            Street Address :
+            <span class="text-danger">*</span>
+        </label>
+
+        <textarea
+            class="form-control"
+            rows="1"
+            cols="1"
+            wire:model.defer="address"
+            name="location_detail_x8"
+            autocomplete="new-password"
+            autocorrect="off"
+            autocapitalize="none"
+            spellcheck="false"
+            style="height: 50px;"
+        >{{ $user->street_address ?? ($user->address ?? '') }}</textarea>
+    </div>
+
+    {{-- Apt --}}
+    <div class="col-sm-3 mt-2">
+        <label>
+            <i class="fa fa-home"></i>
+            Apt/Unit/Suite :
+        </label>
+
+        <input
+            type="text"
+            class="form-control"
+            wire:model.defer="apt_unit_suite"
+            name="unit_detail_x9"
+            autocomplete="new-password"
+            autocorrect="off"
+            autocapitalize="none"
+            spellcheck="false"
+        >
+    </div>
+
+    {{-- Website --}}
+    <div class="col-sm-3 mt-2">
+        <label>
+            <i class="fa fa-link"></i>
+            Website / URL :
+        </label>
+
+        <input
+            type="url"
+            class="form-control"
+            wire:model.defer="website"
+            name="web_link_x10"
+            autocomplete="new-password"
+            autocorrect="off"
+            autocapitalize="none"
+            spellcheck="false"
+        >
+    </div>
+
+</div>
 
                     <hr class="my-4">
                     <h5 class="mb-3"><strong>Reference</strong></h5>
@@ -261,8 +499,8 @@
                         {{-- نمایش اطلاعات کاربر پیدا شده --}}
                         @if($moaref_user)
                             <div class="alert alert-info mt-2">
-                                کاربر معرف: {{ $moaref_user->name }} ({{ $moaref_user->mobile }})
-                            </div>
+                                   {{ $moaref_user->name }} ({{ $moaref_user->mobile }})
+                            </div> 
                         @endif
                         {{-- new end--}}
 

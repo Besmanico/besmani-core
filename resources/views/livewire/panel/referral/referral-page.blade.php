@@ -8,7 +8,7 @@
     <main class="panel-main referral-shell {{ $section === 'new' ? 'is-new-referral' : '' }}">
         <header class="ref-page-header">
             <div>
-                <span class="ref-eyebrow">Besmani Referral Network</span>
+                {{-- <span class="ref-eyebrow">Besmani Referral Network</span> --}}
                 <h1>{{ $isProvider ? 'Business Referrals' : 'My Referrals' }}</h1>
                 <p>{{ $isProvider ? 'Manage referrals connected to you and your authorized businesses.' : 'Refer someone to a Besmani Provider and earn Besmani COIN after completion.' }}</p>
             </div>
@@ -298,15 +298,15 @@
                         <label class="ref-field"><span>Per page</span><select wire:model.live="perPage"><option value="10">10</option><option value="25">25</option><option value="50">50</option></select></label>
                         <button type="button" class="ref-btn ref-btn-secondary ref-filter-submit" wire:click="resetFilters"><i class="fa fa-refresh"></i> Clear filters</button>
                     </div>
-
+ 
                     @if ($referrals->isEmpty())
                         <x-referrals.ui-state type="empty" title="No referrals yet" message="New referral activity will appear here." />
-                    @else
+                    @else 
                         <div class="ref-table-wrap">
                             <table class="ref-table">
                                 <thead><tr><th>Customer</th><th>{{ $listTab === 'incoming' ? 'Referred By' : 'Destination' }}</th><th>Service / Note</th><th>Status</th><th>BC</th><th>Date</th><th class="ref-table-action-heading">Action</th></tr></thead>
-                                <tbody>
-                                    @foreach ($referrals as $referral)
+                                <tbody> 
+                                    @foreach ($referrals as $referral) 
                                         @php
                                             $isIncoming = $isProvider && ((int) $referral->receiver_user_id === (int) Auth::guard('mainUsers')->id() || in_array((int) $referral->receiver_business_id, $businessIds, true));
                                             $customerName = trim($referral->customer_first_name . ' ' . $referral->customer_last_name);
@@ -406,7 +406,15 @@
                     $selectedReferral->receiverUser?->mobile,
                     $selectedReferral->receiverUser?->phone,
                 ])->map(fn ($phone) => trim((string) $phone))->first(fn ($phone) => $phone !== '') ?? '';
-            @endphp
+                $appointmentDoctorName = trim((string) ($selectedReferral->receiverUser
+                    ? trim($selectedReferral->receiverUser->fl_name . ' ' . $selectedReferral->receiverUser->last_name)
+                    : ''));
+                $appointmentDestinationName = $appointmentDoctorName !== ''
+                    ? $appointmentDoctorName
+                    : trim((string) ($selectedReferral->receiverBusiness?->name
+                        ?? $selectedReferral->receiverBusiness?->title
+                        ?? ''));
+            @endphp 
             <div class="ref-modal-backdrop" wire:click.self="closeReferral" x-data="{ appointmentContactOpen: false }" @keydown.escape.window="appointmentContactOpen = false">
                 <section class="ref-modal ref-detail-modal" role="dialog" aria-modal="true">
                     <button class="ref-modal-close" wire:click="closeReferral"><i class="fa fa-times"></i></button>
@@ -414,7 +422,7 @@
                     <x-referrals.status-badge :status="$selectedReferral->status" />
                     <div class="ref-detail-list"><span>Phone<strong>{{ $selectedReferral->customer_phone }}</strong></span><span>Email<strong>{{ $selectedReferral->customer_email ?: '—' }}</strong></span><span>Service<strong>{{ $selectedReferral->service_title ?? 'General referral' }}</strong></span><span>Besmani COIN<strong>{{ in_array(strtolower(trim($selectedReferral->status)), ['completed', 'complete', 'settled'], true) ? number_format($selectedReferral->token_amount) . ' BC' : 'Awarded after completion' }}</strong></span></div>
                     @if ($selectedReferral->note)<div class="ref-agreement-note"><i class="fa fa-sticky-note"></i><span>{{ $selectedReferral->note }}</span></div>@endif
-              
+               
                     @if ($selectedReferral->status === 'accepted')
                         <div class="ref-modal-actions appointment">
                             <button type="button" class="ref-appointment-btn" @click="appointmentContactOpen = true">
@@ -429,8 +437,8 @@
                                 <span class="ref-modal-icon"><i class="fa fa-phone"></i></span>
                                 <h2 id="appointment-contact-title">Book an Appointment</h2>
                                 @if ($appointmentPhone !== '')
-                                    <p>To book an appointment, please call the Referral destination at:</p>
-                                    <p><a href="tel:{{ preg_replace('/[^0-9+]/', '', $appointmentPhone) }}"><strong>{{ $appointmentPhone }}</strong></a></p>
+                                    <p>To book an appointment, please call dr {{ $appointmentDestinationName !== '' ? ': ' . $appointmentDestinationName : '' }}</p>
+                                    <p class="call-dr-ref"><a href="tel:{{ preg_replace('/[^0-9+]/', '', $appointmentPhone) }}"><strong>{{ $appointmentPhone }}</strong></a></p>
                                 @else
                                     <p>No phone number is available for this Referral destination. Please contact them directly to book an appointment.</p>
                                 @endif

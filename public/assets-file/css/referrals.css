@@ -22,7 +22,7 @@
 }
 
 .ref-page-header {
-    margin: -38px 0 18px;
+    margin: 0 0 18px;
 }
 
 .ref-page-header h1 {
@@ -1513,8 +1513,13 @@
 }
 .ref-modal > p {
     color: var(--ref-muted);
-    font-size: 12px;
+    font-size: 14px;
     line-height: 1.6;
+}
+.ref-modal .call-dr-ref{
+    margin-top: 18px;
+    margin-bottom: 10px;
+    font-size: 18px;
 }
 .ref-modal-icon {
     align-items: center;

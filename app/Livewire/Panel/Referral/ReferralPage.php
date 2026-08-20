@@ -582,6 +582,15 @@ class ReferralPage extends Component
         ])
             : null;
 
+        if ($selectedReferral
+            && ! $selectedReferral->receiverUser
+            && $selectedReferral->receiverBusiness?->user_id) {
+            $selectedReferral->setRelation(
+                'receiverUser',
+                MainUser::query()->find($selectedReferral->receiverBusiness->user_id)
+            );
+        }
+
         $coinBalance = TokenLedger::query()
             ->where('status', 'completed')
             ->where(function ($query) use ($user, $businessIds): void {
@@ -632,7 +641,7 @@ class ReferralPage extends Component
             'selectedReferral' => $selectedReferral,
         ])->layout('components.layouts.panel', ['title' => 'Referrals']);
     }
-
+ 
     private function applyListFilters($query, ?string $direction = null): void
     {
         $term = trim($this->partyFilter);
